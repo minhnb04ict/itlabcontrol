@@ -1,0 +1,2 @@
+# ITLabControl: giữ LF cho script shell khi clone trên Windows
+*.sh text eol=lf
