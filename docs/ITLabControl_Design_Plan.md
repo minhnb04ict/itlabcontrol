@@ -169,11 +169,11 @@ Dọn màn hình máy HS trước khi bắt đầu hoạt động mới (trình 
 | Chế độ | Hành vi | Mất dữ liệu? |
 |---|---|---|
 | **Thu nhỏ tất cả** (mặc định) | Thu nhỏ mọi cửa sổ, HS thấy màn hình nền | Không |
-| **Đóng ứng dụng** | Gửi yêu cầu đóng lịch sự (`WM_CLOSE`) tới mọi cửa sổ, để ứng dụng tự hỏi HS lưu bài; sau thời gian chờ (mặc định 30 giây, cấu hình được) thì buộc đóng các ứng dụng còn lại | Chỉ khi HS không lưu kịp; có cảnh báo đếm ngược trên máy HS |
+| **Đóng ứng dụng** | Đóng **ngay lập tức** mọi ứng dụng đang mở trên máy HS, không đếm ngược, không chờ HS lưu | Có: bài chưa lưu sẽ mất. Console hiện hộp xác nhận cảnh báo GV trước khi thực hiện |
 
 - **Không bao giờ đóng:** tiến trình hệ thống Windows (explorer, dwm, winlogon…), tiến trình ITLabControl, và danh sách ứng dụng được bảo vệ do GV/IT cấu hình (ví dụ phần mềm thi).
 - Áp dụng cho các máy đang chọn hoặc cả phòng; Console có hộp xác nhận trước khi đóng ứng dụng.
-- **Kỹ thuật:** plugin Veyon; Worker trong phiên người dùng liệt kê cửa sổ (`EnumWindows`), thu nhỏ hoặc gửi `WM_CLOSE`; Server xử lý buộc đóng sau thời gian chờ.
+- **Kỹ thuật:** plugin Veyon; Worker trong phiên người dùng liệt kê cửa sổ (`EnumWindows`) để thu nhỏ; với chế độ đóng, Server kết thúc ngay các tiến trình có cửa sổ trong phiên của HS (trừ danh sách loại trừ ở trên).
 
 #### Khảo sát nhanh: `itlab-survey` (GĐ3, đưa lên từ GĐ4)
 - **Dạng câu hỏi:** chọn 1 / chọn nhiều đáp án, Đúng–Sai, Có–Không, thang điểm 1–5, trả lời ngắn (văn bản).
@@ -226,7 +226,7 @@ Dọn màn hình máy HS trước khi bắt đầu hoạt động mới (trình 
 3. **Phân quyền theo phòng:** mẫu ACL "máy GV phòng X chỉ điều khiển máy HS phòng X"; tài khoản quản trị điều khiển được mọi phòng.
 4. Scan xoay vòng có cấu hình chu kỳ; ảnh màn hình khoá tuỳ chỉnh (logo trường).
 5. Gửi/thu bài: thư mục mặc định theo `Phòng/Lớp/Ngày/Tên HS`, có hiển thị tiến độ.
-6. **`itlab-cleardesktop`**: dọn màn hình HS (thu nhỏ tất cả / đóng ứng dụng có đếm ngược), xem đặc tả mục 3.1. Đây là plugin `itlab-*` đầu tiên sau `itlab-hello`.
+6. **`itlab-cleardesktop`**: dọn màn hình HS (thu nhỏ tất cả / đóng ngay mọi ứng dụng), xem đặc tả mục 3.1. Đây là plugin `itlab-*` đầu tiên sau `itlab-hello`.
 7. Cấu hình Windows Firewall tự động khi cài; hướng dẫn mở cổng 11100/11400 trên router khi khác subnet.
 8. Kiểm thử đầy đủ: Wake-on-LAN (lưu ý khác subnet cần directed broadcast), tắt/khởi động lại, đăng nhập từ xa, trình chiếu tới 31 máy.
 
