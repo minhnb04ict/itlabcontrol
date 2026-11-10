@@ -99,7 +99,30 @@ cd /d/Projects/itlab-build
 # Kết quả mong đợi: Veyon 4.11.4, Qt 6.12.0, OpenSSL 3.x
 ```
 
-<!-- TODO(GĐ0): đóng gói thành thư mục chạy được/bộ cài NSIS, cài lên VM lab, chạy Configurator → Master -->
+## 6b. Đóng gói: thư mục chạy được và bộ cài
+
+Trong cửa sổ **MSYS2 UCRT64**:
+
+```bash
+cd /d/Projects/ITLAB_CONTROL
+bash scripts/msys2/package.sh /d/Projects/itlab-build --installer
+```
+
+| Kết quả | Mô tả |
+|---|---|
+| `D:\Projects\itlab-build\package\` | Thư mục chạy được (~95 file): chương trình, plugin, DLL Qt/OpenSSL, driver Interception. Script tự dò DLL phụ thuộc bằng `ldd`. |
+| `D:\Projects\itlab-build\veyon-<phiên bản>-win64-setup.exe` | Bộ cài NSIS (~31 MB). Đổi tên thành ITLabControl ở bước 0A.5. |
+
+Bỏ `--installer` nếu chỉ cần thư mục chạy được. Kiểm tra thư mục đóng gói có đủ DLL (chạy từ **cmd** thường, không phải MSYS2):
+
+```bat
+cd /d D:\Projects\itlab-build\package
+veyon-cli.exe plugin list
+```
+
+Kết quả mong đợi: liệt kê khoảng 27 plugin (WindowsPlatformPlugin, RemoteAccess, ScreenLock, ...).
+
+> ⚠️ **Không cài bộ cài lên máy phát triển.** Bộ cài sẽ cài Windows Service và driver bàn phím/chuột. Hãy cài trên máy ảo lab (bước 0A.4).
 
 ## 7. Lỗi thường gặp
 
