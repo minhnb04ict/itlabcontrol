@@ -122,6 +122,7 @@ Trạng thái: ✅ Veyon có sẵn · 🟡 có một phần, cần mở rộng �
 | | Tắt/bật/khởi động lại, Wake-on-LAN | ✅ PowerControl | – | 1 |
 | | Đăng nhập/đăng xuất từ xa | ✅ UserLogin/UserLogoff | – | 1 |
 | | Chạy ứng dụng, mở website | ✅ StartApp, OpenWebsite | – | 1 |
+| | **Clear desktop** (dọn màn hình HS: thu nhỏ hoặc đóng ứng dụng) | ❌ | `itlab-cleardesktop` (xem mục 3.1) | 1 |
 | | Lệnh từ xa / PowerShell | ❌ | `itlab-remotecmd` (có ACL) | 5 |
 | **Trình chiếu** | Show màn hình giáo viên | ✅ Demo (Window/FullScreen) | – | 1 |
 | | Chiếu màn hình một học sinh cho cả lớp | ✅ ShareUserScreen | – | 1 |
@@ -132,13 +133,15 @@ Trạng thái: ✅ Veyon có sẵn · 🟡 có một phần, cần mở rộng �
 | | Chat hai chiều | ❌ | `itlab-chat` | 3 |
 | | Học sinh xin trợ giúp (Help Request) | ❌ | `itlab-helprequest` + phím nóng | 3 |
 | | Thanh công cụ học sinh (Student Toolbar) | ❌ | `itlab-studenttoolbar` | 3 |
-| | Khảo sát nhanh (Survey) | ❌ | `itlab-survey` | 4 |
+| | **Khảo sát nhanh (Survey)** | ❌ | `itlab-survey` (xem mục 3.1) | 3 ⬆ |
 | **Lớp học** | Phòng máy, danh sách máy | ✅ BuiltinDirectory / LDAP | Nhập từ CSV/Excel | 1 |
 | | Danh sách lớp theo học sinh | ❌ | `itlab-classroom` | 3 |
 | | Điểm danh (Student Register) | ❌ | `itlab-attendance` | 3 |
 | | Hẹn giờ tiết học, mục tiêu bài học | ❌ | `itlab-lesson` | 3 |
 | | Nhóm trưởng (Group Leader) | ❌ | Chưa ưu tiên | 6 |
-| **File** | Gửi file / thu bài | ✅ DistributeFiles / FileCollect | Thêm thư mục theo lớp/ngày, đặt tên theo học sinh | 1 |
+| **File** | GV gửi file / GV thu bài | ✅ DistributeFiles / FileCollect | Thêm thư mục theo lớp/ngày, đặt tên theo học sinh, hiện tiến độ | 1 |
+| | **HS chủ động nộp bài** | ❌ | `itlab-submitwork` (xem mục 3.1) | 3 |
+| | **Trình quản lý file hai chiều** (duyệt thư mục máy HS, kéo thả) | ❌ | `itlab-filemanager` (xem mục 3.1) | 3 |
 | | Clipboard | ✅ ClipboardExchange | – | 1 |
 | **Hạn chế** | Chặn web (whitelist/blacklist/chặn hết) | ❌ | `itlab-webfilter` | 2 |
 | | Chặn ứng dụng | ❌ | `itlab-appcontrol` | 2 |
@@ -157,6 +160,37 @@ Trạng thái: ✅ Veyon có sẵn · 🟡 có một phần, cần mở rộng �
 | | Nhật ký thao tác giáo viên (audit), báo cáo | ❌ | Hub | 5 |
 | **Khác** | Giao diện tiếng Việt | 🟡 (Qt i18n, chưa có `vi`) | Tạo `translations/veyon_vi.ts` | 0–1 |
 | | Đổi thương hiệu ITLabControl | – | Tên, icon, bộ cài | 0 |
+
+### 3.1 Đặc tả các tính năng bổ sung (2026-11-10)
+
+#### Clear desktop: `itlab-cleardesktop` (GĐ1)
+Dọn màn hình máy HS trước khi bắt đầu hoạt động mới (trình chiếu, kiểm tra, giao bài).
+
+| Chế độ | Hành vi | Mất dữ liệu? |
+|---|---|---|
+| **Thu nhỏ tất cả** (mặc định) | Thu nhỏ mọi cửa sổ, HS thấy màn hình nền | Không |
+| **Đóng ứng dụng** | Gửi yêu cầu đóng lịch sự (`WM_CLOSE`) tới mọi cửa sổ, để ứng dụng tự hỏi HS lưu bài; sau thời gian chờ (mặc định 30 giây, cấu hình được) thì buộc đóng các ứng dụng còn lại | Chỉ khi HS không lưu kịp; có cảnh báo đếm ngược trên máy HS |
+
+- **Không bao giờ đóng:** tiến trình hệ thống Windows (explorer, dwm, winlogon…), tiến trình ITLabControl, và danh sách ứng dụng được bảo vệ do GV/IT cấu hình (ví dụ phần mềm thi).
+- Áp dụng cho các máy đang chọn hoặc cả phòng; Console có hộp xác nhận trước khi đóng ứng dụng.
+- **Kỹ thuật:** plugin Veyon; Worker trong phiên người dùng liệt kê cửa sổ (`EnumWindows`), thu nhỏ hoặc gửi `WM_CLOSE`; Server xử lý buộc đóng sau thời gian chờ.
+
+#### Khảo sát nhanh: `itlab-survey` (GĐ3, đưa lên từ GĐ4)
+- **Dạng câu hỏi:** chọn 1 / chọn nhiều đáp án, Đúng–Sai, Có–Không, thang điểm 1–5, trả lời ngắn (văn bản).
+- **Gửi câu hỏi:** GV gõ nhanh hoặc chọn từ ngân hàng câu hỏi đã lưu (file dùng chung), có thể đặt thời gian trả lời.
+- **Phía HS:** cửa sổ câu hỏi luôn nằm trên cùng, gửi đáp án một lần.
+- **Phía GV:** biểu đồ kết quả theo thời gian thực, danh sách ai đã/chưa trả lời, xem đáp án từng máy; chiếu biểu đồ kết quả cho cả lớp (qua Demo); xuất Excel.
+- Tách độc lập với `itlab-quiz` (GĐ4); về sau `itlab-quiz` dùng lại phần hiển thị câu hỏi của `itlab-survey`.
+
+#### HS chủ động nộp bài: `itlab-submitwork` (GĐ3)
+- Nút **"Nộp bài"** trên thanh công cụ HS (`itlab-studenttoolbar`): HS chọn file/thư mục, gửi về máy GV.
+- GV bật/tắt quyền nộp bài và đặt hạn nộp; file lưu tại `Phòng/Lớp/Ngày/Tên HS/`, nộp lại thì giữ phiên bản cũ (có hậu tố thời gian).
+- Console hiện danh sách đã/chưa nộp và trạng thái nộp trễ.
+
+#### Trình quản lý file hai chiều: `itlab-filemanager` (GĐ3)
+- Cửa sổ 2 bảng: **trái = máy GV, phải = máy HS đang chọn**; duyệt thư mục, kéo thả hoặc nút để chép file **cả hai chiều**; tạo/đổi tên/xoá thư mục.
+- Phạm vi duyệt mặc định giới hạn ở thư mục người dùng của HS (Documents, Desktop, Downloads); IT có thể mở rộng.
+- Mở rộng plugin `filetransfer` có sẵn của Veyon (đã có kênh truyền file); mọi thao tác được ghi nhật ký.
 
 ---
 
@@ -185,17 +219,18 @@ Trạng thái: ✅ Veyon có sẵn · 🟡 có một phần, cần mở rộng �
 **Bàn giao:** `itlabcontrol-<ver>-win64-setup.exe` cài được; Console điều khiển được máy HS; plugin `itlab-hello` hoạt động.
 **Tiêu chí duyệt:** (1) trên máy phát triển, xem/điều khiển/khoá/nhắn tin được qua `localhost`; (2) trên ≥ 2 máy thật, xem/điều khiển/khoá được máy HS; (3) người trong đội tự sửa được `itlab-hello`. Kịch bản khác subnet chuyển sang kiểm thử ở GĐ1.
 
-### Giai đoạn 1: Tính năng cốt lõi, nhiều phòng, Việt hoá (3–4 tuần)
+### Giai đoạn 1: Tính năng cốt lõi, nhiều phòng, Việt hoá, Clear desktop (4–5 tuần)
 **Mục tiêu:** hoàn thiện tính năng có sẵn của Veyon cho phòng máy 1 GV + 31 HS, nhiều phòng.
 1. Việt hoá toàn bộ giao diện (Console, Configurator, thông báo phía HS) qua `translations/veyon_vi.ts`, đồng thời gửi bản dịch ngược lại cho Veyon.
 2. **Quản lý nhiều phòng:** nhập CSV `Phòng, Tên máy, IP/hostname, MAC, Vai trò (GV/HS)`; dò máy theo dải IP; bố cục lưới mặc định 8×4 khớp sơ đồ phòng.
 3. **Phân quyền theo phòng:** mẫu ACL "máy GV phòng X chỉ điều khiển máy HS phòng X"; tài khoản quản trị điều khiển được mọi phòng.
 4. Scan xoay vòng có cấu hình chu kỳ; ảnh màn hình khoá tuỳ chỉnh (logo trường).
 5. Gửi/thu bài: thư mục mặc định theo `Phòng/Lớp/Ngày/Tên HS`, có hiển thị tiến độ.
-6. Cấu hình Windows Firewall tự động khi cài; hướng dẫn mở cổng 11100/11400 trên router khi khác subnet.
-7. Kiểm thử đầy đủ: Wake-on-LAN (lưu ý khác subnet cần directed broadcast), tắt/khởi động lại, đăng nhập từ xa, trình chiếu tới 31 máy.
+6. **`itlab-cleardesktop`**: dọn màn hình HS (thu nhỏ tất cả / đóng ứng dụng có đếm ngược), xem đặc tả mục 3.1. Đây là plugin `itlab-*` đầu tiên sau `itlab-hello`.
+7. Cấu hình Windows Firewall tự động khi cài; hướng dẫn mở cổng 11100/11400 trên router khi khác subnet.
+8. Kiểm thử đầy đủ: Wake-on-LAN (lưu ý khác subnet cần directed broadcast), tắt/khởi động lại, đăng nhập từ xa, trình chiếu tới 31 máy.
 
-**Tiêu chí duyệt:** dạy được một tiết hoàn chỉnh (chiếu màn hình, khoá máy, gửi và thu bài) bằng tiếng Việt; GV phòng A không thấy được phòng B.
+**Tiêu chí duyệt:** dạy được một tiết hoàn chỉnh (dọn màn hình, chiếu màn hình, khoá máy, gửi và thu bài) bằng tiếng Việt; GV phòng A không thấy được phòng B.
 
 ### Giai đoạn 2: Hạn chế và giám sát (5–7 tuần, rủi ro kỹ thuật cao nhất) ⬆ đã đẩy lên
 **Mục tiêu:** chặn web, ứng dụng, USB, in ấn, âm thanh, không bị học sinh vượt qua và không làm "kẹt" máy.
@@ -216,23 +251,25 @@ Trạng thái: ✅ Veyon có sẵn · 🟡 có một phần, cần mở rộng �
 
 **Tiêu chí duyệt:** HS dùng tài khoản thường không vượt qua được các hạn chế; tắt Console đột ngột thì máy HS tự gỡ hạn chế sau N phút; gỡ xong máy về trạng thái ban đầu 100%.
 
-### Giai đoạn 3: Quản lý lớp học và giao tiếp (3–4 tuần) ⬇ đã lùi
+### Giai đoạn 3: Quản lý lớp học, giao tiếp, khảo sát và file (5–6 tuần) ⬇ đã lùi
 1. `itlab-classroom`: danh sách lớp (HS ↔ máy), lưu JSON/SQLite trên máy GV.
 2. `itlab-attendance`: điểm danh tự động theo tài khoản đăng nhập hoặc HS tự nhập tên; xuất Excel.
 3. `itlab-lesson`: hẹn giờ tiết học, tiêu đề và mục tiêu bài học, tự kết thúc tiết. **Kết thúc tiết thì tự gỡ hạn chế** (nối với `itlab-restrictcore`).
-4. `itlab-studenttoolbar`: thanh công cụ phía HS (lớp, giờ còn lại, trạng thái hạn chế, nút xin trợ giúp, chat).
+4. `itlab-studenttoolbar`: thanh công cụ phía HS (lớp, giờ còn lại, trạng thái hạn chế, nút xin trợ giúp, chat, **nộp bài**).
 5. `itlab-helprequest`: HS xin trợ giúp, Console hiện hàng đợi yêu cầu.
 6. `itlab-chat`: chat GV ↔ HS, có tuỳ chọn cho HS chat với nhau.
 7. `itlab-status`: hiển thị ứng dụng đang dùng, web đang mở, mạng trên thumbnail.
+8. **`itlab-survey`**: khảo sát nhanh với biểu đồ thời gian thực (đặc tả mục 3.1). ⬆ đưa lên từ GĐ4
+9. **`itlab-submitwork`**: HS chủ động nộp bài, có hạn nộp (đặc tả mục 3.1).
+10. **`itlab-filemanager`**: trình quản lý file hai chiều GV ↔ HS (đặc tả mục 3.1).
 
-**Tiêu chí duyệt:** tạo lớp, điểm danh, HS xin trợ giúp và chat được với GV; kết thúc tiết thì hạn chế được gỡ.
+**Tiêu chí duyệt:** tạo lớp, điểm danh, HS xin trợ giúp và chat được với GV; gửi khảo sát và xem biểu đồ kết quả cả phòng; HS tự nộp bài và GV thấy danh sách đã/chưa nộp; chép file hai chiều qua trình quản lý file; kết thúc tiết thì hạn chế được gỡ.
 
-### Giai đoạn 4: Giảng dạy và kiểm tra (4–6 tuần)
-1. `itlab-quiz`: soạn đề (trắc nghiệm, đúng/sai, điền từ, có hình ảnh), giao đề, làm bài phía học sinh, chấm tự động, xuất kết quả Excel.
-2. `itlab-survey`: câu hỏi nhanh và biểu đồ kết quả theo thời gian thực.
-3. `itlab-whiteboard`: bảng trắng chia sẻ.
-4. `itlab-journal`: xuất PDF nhật ký tiết học (ghi chú, ảnh màn hình, kết quả khảo sát/kiểm tra).
-5. `itlab-replay`: ghi màn hình học sinh và phát lại (định dạng MP4).
+### Giai đoạn 4: Giảng dạy và kiểm tra (4–5 tuần)
+1. `itlab-quiz`: soạn đề (trắc nghiệm, đúng/sai, điền từ, có hình ảnh), giao đề, làm bài phía học sinh, chấm tự động, xuất kết quả Excel. Dùng lại phần hiển thị câu hỏi của `itlab-survey` (GĐ3).
+2. `itlab-whiteboard`: bảng trắng chia sẻ.
+3. `itlab-journal`: xuất PDF nhật ký tiết học (ghi chú, ảnh màn hình, kết quả khảo sát/kiểm tra).
+4. `itlab-replay`: ghi màn hình học sinh và phát lại (định dạng MP4).
 
 **Tiêu chí duyệt:** tổ chức được một bài kiểm tra 15 phút cho cả phòng và nhận kết quả tự động.
 
@@ -249,17 +286,18 @@ Trình chiếu multicast, nhóm trưởng, tối ưu băng thông; tài liệu c
 
 ### Tổng quan tiến độ
 ```
-Tuần:  1   3   5   7   9  11  13  15  17  19  21  23  25  27  29  31  33  35
-GĐ0   ████                                   (hạ tầng + học C++/Qt)
-GĐ1       ████                               (cốt lõi, nhiều phòng, tiếng Việt)
-GĐ2           ███████                        (HẠN CHẾ: web/app/USB/in)
-GĐ3                  ████                    (lớp học, giao tiếp)
-GĐ4                      ███████             (kiểm tra, khảo sát…)
-GĐ5                             ███████      (Hub, kiểm kê, triển khai)
-GĐ6                                    ───── liên tục ─────
+Tuần:  1   3   5   7   9  11  13  15  17  19  21  23  25  27  29  31  33  35  37
+GĐ0   ████                                       (hạ tầng + học C++/Qt)
+GĐ1       █████                                  (cốt lõi, nhiều phòng, tiếng Việt, Clear desktop)
+GĐ2                ███████                       (HẠN CHẾ: web/app/USB/in)
+GĐ3                       ██████                 (lớp học, giao tiếp, khảo sát, nộp bài, file 2 chiều)
+GĐ4                             █████            (kiểm tra, bảng trắng, nhật ký, replay)
+GĐ5                                  ███████     (Hub, kiểm kê, triển khai)
+GĐ6                                         ───── liên tục ─────
 ```
-- Mốc **dùng thử thực tế** đầu tiên: hết GĐ2 (khoảng tuần 15, gần 4 tháng). Lúc này đã có điều khiển, trình chiếu, gửi/thu bài và chặn web/app/USB.
-- Tổng ước tính khoảng **8–9 tháng** cho 1 người mới học C++/Qt. Với 2 người, có thể rút còn khoảng 5–6 tháng, vì GĐ3 và GĐ4 làm song song được sau khi xong GĐ2.
+- Mốc **dùng thử thực tế** đầu tiên: hết GĐ2 (khoảng tuần 16, gần 4 tháng). Lúc này đã có điều khiển, trình chiếu, Clear desktop, gửi/thu bài và chặn web/app/USB.
+- Mốc **khảo sát + nộp bài + file hai chiều**: hết GĐ3 (khoảng tuần 22).
+- Tổng ước tính khoảng **9 tháng** cho 1 người mới học C++/Qt (tăng khoảng 2 tuần do bổ sung Clear desktop, nộp bài và trình quản lý file hai chiều). Với 2 người, có thể rút còn khoảng 5–6 tháng, vì GĐ3 và GĐ4 làm song song được sau khi xong GĐ2.
 
 ---
 
