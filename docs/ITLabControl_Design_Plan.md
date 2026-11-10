@@ -282,7 +282,18 @@ GĐ6                                    ───── liên tục ────
 | Giai đoạn | Trạng thái |
 |---|---|
 | Bối cảnh và kiến trúc (mục 0–3) | Đã chốt câu trả lời 2026-11-10 |
-| GĐ0: Nền tảng và học C++/Qt | **Chờ duyệt** |
+| GĐ0: Nền tảng và học C++/Qt | **Đang thực hiện** (duyệt 2026-11-10) |
+
+#### Tiến độ GĐ0
+| Bước | Trạng thái |
+|---|---|
+| 0A.1 Repo GitHub, nhánh `main`/`upstream`, submodule | ✅ Xong |
+| 0A.2 Build trên Windows bằng MSYS2 (`docs/BUILD.md`) | ✅ Xong |
+| 0A.3 Đóng gói và bộ cài NSIS (`scripts/msys2/package.sh`) | ✅ Xong (CI GitHub Actions: chưa làm) |
+| 0A.4 Kiểm thử (`docs/LAB.md`) | 🟡 Tiêu chí (1) localhost **đạt** 2026-11-10: Remote view, Text message, Screenshot. Tiêu chí (2) trên máy thật: chờ |
+| 0A.5 Đổi thương hiệu ITLabControl | ✅ Xong (còn icon/logo) |
+| 0A.6 README, giấy phép | ✅ Xong |
+| 0B Tài liệu học C++/Qt, plugin mẫu `itlab-hello` | Chưa bắt đầu |
 | GĐ1 → GĐ6 | Chưa duyệt |
 
 ### Việc bạn cần chuẩn bị cho GĐ0
