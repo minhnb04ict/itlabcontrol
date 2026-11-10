@@ -31,6 +31,8 @@
 #include <QMessageBox>
 #include <QSplitter>
 
+#include <veyonconfig.h>
+
 #include "AboutDialog.h"
 #include "AccessControlProvider.h"
 #include "MainWindow.h"
@@ -62,6 +64,9 @@ MainWindow::MainWindow( VeyonMaster &masterCore, QWidget* parent ) :
 	m_modeGroup( new QButtonGroup( this ) )
 {
 	ui->setupUi( this );
+
+	// ITLabControl branding
+	setWindowTitle(QStringLiteral(ITLAB_MASTER_NAME));
 
 	restoreState( QByteArray::fromBase64( m_master.userConfig().windowState().toUtf8() ) );
 	restoreGeometry( QByteArray::fromBase64( m_master.userConfig().windowGeometry().toUtf8() ) );

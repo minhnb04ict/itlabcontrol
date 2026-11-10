@@ -22,6 +22,8 @@
  *
  */
 
+#include <veyonconfig.h>
+
 #include "WindowsServiceFunctions.h"
 #include "WindowsServiceControl.h"
 #include "WindowsServiceCore.h"
@@ -29,7 +31,8 @@
 
 QString WindowsServiceFunctions::veyonServiceName() const
 {
-	return QStringLiteral("VeyonService");
+	// ITLabControl: own service name so it can coexist with an installed Veyon
+	return QStringLiteral(ITLAB_SERVICE_NAME);
 }
 
 

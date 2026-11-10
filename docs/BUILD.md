@@ -145,3 +145,13 @@ Ghi lại mọi chỗ sửa lõi Veyon để dễ merge về sau:
 |---|---|---|
 | `CMakeLists.txt` | Nhận dạng Windows 64-bit theo `CMAKE_SIZEOF_VOID_P` | MSYS2 để trống `CMAKE_SYSTEM_PROCESSOR`, khiến Veyon build nhầm cấu hình 32-bit |
 | `CMakeLists.txt` | `-Wno-error=old-style-definition`, `-Wno-error=unused-but-set-variable` với GCC ≥ 15 | Mã cũ trong `3rdparty/ultravnc` lỗi với GCC mới |
+| `cmake/modules/ITLabBranding.cmake` (mới) + `CMakeLists.txt` | Nơi duy nhất khai báo tên thương hiệu | Đổi tên chỉ cần sửa 1 file |
+| `core/src/veyonconfig.h.in` | Thêm các macro `ITLAB_*` | Đưa tên thương hiệu vào C++ |
+| `core/src/VeyonCore.cpp` | Tên tổ chức/ứng dụng của Qt = ITLabControl | Cấu hình lưu ở registry riêng, không đụng Veyon nếu máy có cài Veyon |
+| `plugins/platform/windows/WindowsServiceFunctions.cpp` | Tên service = `ITLabControlService` | Cài song song được với Veyon |
+| `master/src/MainWindow.cpp`, `configurator/src/MainWindow.cpp` | Tiêu đề cửa sổ | Hiển thị tên ITLabControl |
+| `cmake/modules/WindowsBuildHelpers.cmake` | Thông tin phiên bản của file .exe/.dll | ProductName/CompanyName = ITLabControl, giữ ghi công Veyon |
+| `nsis/veyon.nsi.in` | Tên bộ cài, thư mục cài, Start Menu, shortcut | Bộ cài mang tên ITLabControl |
+
+> Chưa đổi (có chủ đích): tên file `veyon-*.exe`, icon, và các chuỗi giao diện còn chữ "Veyon".
+> Tên file exe giữ nguyên để dễ merge với Veyon. Chuỗi giao diện sẽ được thay qua bản dịch tiếng Việt ở GĐ1. Icon chờ có thiết kế logo.

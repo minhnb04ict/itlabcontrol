@@ -27,6 +27,7 @@ endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
+include(ITLabBranding)
 include(AddFileDependencies)
 include(CheckCSourceCompiles)
 include(CheckIncludeFiles)

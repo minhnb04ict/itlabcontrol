@@ -33,6 +33,8 @@
 #include <QSettings>
 #include <QTimer>
 
+#include <veyonconfig.h>
+
 #include "Configuration/JsonStore.h"
 #include "Configuration/UiMapping.h"
 
@@ -53,7 +55,8 @@ MainWindow::MainWindow( QWidget* parent ) :
 {
 	ui->setupUi( this );
 
-	setWindowTitle(tr("Veyon Configurator %1").arg(VeyonCore::versionString()));
+	// ITLabControl branding
+	setWindowTitle(QStringLiteral("%1 %2").arg(QStringLiteral(ITLAB_CONFIGURATOR_NAME), VeyonCore::versionString()));
 
 	loadConfigurationPagePlugins();
 
