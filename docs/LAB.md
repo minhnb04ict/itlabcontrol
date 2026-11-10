@@ -50,8 +50,11 @@ Tất cả đều tách biệt với Veyon nếu máy có cài Veyon.
 
 1. Mở **Start Menu → ITLabControl → ITLabControl Teacher Console**.
 2. Ở bảng bên trái chọn phòng **Phong Thu Nghiem**; ô "May GV (localhost)" hiện ảnh màn hình của chính máy.
-3. Thử: **View** (xem), **Remote control** (điều khiển), **Text message** (tin nhắn), **Lock** (khoá màn hình).
-   Khi bị khoá, bấm lại **Lock** trên Console để mở khoá. Nếu không thao tác được, mở khoá bằng cách khởi động lại service (`veyon-cli service restart` với quyền admin) hoặc khởi động lại máy.
+3. Thử: **Remote view** (xem), **Remote control** (điều khiển), **Text message** (tin nhắn), **Screenshot** (chụp màn hình).
+
+> ⚠️ **Lock không thử được qua localhost.** Veyon cố ý bỏ qua máy có địa chỉ localhost khi khoá
+> (`plugins/screenlock/ScreenLockFeaturePlugin.cpp`), để giáo viên không tự khoá máy đang chạy Console.
+> Nút chỉ đổi thành "Unlock" mà màn hình không bị khoá; đây là hành vi đúng. Thử Lock ở **Cách 2** (máy thật).
 
 ### 1.4 Gỡ cài đặt
 
