@@ -173,7 +173,7 @@ Trạng thái: ✅ Veyon có sẵn · 🟡 có một phần, cần mở rộng �
 1. Tạo repo **công khai** trên GitHub, fork từ Veyon; thiết lập các nhánh `upstream` và `main`; kéo các submodule (ultravnc, libvncserver, kldap, qthttpserver…).
 2. Môi trường build. Đề xuất: **cross-compile trong Docker (Linux → Windows, MinGW)**, giống cách Veyon phát hành chính thức, ổn định và tái lập được. Phương án dự phòng: build trực tiếp trên Windows bằng MSYS2 + Qt6. Viết `docs/BUILD.md` từng bước cho người mới.
 3. CI: GitHub Actions build `ITLabControl-Setup.exe` (NSIS, x64) cho mỗi commit, gắn file vào mỗi Release.
-4. Lab thử nghiệm: 1 máy GV và 3 máy HS bằng VM Hyper-V, chia **2 subnet** để kiểm thử kịch bản khác phòng.
+4. Kiểm thử (không dùng máy ảo, xem `docs/LAB.md`): hằng ngày trên máy phát triển qua `localhost`; cuối giai đoạn trên ít nhất 2 máy thật trong phòng máy.
 5. Đổi thương hiệu: tên sản phẩm, icon, about, tên service, thư mục cài đặt, registry key. Giữ credit Veyon và GPL.
 6. Tạo `README.md`, `CONTRIBUTING.md`, mẫu header GPL cho file mới.
 
@@ -182,8 +182,8 @@ Trạng thái: ✅ Veyon có sẵn · 🟡 có một phần, cần mở rộng �
 2. Đọc và giải thích 3 plugin Veyon từ đơn giản tới phức tạp: `textmessage` → `screenlock` → `filetransfer`.
 3. Plugin mẫu `plugins/itlab-hello`, chú thích từng dòng. Giáo viên bấm nút, máy học sinh hiện cửa sổ và trả lời "OK" về Console. Đây là khuôn cho mọi plugin sau này.
 
-**Bàn giao:** `ITLabControl-Setup.exe` cài được; Console điều khiển được máy HS ở cả 2 subnet; plugin `itlab-hello` hoạt động.
-**Tiêu chí duyệt:** cài trên 4 VM, xem/điều khiển/khoá được máy khác subnet; người trong đội tự sửa được `itlab-hello`.
+**Bàn giao:** `itlabcontrol-<ver>-win64-setup.exe` cài được; Console điều khiển được máy HS; plugin `itlab-hello` hoạt động.
+**Tiêu chí duyệt:** (1) trên máy phát triển, xem/điều khiển/khoá/nhắn tin được qua `localhost`; (2) trên ≥ 2 máy thật, xem/điều khiển/khoá được máy HS; (3) người trong đội tự sửa được `itlab-hello`. Kịch bản khác subnet chuyển sang kiểm thử ở GĐ1.
 
 ### Giai đoạn 1: Tính năng cốt lõi, nhiều phòng, Việt hoá (3–4 tuần)
 **Mục tiêu:** hoàn thiện tính năng có sẵn của Veyon cho phòng máy 1 GV + 31 HS, nhiều phòng.
@@ -287,5 +287,5 @@ GĐ6                                    ───── liên tục ────
 
 ### Việc bạn cần chuẩn bị cho GĐ0
 - Tài khoản GitHub (cá nhân hoặc tổ chức) để tạo repo công khai `itlabcontrol`.
-- Máy phát triển: Windows 10/11, RAM ≥ 16 GB, ổ trống ≥ 60 GB, bật Hyper-V (để chạy lab VM). Docker Desktop nếu chọn cross-compile.
+- Máy phát triển: Windows 10/11, RAM ≥ 16 GB, ổ trống ≥ 60 GB. Build bằng MSYS2 (không cần Docker), kiểm thử không cần máy ảo.
 - (Có thể để sau, nhưng cần trước khi phát hành cho trường khác) Chứng chỉ ký code. Có thể đăng ký miễn phí cho dự án mã nguồn mở qua SignPath Foundation.

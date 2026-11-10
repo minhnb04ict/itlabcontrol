@@ -24,6 +24,8 @@
 
 #include <QDir>
 
+#include <veyonconfig.h>
+
 #include <shlobj.h>
 #include <accctrl.h>
 #include <aclapi.h>
@@ -52,16 +54,18 @@ static QString windowsConfigPath( const KNOWNFOLDERID folderId )
 
 
 
+// ITLabControl: own data folders (%APPDATA%\ITLabControl, %PROGRAMDATA%\ITLabControl)
+// so keys and data do not mix with an installed Veyon
 QString WindowsFilesystemFunctions::personalAppDataPath() const
 {
-	return windowsConfigPath( FOLDERID_RoamingAppData ) + QDir::separator() + QStringLiteral("Veyon");
+	return windowsConfigPath( FOLDERID_RoamingAppData ) + QDir::separator() + QStringLiteral(ITLAB_PRODUCT_NAME);
 }
 
 
 
 QString WindowsFilesystemFunctions::globalAppDataPath() const
 {
-	return windowsConfigPath( FOLDERID_ProgramData ) + QDir::separator() + QStringLiteral("Veyon");
+	return windowsConfigPath( FOLDERID_ProgramData ) + QDir::separator() + QStringLiteral(ITLAB_PRODUCT_NAME);
 }
 
 

@@ -149,6 +149,7 @@ Ghi lại mọi chỗ sửa lõi Veyon để dễ merge về sau:
 | `core/src/veyonconfig.h.in` | Thêm các macro `ITLAB_*` | Đưa tên thương hiệu vào C++ |
 | `core/src/VeyonCore.cpp` | Tên tổ chức/ứng dụng của Qt = ITLabControl | Cấu hình lưu ở registry riêng, không đụng Veyon nếu máy có cài Veyon |
 | `plugins/platform/windows/WindowsServiceFunctions.cpp` | Tên service = `ITLabControlService` | Cài song song được với Veyon |
+| `plugins/platform/windows/WindowsFilesystemFunctions.cpp` | Thư mục dữ liệu `%PROGRAMDATA%\ITLabControl`, `%APPDATA%\ITLabControl` | Khoá xác thực và dữ liệu tách khỏi Veyon |
 | `master/src/MainWindow.cpp`, `configurator/src/MainWindow.cpp` | Tiêu đề cửa sổ | Hiển thị tên ITLabControl |
 | `cmake/modules/WindowsBuildHelpers.cmake` | Thông tin phiên bản của file .exe/.dll | ProductName/CompanyName = ITLabControl, giữ ghi công Veyon |
 | `nsis/veyon.nsi.in` | Tên bộ cài, thư mục cài, Start Menu, shortcut | Bộ cài mang tên ITLabControl |

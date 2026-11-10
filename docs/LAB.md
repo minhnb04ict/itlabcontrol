@@ -1,72 +1,75 @@
-# Lab thử nghiệm ITLabControl bằng VirtualBox
+# Kiểm thử ITLabControl
 
-Lab gồm **1 máy giáo viên (GV) và 1 máy học sinh (HS)** chạy trong VirtualBox, dùng để cài thử bộ cài
-mà không làm ảnh hưởng máy phát triển (bộ cài có Windows Service và driver bàn phím/chuột).
+Có 2 cách, dùng cho 2 mục đích khác nhau. **Không cần máy ảo.**
 
-Cấu hình tham chiếu: host Windows 11 Home, RAM 16 GB, máy ảo đặt trên SSD ngoài `F:`.
-
-## 1. Cài VirtualBox
-
-1. Tải **VirtualBox 7.x – Windows hosts** tại <https://www.virtualbox.org/wiki/Downloads>.
-2. Chạy file cài, để mặc định và chọn **Yes** khi Windows hỏi cài driver mạng.
-   Nếu được yêu cầu cài *Microsoft Visual C++ Redistributable*, hãy cài theo hướng dẫn.
-3. Mở VirtualBox: **File → Preferences → General → Default Machine Folder** = `F:\VMs`.
-
-> Windows Home không có Hyper-V nên dùng VirtualBox. Nếu máy đang bật tính năng ảo hoá của Windows (WSL2/VBS),
-> VirtualBox vẫn chạy được nhưng chậm hơn; điều đó chấp nhận được cho lab.
-
-## 2. Tải bộ cài Windows (miễn phí, dùng thử 90 ngày)
-
-- Vào **Microsoft Evaluation Center**: <https://www.microsoft.com/evalcenter>
-  → **Windows 11 Enterprise** → tải bản **ISO 64-bit, English (United States)**, khoảng 6 GB.
-- Lưu vào `F:\ISO\`.
-
-## 3. Mạng ảo cho lab
-
-**File → Tools → Network Manager → NAT Networks → Create**:
-
-| Thuộc tính | Giá trị |
-|---|---|
-| Name | `itlab-net` |
-| IPv4 Prefix | `10.10.1.0/24` |
-| Enable DHCP | ✔ |
-
-Hai máy cùng nằm trong `itlab-net`, thấy nhau như trong một phòng máy và vẫn ra Internet được.
-(Kịch bản **khác subnet** sẽ dựng thêm sau: một mạng `10.10.2.0/24` và một máy ảo router.)
-
-## 4. Tạo máy ảo
-
-Tạo 2 máy, **New** với thông số:
-
-| Thuộc tính | `ITLAB-GV` | `ITLAB-HS01` |
+| Cách | Dùng khi | Thử được |
 |---|---|---|
-| ISO | `F:\ISO\...Win11...Enterprise...iso` | như bên trái |
-| Type / Version | Microsoft Windows / Windows 11 (64-bit) | như bên trái |
-| Skip Unattended Installation | ✔ (để tự đặt tên máy và tài khoản) | ✔ |
-| RAM | 4096 MB | 4096 MB |
-| CPU | 2 | 2 |
-| Ổ cứng | 50 GB, dynamically allocated | 50 GB |
-| EFI / TPM | Mặc định của VirtualBox 7 cho Windows 11 (EFI + TPM 2.0) | như bên trái |
+| **1. Trên máy phát triển (localhost)** | Hằng ngày, sau mỗi lần sửa code | Xem màn hình, điều khiển, khoá, tin nhắn, gửi/thu file, các plugin mới |
+| **2. Trên máy thật trong phòng máy** | Cuối mỗi giai đoạn, trước khi duyệt | Nhiều máy, 31 máy HS, khác subnet, Wake-on-LAN, hiệu năng mạng |
 
-Sau khi tạo: **Settings → Network → Adapter 1 → Attached to: NAT Network → `itlab-net`**.
+---
 
-> Chỉ nên chạy cùng lúc 2 máy ảo (tổng 8 GB), phần còn lại để cho Windows host và VS Code.
+## Cách 1: Kiểm thử trên máy phát triển
 
-## 5. Cài Windows trong mỗi máy ảo
+Console giáo viên kết nối tới **chính máy đang chạy** qua `127.0.0.1`.
 
-1. Start máy ảo, cài Windows 11 bình thường.
-2. Đặt **tên máy**: `ITLAB-GV` và `ITLAB-HS01`.
-   Tài khoản: GV dùng `giaovien` (Administrator); HS dùng `admin` (Administrator, để cài đặt) và `hocsinh` (Standard user, để thử nghiệm).
-3. Cài **Guest Additions**: menu **Devices → Insert Guest Additions CD image** → chạy `VBoxWindowsAdditions.exe` → khởi động lại.
-4. **Devices → Shared Folders**: thêm `D:\Projects\itlab-build`, tên `itlab-build`, tick *Read-only* và *Auto-mount*.
-   Trong máy ảo, thư mục xuất hiện dạng ổ mạng (ví dụ `Z:`), chứa bộ cài `itlabcontrol-*-setup.exe`.
-5. Tắt máy ảo và **chụp snapshot** tên `clean-windows`, để luôn quay lại trạng thái sạch được.
+### 1.1 Cài đặt (sau mỗi lần build)
 
-## 6. Cài ITLabControl (khi build xong)
+```bat
+:: chạy trong cmd "Run as administrator"
+D:\Projects\itlab-build\itlabcontrol-4.11.4.0-win64-setup.exe /S /NoInterception
+```
 
-| Máy | Cài |
+- `/S`: cài im lặng, không hiện giao diện. Cài đè lên bản cũ được, giữ nguyên cấu hình.
+- `/NoInterception`: **không** cài driver bàn phím/chuột trên máy phát triển.
+
+### 1.2 Cấu hình lần đầu (chỉ làm 1 lần)
+
+```bat
+cd /d "C:\Program Files\ITLabControl"
+veyon-cli authkeys create teacher
+veyon-cli authkeys setaccessgroup teacher/private Users
+veyon-cli config set Authentication/Method 1
+veyon-cli networkobjects add location "Phong Thu Nghiem"
+veyon-cli networkobjects add computer "May GV (localhost)" 127.0.0.1 "" "Phong Thu Nghiem"
+veyon-cli service restart
+```
+
+> Chạy các lệnh trên trong **cmd**, không chạy trong PowerShell: PowerShell 5.1 bỏ qua tham số rỗng `""`.
+
+| Thành phần | Vị trí |
 |---|---|
-| `ITLAB-GV` | Đầy đủ (Service + Teacher Console) |
-| `ITLAB-HS01` | Chỉ phần Service: chạy bộ cài với `/NoMaster`, hoặc bỏ chọn *Teacher Console* |
+| Chương trình | `C:\Program Files\ITLabControl` |
+| Cấu hình | Registry `HKLM\SOFTWARE\ITLabControl` |
+| Khoá xác thực | `C:\ProgramData\ITLabControl\keys` |
+| Service | `ITLabControlService` |
 
-Bước cấu hình khoá xác thực và phòng máy sẽ được hướng dẫn ở bước kiểm thử 0A.4.
+Tất cả đều tách biệt với Veyon nếu máy có cài Veyon.
+
+### 1.3 Thử nghiệm
+
+1. Mở **Start Menu → ITLabControl → ITLabControl Teacher Console**.
+2. Ở bảng bên trái chọn phòng **Phong Thu Nghiem**; ô "May GV (localhost)" hiện ảnh màn hình của chính máy.
+3. Thử: **View** (xem), **Remote control** (điều khiển), **Text message** (tin nhắn), **Lock** (khoá màn hình).
+   Khi bị khoá, bấm lại **Lock** trên Console để mở khoá. Nếu không thao tác được, mở khoá bằng cách khởi động lại service (`veyon-cli service restart` với quyền admin) hoặc khởi động lại máy.
+
+### 1.4 Gỡ cài đặt
+
+**Settings → Apps → ITLabControl → Uninstall**. Thêm `/ClearConfig` khi chạy `uninstall.exe` để xoá luôn cấu hình.
+
+---
+
+## Cách 2: Kiểm thử trên máy thật
+
+1. Chép `itlabcontrol-*-setup.exe` và khoá công khai `C:\ProgramData\ITLabControl\keys\public\teacher\key` sang USB.
+2. **Máy GV:** chạy bộ cài đầy đủ, nhập khoá **riêng tư** (*private key*) qua Configurator (hoặc tạo khoá mới trên máy GV rồi xuất khoá công khai cho các máy HS).
+3. **Mỗi máy HS:** chạy bộ cài với `/NoMaster`, rồi nhập khoá công khai:
+   ```bat
+   cd /d "C:\Program Files\ITLabControl"
+   veyon-cli authkeys import teacher/public E:\key
+   veyon-cli config set Authentication/Method 1
+   veyon-cli service restart
+   ```
+4. Trên máy GV, thêm phòng và các máy HS theo IP/hostname (hoặc nhập CSV, sẽ có ở GĐ1).
+
+Hướng dẫn chi tiết cho phòng máy thật sẽ hoàn thiện ở GĐ1, cùng chức năng nhập danh sách máy từ CSV.
