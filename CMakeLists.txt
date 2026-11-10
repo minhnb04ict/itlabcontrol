@@ -95,7 +95,9 @@ endif()
 # set up basic platform variables
 if(WIN32)
 	set(VEYON_BUILD_WINDOWS 1)
-	if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+	# native Windows builds (e.g. MSYS2) may report "AMD64" or an empty
+	# CMAKE_SYSTEM_PROCESSOR, so also detect 64 bit via pointer size
+	if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64)$" OR CMAKE_SIZEOF_VOID_P EQUAL 8)
 		set(VEYON_BUILD_WIN64 1)
 		set(VEYON_WINDOWS_ARCH "win64")
 	else()
@@ -105,6 +107,11 @@ if(WIN32)
 	add_definitions(-DUNICODE -D_UNICODE)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-attributes")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-attributes")
+	# ITLabControl: newer GCC (e.g. MSYS2 UCRT64) warns about legacy code in 3rdparty/ultravnc
+	if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 15)
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=old-style-definition -Wno-error=unused-but-set-variable")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=unused-but-set-variable")
+	endif()
 endif()
 if(APPLE)
 	set(VEYON_BUILD_APPLE 1)
