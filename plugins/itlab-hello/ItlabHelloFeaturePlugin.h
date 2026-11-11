@@ -100,7 +100,7 @@ public:
 
 	QString description() const override
 	{
-		return tr( "Plugin mẫu: gửi lời chào tới học sinh và nhận xác nhận" );
+		return tr( "Sample plugin: send a greeting to students and receive confirmations" );
 	}
 
 	QString vendor() const override

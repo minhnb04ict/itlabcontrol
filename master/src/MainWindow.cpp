@@ -27,9 +27,11 @@
 #include <QJsonDocument>
 #include <QKeyEvent>
 #include <QHostAddress>
+#include <QActionGroup>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSplitter>
+#include <QToolButton>
 
 #include <veyonconfig.h>
 
@@ -50,6 +52,7 @@
 #include "SlideshowPanel.h"
 #include "SpotlightPanel.h"
 #include "ToolButton.h"
+#include "TranslationLoader.h"
 #include "VeyonConfiguration.h"
 #include "VeyonMaster.h"
 #include "UserConfig.h"
@@ -84,6 +87,7 @@ MainWindow::MainWindow( VeyonMaster &masterCore, QWidget* parent ) :
 	ui->statusBar->addWidget( ui->useCustomComputerPositionsButton );
 	ui->statusBar->addWidget( ui->alignComputersButton );
 	ui->statusBar->addWidget( ui->spacerLabel4 );
+	ui->statusBar->addWidget( createLanguageButton() );
 	ui->statusBar->addWidget( ui->aboutButton );
 
 	// create all views
@@ -293,6 +297,56 @@ MainWindow::~MainWindow()
 	ui->computerMonitoringWidget->saveConfiguration();
 
 	delete ui;
+}
+
+
+
+QToolButton* MainWindow::createLanguageButton()
+{
+	// Language names are always shown in their own language so that users can find
+	// their language even when the interface is currently shown in another one
+	const QList<QPair<QString, QString>> languages{
+		{ QStringLiteral("vi"), QStringLiteral("Tiếng Việt") },
+		{ QStringLiteral("en"), QStringLiteral("English") },
+	};
+
+	const auto currentLanguage = TranslationLoader::effectiveLanguageCode();
+
+	auto button = new QToolButton( this );
+	button->setAutoRaise( true );
+	button->setPopupMode( QToolButton::InstantPopup );
+	button->setToolButtonStyle( Qt::ToolButtonTextOnly );
+	button->setToolTip( tr( "Language" ) );
+
+	auto menu = new QMenu( button );
+	auto actionGroup = new QActionGroup( menu );
+	for( const auto& language : languages )
+	{
+		auto action = menu->addAction( language.second );
+		action->setCheckable( true );
+		action->setChecked( currentLanguage.startsWith( language.first ) );
+		actionGroup->addAction( action );
+
+		if( action->isChecked() )
+		{
+			button->setText( language.second );
+		}
+
+		connect( action, &QAction::triggered, this, [this, button, language]() {
+			TranslationLoader::setUserLanguage( language.first );
+			button->setText( language.second );
+			QMessageBox::information( this, tr( "Language" ),
+									  tr( "The new language will be used the next time the Teacher Console is started." ) );
+		} );
+	}
+	button->setMenu( menu );
+
+	if( button->text().isEmpty() )
+	{
+		button->setText( currentLanguage );
+	}
+
+	return button;
 }
 
 

@@ -85,6 +85,9 @@ private:
 	void loadComputerPositions();
 	void saveComputerPositions();
 
+	// ITLabControl: per-user language switch (Vietnamese / English) in the status bar
+	QToolButton* createLanguageButton();
+
 	Ui::MainWindow* ui;
 
 	VeyonMaster& m_master;

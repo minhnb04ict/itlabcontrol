@@ -46,12 +46,12 @@ ItlabHelloFeaturePlugin::ItlabHelloFeaturePlugin( QObject* parent ) :
 		// Tính năng cha: không có
 		Feature::Uid(),
 		// Tên hiện trên nút của Console
-		tr( "Xin chào" ),
+		tr( "Say hello" ),
 		// Tên khi tính năng đang bật (chỉ dùng cho loại Mode): để trống
 		{},
 		// Chú thích khi rê chuột vào nút
-		tr( "Gửi lời chào tới các máy học sinh đang chọn. "
-			"Học sinh bấm OK để xác nhận đã nhận được." ),
+		tr( "Send a greeting to the selected student computers. "
+			"Students click OK to confirm they received it." ),
 		// Icon nằm trong file itlab-hello.qrc
 		QStringLiteral(":/itlab-hello/itlab-hello.png") ) ),
 	m_features( { m_helloFeature } )
@@ -86,7 +86,7 @@ bool ItlabHelloFeaturePlugin::startFeature( VeyonMasterInterface& master, const 
 	// Ở đây có thể mở hộp thoại cho giáo viên nhập nội dung (xem plugin textmessage).
 	// Plugin mẫu dùng lời chào cố định cho đơn giản.
 	return controlFeature( m_helloFeature.uid(), Operation::Start,
-						   { { argToString(Argument::Text), tr( "Xin chào các em! Bấm OK để xác nhận." ) } },
+						   { { argToString(Argument::Text), tr( "Hello everyone! Click OK to confirm." ) } },
 						   computerControlInterfaces );
 }
 
@@ -136,8 +136,8 @@ bool ItlabHelloFeaturePlugin::handleFeatureMessage( ComputerControlInterface::Po
 	// Hộp thông báo KHÔNG chặn (show() thay vì exec()), tự xoá khi đóng.
 	// Plugin thật nên gom kết quả của cả phòng vào một bảng thay vì mỗi máy một hộp.
 	auto box = new QMessageBox( QMessageBox::Information,
-								tr( "Xin chào" ),
-								tr( "Máy %1 (người dùng %2) đã xác nhận." ).arg( computerName, userName ) );
+								tr( "Say hello" ),
+								tr( "Computer %1 (user %2) has confirmed." ).arg( computerName, userName ) );
 	box->setAttribute( Qt::WA_DeleteOnClose );
 	box->show();
 
@@ -210,7 +210,7 @@ bool ItlabHelloFeaturePlugin::handleFeatureMessage( VeyonWorkerInterface& worker
 	const auto requestId = message.argument( Argument::RequestId ).toUuid();
 
 	auto box = new QMessageBox( QMessageBox::Information,
-								tr( "Lời chào từ giáo viên" ),
+								tr( "Greeting from the teacher" ),
 								message.argument( Argument::Text ).toString(),
 								QMessageBox::Ok );
 	box->setAttribute( Qt::WA_DeleteOnClose );

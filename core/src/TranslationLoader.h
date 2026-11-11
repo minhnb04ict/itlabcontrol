@@ -35,4 +35,9 @@ public:
 
 	static bool load( const QString& resourceName );
 
+	// ITLabControl: language selection (per-user choice > system-wide setting > Vietnamese)
+	static QString effectiveLanguageCode();
+	static QString userLanguage();
+	static void setUserLanguage( const QString& languageCode );
+
 };

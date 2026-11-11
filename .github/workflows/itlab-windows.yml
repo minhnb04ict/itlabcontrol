@@ -54,6 +54,7 @@ jobs:
             mingw-w64-ucrt-x86_64-qt6-tools
             mingw-w64-ucrt-x86_64-qt6-translations
             mingw-w64-ucrt-x86_64-qt6-httpserver
+            mingw-w64-ucrt-x86_64-qt6-declarative
             mingw-w64-ucrt-x86_64-qca-qt6
             mingw-w64-ucrt-x86_64-openssl
             mingw-w64-ucrt-x86_64-lzo2
@@ -80,8 +81,7 @@ jobs:
         run: |
           cmake -S . -B build -G Ninja \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-            -DWITH_LTO=OFF \
-            -DWITH_TRANSLATIONS=OFF
+            -DWITH_LTO=OFF
 
       - name: Build
         run: cmake --build build --parallel

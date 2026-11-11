@@ -1,3 +1,6 @@
+; ITLabControl: Unicode installer so Vietnamese text is displayed correctly
+Unicode true
+
 !define APP_NAME "@ITLAB_PRODUCT_NAME@"
 !define MASTER_NAME "@ITLAB_MASTER_NAME@"
 !define CONFIGURATOR_NAME "@ITLAB_CONFIGURATOR_NAME@"
@@ -70,9 +73,9 @@ RequestExecutionLevel admin
 !insertmacro MUI_PAGE_INSTFILES
 
 !define MUI_FINISHPAGE_RUN
-!define MUI_FINISHPAGE_RUN_TEXT "Run ${CONFIGURATOR_NAME} now"
+!define MUI_FINISHPAGE_RUN_TEXT "$(TXT_RUN_CONFIGURATOR)"
 !define MUI_FINISHPAGE_RUN_FUNCTION "RunConfigurator"
-!define MUI_FINISHPAGE_LINK "${APP_NAME} on GitHub (based on Veyon)"
+!define MUI_FINISHPAGE_LINK "$(TXT_GITHUB_LINK)"
 !define MUI_FINISHPAGE_LINK_LOCATION "${WEB_SITE}"
 
 !insertmacro MUI_PAGE_FINISH
@@ -83,70 +86,15 @@ RequestExecutionLevel admin
 
 !insertmacro MUI_UNPAGE_FINISH
 
-!insertmacro MUI_LANGUAGE "English" ;first language is the default language
-!insertmacro MUI_LANGUAGE "Afrikaans"
-!insertmacro MUI_LANGUAGE "Albanian"
-!insertmacro MUI_LANGUAGE "Arabic"
-!insertmacro MUI_LANGUAGE "Basque"
-!insertmacro MUI_LANGUAGE "Belarusian"
-!insertmacro MUI_LANGUAGE "Bosnian"
-!insertmacro MUI_LANGUAGE "Breton"
-!insertmacro MUI_LANGUAGE "Bulgarian"
-!insertmacro MUI_LANGUAGE "Catalan"
-!insertmacro MUI_LANGUAGE "Croatian"
-!insertmacro MUI_LANGUAGE "Czech"
-!insertmacro MUI_LANGUAGE "Danish"
-!insertmacro MUI_LANGUAGE "Dutch"
-!insertmacro MUI_LANGUAGE "Esperanto"
-!insertmacro MUI_LANGUAGE "Estonian"
-!insertmacro MUI_LANGUAGE "Farsi"
-!insertmacro MUI_LANGUAGE "Finnish"
-!insertmacro MUI_LANGUAGE "French"
-!insertmacro MUI_LANGUAGE "Galician"
-!insertmacro MUI_LANGUAGE "German"
-!insertmacro MUI_LANGUAGE "Greek"
-!insertmacro MUI_LANGUAGE "Hebrew"
-!insertmacro MUI_LANGUAGE "Hungarian"
-!insertmacro MUI_LANGUAGE "Icelandic"
-!insertmacro MUI_LANGUAGE "Indonesian"
-!insertmacro MUI_LANGUAGE "Irish"
-!insertmacro MUI_LANGUAGE "Italian"
-!insertmacro MUI_LANGUAGE "Japanese"
-!insertmacro MUI_LANGUAGE "Korean"
-!insertmacro MUI_LANGUAGE "Kurdish"
-!insertmacro MUI_LANGUAGE "Latvian"
-!insertmacro MUI_LANGUAGE "Lithuanian"
-!insertmacro MUI_LANGUAGE "Luxembourgish"
-!insertmacro MUI_LANGUAGE "Macedonian"
-!insertmacro MUI_LANGUAGE "Malay"
-!insertmacro MUI_LANGUAGE "Mongolian"
-!insertmacro MUI_LANGUAGE "Norwegian"
-!insertmacro MUI_LANGUAGE "NorwegianNynorsk"
-!insertmacro MUI_LANGUAGE "Polish"
-!insertmacro MUI_LANGUAGE "Portuguese"
-!insertmacro MUI_LANGUAGE "PortugueseBR"
-!insertmacro MUI_LANGUAGE "Romanian"
-!insertmacro MUI_LANGUAGE "Russian"
-!insertmacro MUI_LANGUAGE "Serbian"
-!insertmacro MUI_LANGUAGE "SerbianLatin"
-!insertmacro MUI_LANGUAGE "SimpChinese"
-!insertmacro MUI_LANGUAGE "Slovak"
-!insertmacro MUI_LANGUAGE "Slovenian"
-!insertmacro MUI_LANGUAGE "Spanish"
-!insertmacro MUI_LANGUAGE "SpanishInternational"
-!insertmacro MUI_LANGUAGE "Swedish"
-!insertmacro MUI_LANGUAGE "Thai"
-!insertmacro MUI_LANGUAGE "TradChinese"
-!insertmacro MUI_LANGUAGE "Turkish"
-!insertmacro MUI_LANGUAGE "Ukrainian"
-!insertmacro MUI_LANGUAGE "Uzbek"
-!insertmacro MUI_LANGUAGE "Welsh"
+; ITLabControl: Vietnamese (default) and English only
+!insertmacro MUI_LANGUAGE "Vietnamese" ;first language is the default language
+!insertmacro MUI_LANGUAGE "English"
 
 !insertmacro MUI_RESERVEFILE_LANGDLL
 
 ######################################################################
 
-Section "${APP_NAME} Service" SEC_SERVICE
+Section "$(SEC_SERVICE_NAME)" SEC_SERVICE
 SectionIn RO
 ${INSTALL_TYPE}
 ClearErrors
@@ -203,13 +151,13 @@ ${If} $R1 != ""
   ClearErrors
   ExecWait '"$INSTDIR\veyon-wcli.exe" config import "$R1"' $0
   ${If} $0 != 0
-	   MessageBox MB_OK|MB_ICONSTOP "Could not apply specified configuration file!"
+	   MessageBox MB_OK|MB_ICONSTOP "$(TXT_CONFIG_IMPORT_FAILED)"
   ${EndIf}
 ${EndIf}
 ExecWait '"$INSTDIR\veyon-wcli.exe" service start'
 SectionEnd
 
-Section "${MASTER_NAME}" SEC_MASTER
+Section "$(SEC_MASTER_NAME)" SEC_MASTER
 ${INSTALL_TYPE}
 SetOutPath "$INSTDIR"
 File "veyon-master.exe"
@@ -223,7 +171,7 @@ ${EndIf}
 CreateShortCut "$DESKTOP\${MASTER_NAME}.lnk" "$INSTDIR\${MAIN_APP_EXE}"
 SectionEnd
 
-Section "Interception driver" SEC_INTERCEPTION
+Section "$(SEC_INTERCEPTION_NAME)" SEC_INTERCEPTION
 ${INSTALL_TYPE}
 SetOutPath "$INSTDIR\interception"
 File "interception/*"
@@ -237,6 +185,7 @@ FunctionEnd
 ######################################################################
 
 Function .onInit
+!insertmacro MUI_LANGDLL_DISPLAY
 ${GetParameters} $R0
 ${GetOptions} $R0 "/NoMaster" $R1
 ${IfNot} ${Errors}
@@ -249,7 +198,7 @@ ${EndIf}
 UserInfo::GetAccountType
 pop $0
 ${If} $0 != "admin"
-	MessageBox mb_iconstop "Please run the installer with administrative rights!"
+	MessageBox mb_iconstop "$(TXT_ADMIN_REQUIRED)"
 	SetErrorLevel 740 ;ERROR_ELEVATION_REQUIRED
 	Quit
 ${EndIf}
@@ -333,12 +282,26 @@ FunctionEnd
 
 ######################################################################
 
+LangString SEC_SERVICE_NAME ${LANG_ENGLISH} "${APP_NAME} Service"
+LangString SEC_SERVICE_NAME ${LANG_VIETNAMESE} "Dịch vụ ${APP_NAME}"
+LangString SEC_MASTER_NAME ${LANG_ENGLISH} "Teacher Console"
+LangString SEC_MASTER_NAME ${LANG_VIETNAMESE} "Bảng điều khiển giáo viên"
+LangString SEC_INTERCEPTION_NAME ${LANG_ENGLISH} "Interception driver"
+LangString SEC_INTERCEPTION_NAME ${LANG_VIETNAMESE} "Driver khoá bàn phím/chuột (Interception)"
 LangString DESC_SEC_SERVICE ${LANG_ENGLISH} "${APP_NAME} service and common files required on all computers"
-LangString DESC_SEC_SERVICE ${LANG_GERMAN} "Veyon-Dienst und gemeinsame Dateien, die auf allen Computern benötigt werden"
+LangString DESC_SEC_SERVICE ${LANG_VIETNAMESE} "Dịch vụ ${APP_NAME} và các file dùng chung, cần cài trên mọi máy"
 LangString DESC_SEC_MASTER ${LANG_ENGLISH} "Teacher console for monitoring and controlling student computers"
-LangString DESC_SEC_MASTER ${LANG_GERMAN} "Master-Applikation zum Beobachten und Steuern von Veyon-Client-Computern"
+LangString DESC_SEC_MASTER ${LANG_VIETNAMESE} "Bảng điều khiển giáo viên để giám sát và điều khiển máy học sinh (chỉ cài trên máy giáo viên)"
 LangString DESC_SEC_INTERCEPTION ${LANG_ENGLISH} "Special input device driver required for intercepting keyboard shortcuts such as Ctrl+Alt+Del in screen lock mode"
-LangString DESC_SEC_INTERCEPTION ${LANG_GERMAN} "Spezieller Eingabegerätetreiber, der zum Abfangen von Tastenkombinationen wie Strg+Alt+Entf im Bildschirmsperr-Modus benötigt wird"
+LangString DESC_SEC_INTERCEPTION ${LANG_VIETNAMESE} "Driver đặc biệt để chặn các tổ hợp phím như Ctrl+Alt+Del khi khoá máy học sinh"
+LangString TXT_RUN_CONFIGURATOR ${LANG_ENGLISH} "Run ${CONFIGURATOR_NAME} now"
+LangString TXT_RUN_CONFIGURATOR ${LANG_VIETNAMESE} "Mở ${CONFIGURATOR_NAME} ngay"
+LangString TXT_GITHUB_LINK ${LANG_ENGLISH} "${APP_NAME} on GitHub (based on Veyon)"
+LangString TXT_GITHUB_LINK ${LANG_VIETNAMESE} "${APP_NAME} trên GitHub (phát triển từ Veyon)"
+LangString TXT_ADMIN_REQUIRED ${LANG_ENGLISH} "Please run the installer with administrative rights!"
+LangString TXT_ADMIN_REQUIRED ${LANG_VIETNAMESE} "Vui lòng chạy bộ cài với quyền quản trị (Run as administrator)!"
+LangString TXT_CONFIG_IMPORT_FAILED ${LANG_ENGLISH} "Could not apply specified configuration file!"
+LangString TXT_CONFIG_IMPORT_FAILED ${LANG_VIETNAMESE} "Không áp dụng được file cấu hình đã chỉ định!"
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
 !insertmacro MUI_DESCRIPTION_TEXT ${SEC_SERVICE} $(DESC_SEC_SERVICE)

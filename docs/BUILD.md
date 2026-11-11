@@ -23,7 +23,7 @@ pacman -Syu        # cập nhật MSYS2; nếu cửa sổ tự đóng thì mở 
 
 P=mingw-w64-ucrt-x86_64
 pacman -S --needed git $P-toolchain $P-cmake $P-ninja \
-  $P-qt6-base $P-qt6-tools $P-qt6-translations $P-qt6-httpserver \
+  $P-qt6-base $P-qt6-tools $P-qt6-translations $P-qt6-httpserver $P-qt6-declarative \
   $P-qca-qt6 $P-openssl $P-lzo2 $P-libjpeg-turbo $P-libpng $P-zlib \
   $P-openldap $P-cyrus-sasl $P-libvncserver $P-nsis
 ```
@@ -67,11 +67,11 @@ mkdir -p /d/Projects/itlab-build && cd /d/Projects/itlab-build
 cmake /d/Projects/ITLAB_CONTROL -G Ninja \
   -DCMAKE_BUILD_TYPE=RelWithDebInfo \
   -DWITH_LTO=OFF \
-  -DWITH_TRANSLATIONS=OFF \
   -DCMAKE_INSTALL_PREFIX=/d/Projects/itlab-build/install
 ```
 
-- `WITH_TRANSLATIONS=OFF`: **tạm thời bắt buộc.** Bước `lupdate` truyền hàng trăm file trên một dòng lệnh, vượt giới hạn 8.191 ký tự của cmd.exe. Sẽ xử lý ở GĐ1 (Việt hoá).
+- Bản dịch tiếng Việt `translations/veyon_vi.ts` tự được build thành `veyon_vi.qm` (gói `qt6-declarative` cần cho công cụ `lupdate`).
+  Mỗi lần build, `lupdate` cập nhật `veyon_vi.ts` theo các chuỗi `tr()` mới trong mã; chuỗi mới ở trạng thái *unfinished* cần được dịch.
 
 - Thư mục build đặt **ngoài repo**, để không lẫn file sinh ra vào Git.
 - `RelWithDebInfo`: chạy nhanh nhưng vẫn debug được. `WITH_LTO=OFF`: build nhanh hơn khi phát triển. Bản phát hành sẽ bật lại LTO.
@@ -134,7 +134,7 @@ Kết quả mong đợi: liệt kê khoảng 27 plugin (WindowsPlatformPlugin, R
 | Lỗi submodule trống (`3rdparty/ultravnc` rỗng) | Chạy lại `git submodule update --init --recursive`. |
 | `interception.h: No such file or directory` | Chưa làm bước 2b. |
 | Hàng loạt lỗi `GWL_USERDATA was not declared` trong UltraVNC | Mã nguồn thiếu bản vá nhận dạng 64-bit trong `CMakeLists.txt` (đã có trong repo ITLabControl). Xoá thư mục build rồi cấu hình lại. |
-| `Generating ... veyon.ts` – `The system cannot execute the specified program` | Thiếu `-DWITH_TRANSLATIONS=OFF`. |
+| `Generating ... veyon_vi.ts` lỗi mã `0xC0000135` | Thiếu gói `qt6-declarative` (lupdate cần `Qt6Qml.dll`). |
 | `veyon-cli plugin list` không thấy plugin | Bình thường khi chạy trực tiếp từ thư mục build; plugin chỉ được nạp sau khi đóng gói. |
 
 ## 8. Các bản vá so với Veyon gốc

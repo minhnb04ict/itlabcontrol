@@ -24,6 +24,7 @@
 
 #include <QCoreApplication>
 #include <QRegularExpression>
+#include <QSettings>
 #include <QTranslator>
 
 #include "TranslationLoader.h"
@@ -38,16 +39,57 @@ TranslationLoader::TranslationLoader( const QString& resourceName )
 
 
 
+// ITLabControl: language codes are stored either as "<name> (<code>)" (Configurator) or as plain "<code>"
+static QString languageCodeFromSetting( const QString& value )
+{
+	static const QRegularExpression configuredLocaleRX{QStringLiteral( "[^(]*\\(([^)]*)\\)")};
+	const auto match = configuredLocaleRX.match( value );
+	return match.hasMatch() ? match.captured( 1 ) : value.trimmed();
+}
+
+
+
+QString TranslationLoader::effectiveLanguageCode()
+{
+	// 1. per-user choice (e.g. language menu of the Teacher Console), no admin rights required
+	const auto userLanguageCode = languageCodeFromSetting( userLanguage() );
+	if( userLanguageCode.isEmpty() == false )
+	{
+		return userLanguageCode;
+	}
+
+	// 2. system-wide setting (Configurator)
+	const auto systemLanguage = languageCodeFromSetting( VeyonCore::config().uiLanguage() );
+	if( systemLanguage.isEmpty() == false )
+	{
+		return systemLanguage;
+	}
+
+	// 3. ITLabControl default: Vietnamese, regardless of the Windows display language
+	return QStringLiteral("vi");
+}
+
+
+
+QString TranslationLoader::userLanguage()
+{
+	return QSettings( QSettings::UserScope, QCoreApplication::organizationName(), QCoreApplication::applicationName() )
+		.value( QStringLiteral("UI/Language") ).toString();
+}
+
+
+
+void TranslationLoader::setUserLanguage( const QString& languageCode )
+{
+	QSettings( QSettings::UserScope, QCoreApplication::organizationName(), QCoreApplication::applicationName() )
+		.setValue( QStringLiteral("UI/Language"), languageCode );
+}
+
+
+
 bool TranslationLoader::load( const QString& resourceName )
 {
-	QLocale configuredLocale( QLocale::C );
-
-	static const QRegularExpression configuredLocaleRX{QStringLiteral( "[^(]*\\(([^)]*)\\)")};
-	const auto configuredLocaleMatch = configuredLocaleRX.match(VeyonCore::config().uiLanguage());
-	if( configuredLocaleMatch.hasMatch() )
-	{
-		configuredLocale = QLocale( configuredLocaleMatch.captured( 1 ) );
-	}
+	QLocale configuredLocale( effectiveLanguageCode() );
 
 	if( configuredLocale.language() != QLocale::English &&
 		VeyonCore::instance()->findChild<QTranslator *>( resourceName ) == nullptr )

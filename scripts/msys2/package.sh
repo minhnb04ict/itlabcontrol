@@ -91,7 +91,7 @@ if [ "$MAKE_INSTALLER" = "--installer" ]; then
 	# và các ảnh/icon MUI, nên đổi sang "\" (bỏ qua các dòng chứa URL)
 	sed -E '/^\s*(File |!define MUI_[A-Z_]*(BITMAP|ICON) )/{ /:\/\//! s#/#\\#g }' \
 		"$BUILDDIR/nsis/veyon.nsi" > "$OUT/veyon.nsi"
-	(cd "$OUT" && makensis -V2 veyon.nsi)
+	(cd "$OUT" && makensis -V2 -INPUTCHARSET UTF8 veyon.nsi)
 	mv "$OUT"/*setup.exe "$BUILDDIR/"
 	rm -rf "$OUT/nsis" "$OUT/veyon.nsi"
 	echo "==> Bộ cài: $(ls "$BUILDDIR"/*setup.exe)"

@@ -95,7 +95,7 @@ Tài liệu chính: **<https://doc.qt.io/qt-6/>**. Tra cứu từng class khi g�
 | `QObject` + `Q_OBJECT` | Lớp gốc của Qt. Có `Q_OBJECT` thì công cụ **moc** sinh thêm mã cho signal/slot, `tr()` | Đầu class plugin |
 | **Signal / slot** | Cơ chế sự kiện: "khi A xảy ra (signal), gọi B (slot hoặc lambda)" | `connect(box, &QMessageBox::finished, …)` |
 | `QString`, `QStringLiteral("…")` | Chuỗi Unicode. Dự án **cấm** chuyển ngầm từ `"…"`, phải dùng `QStringLiteral` hoặc `tr` | `QStringLiteral("ItlabHello")` |
-| `tr("…")` | Chuỗi hiển thị cho người dùng, **dịch được** | `tr( "Xin chào" )` |
+| `tr("…")` | Chuỗi hiển thị cho người dùng, **dịch được**. Luôn viết **tiếng Anh** trong mã; tiếng Việt nằm trong `translations/veyon_vi.ts` | `tr( "Say hello" )` → dịch thành "Xin chào" |
 | `QVariant`, `QVariantMap` | Hộp chứa giá trị bất kỳ kiểu nào; bảng tên → giá trị | Tham số của `controlFeature()` |
 | `QUuid` | Mã định danh duy nhất | `RequestId`, UUID tính năng |
 | `QWidget`, `QDialog`, `QMessageBox` | Giao diện | Hộp thoại chào |
@@ -199,12 +199,14 @@ Câu hỏi tự kiểm tra sau khi đọc mỗi plugin:
 3. **Tạo 2 UUID mới** (UUID plugin, UUID tính năng), tuyệt đối không dùng lại:
    `node -e "console.log(require('crypto').randomUUID())"`
 4. Đổi `Q_PLUGIN_METADATA(IID "vn.itlabcontrol.Plugins.<Tên>")`, `name()`, `description()`.
-5. Build: `cmake .` rồi `ninja -j6` (trong MSYS2 UCRT64, thư mục build).
-6. Đóng gói: `bash scripts/msys2/package.sh /d/Projects/itlab-build --installer`.
-7. **Đóng Teacher Console**, rồi cài: `itlabcontrol-…-setup.exe /S /NoInterception` (quyền admin).
-8. Kiểm tra plugin được nạp: `veyon-cli plugin list`.
-9. Mở Console, thử qua localhost (trừ tính năng có khoá màn hình).
-10. Commit kèm mô tả tiếng Việt, push. CI tự build lại bộ cài.
+5. Viết mọi chuỗi giao diện bằng **tiếng Anh** trong `tr()`.
+6. Build: `cmake .` rồi `ninja -j6` (trong MSYS2 UCRT64, thư mục build). Bước build tự thêm chuỗi mới vào `translations/veyon_vi.ts`.
+7. **Dịch các chuỗi mới** trong `veyon_vi.ts` (mở bằng **Qt Linguist**: `linguist translations/veyon_vi.ts`, hoặc sửa thẳng thẻ `<translation>`), build lại.
+8. Đóng gói: `bash scripts/msys2/package.sh /d/Projects/itlab-build --installer`.
+9. **Đóng Teacher Console**, rồi cài: `itlabcontrol-…-setup.exe /S /NoInterception` (quyền admin).
+10. Kiểm tra plugin được nạp: `veyon-cli plugin list`.
+11. Mở Console, thử qua localhost (trừ tính năng có khoá màn hình), thử cả 2 ngôn ngữ (nút ngôn ngữ góc dưới bên phải).
+12. Commit kèm mô tả tiếng Việt, push. CI tự build lại bộ cài.
 
 ---
 
