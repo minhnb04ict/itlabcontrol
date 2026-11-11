@@ -23,6 +23,8 @@
 
 #include <QActionGroup>
 #include <QBitmap>
+#include <QGuiApplication>
+#include <QScreen>
 #include <QLayout>
 #include <QMenu>
 #include <QPainter>
@@ -127,29 +129,17 @@ RemoteAccessWidgetToolBar::RemoteAccessWidgetToolBar( RemoteAccessWidget* parent
 
 
 
+// ITLabControl: the toolbar is pinned at the top of the window (the remote screen is shown below it),
+// so it never slides in or out
 void RemoteAccessWidgetToolBar::appear()
 {
-	m_showHideTimeLine.setDirection( QTimeLine::Backward );
-	if( m_showHideTimeLine.state() != QTimeLine::Running )
-	{
-		m_showHideTimeLine.resume();
-	}
+	move( 0, 0 );
 }
 
 
 
 void RemoteAccessWidgetToolBar::disappear()
 {
-	if( rect().contains( mapFromGlobal( QCursor::pos() ) ) == false )
-	{
-		QTimer::singleShot( DisappearDelay, this, [this]() {
-			if( m_showHideTimeLine.state() != QTimeLine::Running )
-			{
-				m_showHideTimeLine.setDirection( QTimeLine::Forward );
-				m_showHideTimeLine.resume();
-			}
-		} );
-	}
 }
 
 
@@ -193,9 +183,8 @@ void RemoteAccessWidgetToolBar::paintEvent( QPaintEvent *paintEv )
 {
 	QPainter p( this );
 
-	p.setOpacity( 0.8 );
+	// ITLabControl: opaque, since the toolbar no longer overlays the remote screen
 	p.fillRect( paintEv->rect(), palette().brush( QPalette::Window ) );
-	p.setOpacity( 1 );
 
 	auto f = p.font();
 	f.setPointSize( 10 );
@@ -322,7 +311,8 @@ RemoteAccessWidget::RemoteAccessWidget( const ComputerControlInterface::Pointer&
 	setWindowIcon( QPixmap( QStringLiteral(":/remoteaccess/kmag.png") ) );
 	setAttribute( Qt::WA_DeleteOnClose, true );
 
-	m_vncView->move( 0, 0 );
+	// ITLabControl: remote screen below the pinned toolbar
+	m_vncView->move( 0, m_toolBar->height() );
 	m_vncView->installEventFilter( this );
 	connect( m_vncView, &VncViewWidget::mouseAtBorder, m_toolBar, &RemoteAccessWidgetToolBar::appear );
 	connect( m_vncView, &VncViewWidget::sizeHintChanged, this, &RemoteAccessWidget::updateSize );
@@ -448,8 +438,13 @@ void RemoteAccessWidget::leaveEvent( QEvent* event )
 
 void RemoteAccessWidget::resizeEvent( QResizeEvent* event )
 {
-	m_vncView->setFixedSize(size());
-	m_toolBar->setFixedSize( width(), m_toolBar->height() );
+	// ITLabControl: toolbar pinned at the top, remote screen in the remaining area
+	// (VncView scales the screen down keeping the aspect ratio if the area is smaller)
+	const auto toolBarHeight = m_toolBar->height();
+	m_toolBar->move( 0, 0 );
+	m_toolBar->setFixedSize( width(), toolBarHeight );
+	m_vncView->move( 0, toolBarHeight );
+	m_vncView->setFixedSize( width(), qMax( 0, height() - toolBarHeight ) );
 
 	QWidget::resizeEvent( event );
 }
@@ -460,7 +455,23 @@ void RemoteAccessWidget::updateSize()
 {
 	if (!(windowState() & Qt::WindowFullScreen))
 	{
-		resize( m_vncView->sizeHint() );
+		// ITLabControl: window = toolbar + remote screen; scale the remote screen down (keeping the
+		// aspect ratio) so that the whole window still fits on the screen
+		const auto toolBarHeight = m_toolBar->height();
+
+		QSize available = screen() ? screen()->availableVirtualSize()
+								   : QGuiApplication::primaryScreen()->availableVirtualSize();
+		available -= frameSize() - size();
+		const QSize maxViewSize( available.width(), qMax( 1, available.height() - toolBarHeight ) );
+
+		auto viewSize = m_vncView->sizeHint();
+		if( viewSize.width() > maxViewSize.width() || viewSize.height() > maxViewSize.height() )
+		{
+			viewSize = viewSize.scaled( maxViewSize, Qt::KeepAspectRatio );
+		}
+
+		resize( qMax( viewSize.width(), m_toolBar->minimumSizeHint().width() ),
+				viewSize.height() + toolBarHeight );
 	}
 }
 
