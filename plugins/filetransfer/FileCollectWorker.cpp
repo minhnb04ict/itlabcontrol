@@ -86,11 +86,13 @@ FileCollectWorker::FileCollectWorker(FileTransferPlugin* plugin,
 									 bool collectRecursively) :
 	QObject(plugin),
 	m_configuration(plugin->configuration()),
+	// ITLabControl: expand placeholders such as %DOCUMENTS%, %DESKTOP% or %DOWNLOADS% sent by the
+	// master so that the real (e.g. OneDrive-redirected) folders of the logged on user are used
 	m_sourceDirectory(sourceDirectory.isEmpty() ?
 						  VeyonCore::filesystem().expandPath(m_configuration.filesToCollectSourceDirectory())
 						:
-						  (QDir::isAbsolutePath(sourceDirectory) ?
-						   sourceDirectory
+						  (QDir::isAbsolutePath(VeyonCore::filesystem().expandPath(sourceDirectory)) ?
+						   VeyonCore::filesystem().expandPath(sourceDirectory)
 						 :
 						   QDir::toNativeSeparators(QDir::homePath() + QLatin1Char('/') + sourceDirectory))),
 	m_filePattern(filePattern),

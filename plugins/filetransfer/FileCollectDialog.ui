@@ -31,9 +31,12 @@
        </widget>
       </item>
       <item row="1" column="1" colspan="2">
-       <widget class="QLineEdit" name="filePatternEdit">
-        <property name="placeholderText">
-         <string>*.* or *.docx;*.pdf (leave empty for all files)</string>
+       <widget class="QComboBox" name="filePatternComboBox">
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>Select a file type or enter patterns such as *.docx;*.pdf</string>
         </property>
        </widget>
       </item>
@@ -63,9 +66,12 @@
        </widget>
       </item>
       <item row="0" column="1" colspan="2">
-       <widget class="QLineEdit" name="sourceDirectoryEdit">
-        <property name="placeholderText">
-         <string>Relative (Documents/) or absolute (/tmp/ or C:\TMP) or empty for configured directory</string>
+       <widget class="QComboBox" name="sourceDirectoryComboBox">
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>Select a folder or enter a path relative to the user profile (e.g. Documents/Lop10) or an absolute path (e.g. C:\BaiLam)</string>
         </property>
        </widget>
       </item>

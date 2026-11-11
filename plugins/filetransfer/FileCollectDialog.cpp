@@ -38,6 +38,48 @@
 
 #include "ui_FileCollectDialog.h"
 
+
+// ITLabControl: preset choices so teachers do not have to type paths on the student computers.
+// The value (item data) is sent to the student computer, where placeholders like %DOCUMENTS%
+// are resolved to the real folders of the logged on user (see FileCollectWorker).
+static void populateComboBox(QComboBox* comboBox, const QList<QPair<QString, QString>>& items, const QString& value)
+{
+	for (const auto& item : items)
+	{
+		comboBox->addItem(item.first, item.second);
+	}
+
+	const auto index = comboBox->findData(value);
+	if (index >= 0)
+	{
+		comboBox->setCurrentIndex(index);
+	}
+	else if (value.isEmpty())
+	{
+		comboBox->setCurrentIndex(0);
+	}
+	else
+	{
+		comboBox->setEditText(value);
+	}
+}
+
+
+
+// Returns the value of the selected preset or the text entered by the user
+static QString comboBoxValue(const QComboBox* comboBox)
+{
+	const auto index = comboBox->currentIndex();
+	if (index >= 0 && comboBox->currentText() == comboBox->itemText(index))
+	{
+		return comboBox->itemData(index).toString();
+	}
+
+	return comboBox->currentText().trimmed();
+}
+
+
+
 FileCollectDialog::FileCollectDialog(FileCollectController* controller, QWidget* parent) :
 	QDialog(parent),
 	ui(new Ui::FileCollectDialog),
@@ -52,10 +94,25 @@ FileCollectDialog::FileCollectDialog(FileCollectController* controller, QWidget*
 	ui->collectionsTreeView->setModel(m_model);
 
 	// Initialize source directory from controller / default config
-	ui->sourceDirectoryEdit->setText(m_controller->collectSourceDirectory());
+	populateComboBox(ui->sourceDirectoryComboBox, {
+						 { tr("Documents folder of the user"), QStringLiteral("%DOCUMENTS%") },
+						 { tr("Desktop of the user"), QStringLiteral("%DESKTOP%") },
+						 { tr("Downloads folder of the user"), QStringLiteral("%DOWNLOADS%") },
+						 { tr("Shared assignments folder (C:\\BaiLam)"), QStringLiteral("C:\\BaiLam") },
+					 },
+					 m_controller->collectSourceDirectory());
 
 	// Initialize file pattern
-	ui->filePatternEdit->setText(m_controller->filePattern());
+	populateComboBox(ui->filePatternComboBox, {
+						 { tr("All files"), QString() },
+						 { tr("Word documents (*.doc, *.docx)"), QStringLiteral("*.doc;*.docx") },
+						 { tr("Excel spreadsheets (*.xls, *.xlsx)"), QStringLiteral("*.xls;*.xlsx") },
+						 { tr("PowerPoint presentations (*.ppt, *.pptx)"), QStringLiteral("*.ppt;*.pptx") },
+						 { tr("PDF documents (*.pdf)"), QStringLiteral("*.pdf") },
+						 { tr("Images (*.png, *.jpg, *.jpeg, *.bmp, *.gif)"), QStringLiteral("*.png;*.jpg;*.jpeg;*.bmp;*.gif") },
+						 { tr("Text files (*.txt)"), QStringLiteral("*.txt") },
+					 },
+					 m_controller->filePattern());
 
 	// Initialize destination directory
 	ui->destinationDirectoryEdit->setText(m_controller->destinationDirectory());
@@ -127,17 +184,14 @@ void FileCollectDialog::start()
 	}
 
 	// Pass source directory and file pattern to controller
-	const auto sourceDir = ui->sourceDirectoryEdit->text().trimmed();
+	const auto sourceDir = comboBoxValue(ui->sourceDirectoryComboBox);
 	if (sourceDir.isEmpty() == false)
 	{
 		m_controller->setCollectSourceDirectory(sourceDir);
 	}
 
-	const auto filePattern = ui->filePatternEdit->text().trimmed();
-	if (filePattern.isEmpty() == false)
-	{
-		m_controller->setFilePattern(filePattern);
-	}
+	// an empty pattern ("All files") must also be passed so a previously used pattern is reset
+	m_controller->setFilePattern(comboBoxValue(ui->filePatternComboBox));
 
 	if (VeyonCore::filesystem().ensurePathExists(m_controller->outputDirectory()) == false)
 	{
