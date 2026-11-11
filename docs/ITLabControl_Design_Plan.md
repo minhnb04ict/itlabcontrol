@@ -327,11 +327,12 @@ GĐ6                                         ───── liên tục ──�
 |---|---|
 | 0A.1 Repo GitHub, nhánh `main`/`upstream`, submodule | ✅ Xong |
 | 0A.2 Build trên Windows bằng MSYS2 (`docs/BUILD.md`) | ✅ Xong |
-| 0A.3 Đóng gói và bộ cài NSIS (`scripts/msys2/package.sh`) | ✅ Xong (CI GitHub Actions: chưa làm) |
+| 0A.3 Đóng gói và bộ cài NSIS (`scripts/msys2/package.sh`) | ✅ Xong; CI GitHub Actions `itlab-windows.yml` chạy thành công 2026-11-11 |
 | 0A.4 Kiểm thử (`docs/LAB.md`) | 🟡 Tiêu chí (1) localhost **đạt** 2026-11-10: Remote view, Text message, Screenshot. Tiêu chí (2) trên máy thật: chờ |
 | 0A.5 Đổi thương hiệu ITLabControl | ✅ Xong (còn icon/logo) |
 | 0A.6 README, giấy phép | ✅ Xong |
-| 0B Tài liệu học C++/Qt, plugin mẫu `itlab-hello` | Chưa bắt đầu |
+| 0B Plugin mẫu `itlab-hello` | ✅ Xong 2026-11-11: chạy đủ 2 chiều Console ↔ máy HS qua localhost |
+| 0B Tài liệu học C++/Qt `docs/LEARNING.md` | ✅ Xong 2026-11-11 |
 | GĐ1 → GĐ6 | Chưa duyệt |
 
 ### Việc bạn cần chuẩn bị cho GĐ0

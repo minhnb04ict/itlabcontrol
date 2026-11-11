@@ -6,12 +6,14 @@ quản lý lớp học, điểm danh và tổ chức kiểm tra.
 
 ITLabControl được phát triển dựa trên [Veyon](https://github.com/veyon/veyon) (Virtual Eye On Networks).
 
-> ⚠️ Dự án đang ở **Giai đoạn 0** (dựng nền tảng). Chưa có bản phát hành.
+> ⚠️ Dự án đang ở **Giai đoạn 0** (dựng nền tảng). Chưa có bản phát hành chính thức; bộ cài thử nghiệm có trong mục *Actions → Artifacts* của repo.
 
 ## Tài liệu
 
 - [Thiết kế và kế hoạch phát triển](docs/ITLabControl_Design_Plan.md)
 - [Hướng dẫn build trên Windows](docs/BUILD.md)
+- [Kiểm thử](docs/LAB.md)
+- [Học C++/Qt để viết plugin](docs/LEARNING.md)
 
 ## Cấu trúc mã nguồn
 
