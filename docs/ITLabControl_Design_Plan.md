@@ -133,7 +133,7 @@ Trạng thái: ✅ Veyon có sẵn · 🟡 có một phần, cần mở rộng �
 | | Chat hai chiều | ❌ | `itlab-chat` | 3 |
 | | Học sinh xin trợ giúp (Help Request) | ❌ | `itlab-helprequest` + phím nóng | 3 |
 | | Thanh công cụ học sinh (Student Toolbar) | ❌ | `itlab-studenttoolbar` | 3 |
-| | **Khảo sát nhanh (Survey)** | ❌ | `itlab-survey` (xem mục 3.1) | 3 ⬆ |
+| | **Khảo sát nhanh (Survey)** | ❌ | `itlab-survey` (xem mục 3.1) | 1b ⬆ |
 | **Lớp học** | Phòng máy, danh sách máy | ✅ BuiltinDirectory / LDAP | Nhập từ CSV/Excel | 1 |
 | | Danh sách lớp theo học sinh | ❌ | `itlab-classroom` | 3 |
 | | Điểm danh (Student Register) | ❌ | `itlab-attendance` | 3 |
@@ -194,8 +194,8 @@ Hiện trạng Veyon: Collect lấy mọi file trong **một thư mục cố đ�
 - **Kỹ thuật:** mở rộng plugin `filetransfer` của Veyon (đã có kênh truyền file và luồng thu); phần xem trước
   dùng lệnh liệt kê file chạy ở Worker trên máy HS.
 
-#### Khảo sát nhanh: `itlab-survey` (GĐ3, đưa lên từ GĐ4)
-> Thiết kế chi tiết (11 dạng câu hỏi, màn hình, kỹ thuật, chia giai đoạn): **`docs/ITLabControl_Survey_Design.md`** (2026-11-11, chờ duyệt).
+#### Khảo sát nhanh: `itlab-survey` (GĐ1b, làm ngay sau GĐ1)
+> Thiết kế chi tiết (11 dạng câu hỏi, màn hình, kỹ thuật, chia giai đoạn): **`docs/ITLabControl_Survey_Design.md`** (**đã duyệt** 2026-11-11).
 
 - **Dạng câu hỏi:** chọn 1 / chọn nhiều đáp án, Đúng–Sai, Có–Không, thang điểm 1–5, trả lời ngắn (văn bản).
 - **Gửi câu hỏi:** GV gõ nhanh hoặc chọn từ ngân hàng câu hỏi đã lưu (file dùng chung), có thể đặt thời gian trả lời.
@@ -279,6 +279,13 @@ Hiện trạng Veyon: Collect lấy mọi file trong **một thư mục cố đ�
 
 **Tiêu chí duyệt:** dạy được một tiết hoàn chỉnh (dọn màn hình, chiếu màn hình, khoá máy, gửi và thu bài) bằng tiếng Việt; GV phòng A không thấy được phòng B.
 
+### Giai đoạn 1b: Khảo sát nhanh `itlab-survey` (4–5 tuần) ⬆ đưa lên từ GĐ3 (duyệt 2026-11-11)
+Làm ngay sau GĐ1, trước GĐ2. Thiết kế chi tiết: **`docs/ITLabControl_Survey_Design.md`** (đã duyệt: đủ 11 dạng câu hỏi, ẩn danh hoàn toàn).
+1. **S1. Cơ bản (2–3 tuần):** dạng Đúng/Sai, Có/Không, Chọn 1, Chọn nhiều, Thang 1…n, Mức hiểu bài, Trả lời ngắn; thời gian trả lời, đổi đáp án, ẩn danh, đáp án đúng; cửa sổ kết quả thời gian thực; xuất CSV; gửi theo nhóm.
+2. **S2. Mở rộng (2 tuần):** dạng Mức độ đồng ý, Đánh giá sao, Nhập số, Xếp thứ tự; mẫu câu hỏi một chạm; chiếu kết quả cho HS; nhãn đáp án trên ô máy; nhắc máy chưa trả lời; ảnh kèm câu hỏi.
+
+**Tiêu chí duyệt:** gửi được cả 11 dạng câu hỏi tới cả phòng hoặc một nhóm, HS trả lời bằng chuột; Console cập nhật biểu đồ ngay khi có câu trả lời; khảo sát ẩn danh không để lại tên máy/HS ở bất kỳ đâu.
+
 ### Giai đoạn 2: Hạn chế và giám sát (5–7 tuần, rủi ro kỹ thuật cao nhất) ⬆ đã đẩy lên
 **Mục tiêu:** chặn web, ứng dụng, USB, in ấn, âm thanh, không bị học sinh vượt qua và không làm "kẹt" máy.
 
@@ -306,11 +313,11 @@ Hiện trạng Veyon: Collect lấy mọi file trong **một thư mục cố đ�
 5. `itlab-helprequest`: HS xin trợ giúp, Console hiện hàng đợi yêu cầu.
 6. `itlab-chat`: chat GV ↔ HS, có tuỳ chọn cho HS chat với nhau.
 7. `itlab-status`: hiển thị ứng dụng đang dùng, web đang mở, mạng trên thumbnail.
-8. **`itlab-survey`**: khảo sát nhanh với biểu đồ thời gian thực (đặc tả mục 3.1). ⬆ đưa lên từ GĐ4
+8. ~~`itlab-survey`~~: đã chuyển lên GĐ1b. Ở đây chỉ nối kết quả khảo sát với danh sách lớp (hiện họ tên HS).
 9. **`itlab-submitwork`**: HS chủ động nộp bài, có hạn nộp (đặc tả mục 3.1).
 10. **`itlab-filemanager`**: trình quản lý file hai chiều GV ↔ HS (đặc tả mục 3.1).
 
-**Tiêu chí duyệt:** tạo lớp, điểm danh, HS xin trợ giúp và chat được với GV; gửi khảo sát và xem biểu đồ kết quả cả phòng; HS tự nộp bài và GV thấy danh sách đã/chưa nộp; chép file hai chiều qua trình quản lý file; kết thúc tiết thì hạn chế được gỡ.
+**Tiêu chí duyệt:** tạo lớp, điểm danh, HS xin trợ giúp và chat được với GV; HS tự nộp bài và GV thấy danh sách đã/chưa nộp; chép file hai chiều qua trình quản lý file; kết thúc tiết thì hạn chế được gỡ.
 
 ### Giai đoạn 4: Giảng dạy và kiểm tra (4–5 tuần)
 1. `itlab-quiz`: soạn đề (trắc nghiệm, đúng/sai, điền từ, có hình ảnh), giao đề, làm bài phía học sinh, chấm tự động, xuất kết quả Excel. Dùng lại phần hiển thị câu hỏi của `itlab-survey` (GĐ3).
@@ -336,15 +343,17 @@ Trình chiếu multicast, nhóm trưởng, tối ưu băng thông; tài liệu c
 ```
 Tuần:  1   3   5   7   9  11  13  15  17  19  21  23  25  27  29  31  33  35  37
 GĐ0   ████                                       (hạ tầng + học C++/Qt)
-GĐ1       █████                                  (cốt lõi, nhiều phòng, tiếng Việt, Clear desktop)
-GĐ2                ███████                       (HẠN CHẾ: web/app/USB/in)
-GĐ3                       ██████                 (lớp học, giao tiếp, khảo sát, nộp bài, file 2 chiều)
-GĐ4                             █████            (kiểm tra, bảng trắng, nhật ký, replay)
-GĐ5                                  ███████     (Hub, kiểm kê, triển khai)
-GĐ6                                         ───── liên tục ─────
+GĐ1       █████                                  (cốt lõi, nhiều phòng, tiếng Việt, Clear desktop, nhóm)
+GĐ1b           ███                               (KHẢO SÁT NHANH)
+GĐ2                  ███████                     (HẠN CHẾ: web/app/USB/in)
+GĐ3                         █████                (lớp học, giao tiếp, nộp bài, file 2 chiều)
+GĐ4                               █████          (kiểm tra, bảng trắng, nhật ký, replay)
+GĐ5                                    ███████   (Hub, kiểm kê, triển khai)
+GĐ6                                           ───── liên tục ─────
 ```
-- Mốc **dùng thử thực tế** đầu tiên: hết GĐ2 (khoảng tuần 16, gần 4 tháng). Lúc này đã có điều khiển, trình chiếu, Clear desktop, gửi/thu bài và chặn web/app/USB.
-- Mốc **khảo sát + nộp bài + file hai chiều**: hết GĐ3 (khoảng tuần 22).
+- Mốc **khảo sát nhanh**: hết GĐ1b (khoảng tuần 13).
+- Mốc **dùng thử thực tế** đầu tiên: hết GĐ2 (khoảng tuần 20). Lúc này đã có điều khiển, trình chiếu, Quản lý màn hình, nhóm, khảo sát, gửi/thu bài và chặn web/app/USB.
+- Mốc **nộp bài + file hai chiều**: hết GĐ3 (khoảng tuần 25).
 - Tổng ước tính khoảng **9 tháng** cho 1 người mới học C++/Qt (tăng khoảng 2 tuần do bổ sung Clear desktop, nộp bài và trình quản lý file hai chiều). Với 2 người, có thể rút còn khoảng 5–6 tháng, vì GĐ3 và GĐ4 làm song song được sau khi xong GĐ2.
 
 ---
@@ -394,6 +403,7 @@ GĐ6                                         ───── liên tục ──�
 | 3. Phân quyền theo phòng | Chưa bắt đầu |
 | 4/7. Hoàn thiện nhỏ (scan, ảnh khoá, firewall) | Chưa bắt đầu |
 | 8. Kiểm thử phòng thật | Chưa bắt đầu |
+| GĐ1b Khảo sát nhanh | ✅ Thiết kế đã duyệt 2026-11-11; làm ngay sau GĐ1 |
 | GĐ2 → GĐ6 | Chưa duyệt |
 
 ### Việc bạn cần chuẩn bị cho GĐ0

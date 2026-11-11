@@ -1,6 +1,7 @@
 # Thiết kế tính năng Khảo sát nhanh (`itlab-survey`)
 
-Trạng thái: **nghiên cứu, chờ duyệt** (2026-11-11). Bản này mở rộng mục "Khảo sát nhanh" trong `ITLabControl_Design_Plan.md` mục 3.1.
+Trạng thái: **đã duyệt 2026-11-11**. Làm thành **Giai đoạn 1b**, ngay sau GĐ1 và trước GĐ2. Đủ 11 dạng câu hỏi; ẩn danh là ẩn hoàn toàn (mục 3.1).
+Bản này mở rộng mục "Khảo sát nhanh" trong `ITLabControl_Design_Plan.md` mục 3.1.
 
 ## 1. Mục tiêu
 
@@ -49,9 +50,17 @@ Nút mũi tên trên thanh công cụ "Khảo sát" mở menu các mẫu thườ
 |---|---|---|
 | Thời gian trả lời | Không giới hạn | 15 giây – 10 phút; HS thấy đồng hồ đếm ngược, hết giờ cửa sổ tự đóng |
 | Cho phép đổi đáp án | Bật | HS sửa được đến khi GV đóng khảo sát |
-| Ẩn danh | Tắt | Bật thì Console chỉ hiện thống kê, không hiện ai trả lời gì (dùng cho khảo sát ý kiến) |
+| Ẩn danh | Tắt | Bật thì **ẩn danh hoàn toàn** (dùng cho khảo sát ý kiến), xem mục 3.1 |
 | Hiện kết quả cho HS sau khi đóng | Tắt | Gửi biểu đồ kết quả (và đáp án đúng nếu có) tới màn hình HS |
 | Gửi cho | Máy đang hiển thị | Theo cơ chế chung: cả phòng, hoặc nhóm đang chọn |
+
+### 3.1 Ẩn danh hoàn toàn (duyệt 2026-11-11)
+Khi bật ẩn danh, **không nơi nào gắn câu trả lời với máy hay HS**:
+- Console chỉ hiện thống kê tổng (biểu đồ, số đã trả lời/tổng số). **Không có** tab "Từng máy", **không** hiện nhãn đáp án trên ô máy, **không** có danh sách "Chưa trả lời" theo tên (chỉ còn con số).
+- File kết quả (JSON/CSV) chỉ chứa câu hỏi, các câu trả lời đã xáo trộn thứ tự và số liệu thống kê; **không** có tên máy, tên đăng nhập hay thời điểm trả lời của từng người.
+- Máy HS không gửi tên đăng nhập kèm câu trả lời. Để HS đổi được đáp án, Console chỉ giữ trong bộ nhớ một mã ngẫu nhiên cho mỗi kết nối; mã này bị xoá khi đóng khảo sát và không bao giờ ghi ra đĩa hay nhật ký (log).
+- Cửa sổ câu hỏi bên HS ghi rõ "Khảo sát ẩn danh" để HS yên tâm trả lời.
+- Không chuyển được khảo sát ẩn danh thành có tên sau khi đã gửi (và ngược lại).
 
 ## 4. Màn hình
 
@@ -111,8 +120,8 @@ Sau khi gửi: "Đã gửi câu trả lời" (và nút "Sửa" nếu được ph
 | **S2. Mở rộng** | Dạng 6, 7, 9, 11; mẫu câu hỏi một chạm và lưu mẫu; chiếu kết quả cho HS; nhãn đáp án trên ô máy; "Nhắc lại" máy chưa trả lời; ảnh kèm câu hỏi | 2 tuần |
 | **S3. Kết nối** | Chuỗi nhiều câu hỏi liên tiếp; lịch sử khảo sát trong buổi; dùng chung phần hiển thị cho `itlab-quiz`; đưa kết quả vào nhật ký tiết học (`itlab-journal`) | Cùng GĐ4 |
 
-## 7. Cần GV quyết định
+## 7. Quyết định của GV (2026-11-11)
 
-1. Làm khảo sát **ngay sau GĐ1** (trước phần Hạn chế của GĐ2) hay giữ đúng lịch GĐ3?
-2. Danh sách dạng câu hỏi ở giai đoạn S1 như trên đã đủ chưa, cần thêm hoặc bớt dạng nào?
-3. Ẩn danh: chỉ ẩn trên màn hình Console, hay **không lưu cả trong file kết quả**?
+1. Làm khảo sát **ngay sau GĐ1**, trước GĐ2 (thành Giai đoạn 1b).
+2. **Đủ 11 dạng câu hỏi** như mục 2, chia vào S1 và S2 như mục 6.
+3. Ẩn danh là **ẩn hoàn toàn**: cả trên Console lẫn trong file kết quả (mục 3.1).
