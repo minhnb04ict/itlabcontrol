@@ -262,8 +262,10 @@ Hiện trạng Veyon: Collect lấy mọi file trong **một thư mục cố đ�
    | Power on / Reboot / Power down | Bật máy / Khởi động lại / Tắt máy |
 2. **Quản lý nhiều phòng: thêm máy bằng tên** (duyệt 2026-11-11, thay cho nhập CSV/IP làm cách chính):
    - Nền tảng: Veyon cho phép để trống địa chỉ, khi đó **tên máy được dùng làm địa chỉ** và tra IP lúc kết nối (không lo IP DHCP thay đổi). Mạng trường hiện tra tên qua mDNS/LLMNR (WORKGROUP, không AD), nên **chạy tốt khi máy GV và HS cùng subnet**; khác subnet cần DNS của trường hoặc phương án D (GĐ5).
-   - **B. Tạo phòng theo mẫu tên:** GV nhập tiền tố (`T36-ICT2-`) và khoảng số (`01–31`), Console tạo cả phòng một lần.
-   - **C. Tự dò máy:** Console quét subnet tìm máy đang chạy ITLabControl (cổng 11100), lấy tên máy, **tự gom theo tiền tố tên thành phòng**; GV tick chọn rồi thêm.
+   - **A. Gõ tên máy:** có sẵn trong Veyon (để trống địa chỉ). Dùng cho vài máy lẻ.
+   - **B. Tạo phòng theo mẫu tên:** GV nhập **tiền tố + khoảng số + hậu tố (tuỳ chọn) + số chữ số** (ví dụ `T36-ICT2-` `01–31`, `P201-PC` `1–30`, `LABA-` `01–31` `-HS`); Console hiện danh sách xem trước để sửa/xoá từng dòng rồi tạo cả phòng. Phù hợp khi tên máy có đánh số theo quy luật.
+   - **C. Tự dò máy:** Console quét subnet tìm máy đang chạy ITLabControl (cổng 11100), hiện tên máy, IP, MAC, người đăng nhập; **gom nhóm chỉ là gợi ý** (theo phòng đã gán, hoặc theo tiền tố tên); GV tick chọn và gán vào phòng bất kỳ. Dùng được với tên máy không theo quy luật.
+   - **Gán phòng khi cài đặt máy HS** (duyệt 2026-11-11): script cài máy HS hỏi tên phòng (hoặc nhận tham số `/Room="Phòng 201"` khi cài hàng loạt) và lưu vào cấu hình máy HS. Khi tự dò (C), máy HS báo phòng của mình và Console **tự xếp đúng phòng**, GV chỉ cần bấm "Thêm tất cả". Không phụ thuộc cách đặt tên máy.
    - Nhập CSV giữ làm phương án phụ cho IT. Bố cục lưới mặc định 8×4 khớp sơ đồ phòng.
 3. **Phân quyền theo phòng:** mẫu ACL "máy GV phòng X chỉ điều khiển máy HS phòng X"; tài khoản quản trị điều khiển được mọi phòng.
 4. Scan xoay vòng có cấu hình chu kỳ; ảnh màn hình khoá tuỳ chỉnh (logo trường).
@@ -376,7 +378,18 @@ GĐ6                                         ───── liên tục ──�
 | 0A.6 README, giấy phép | ✅ Xong |
 | 0B Plugin mẫu `itlab-hello` | ✅ Xong 2026-11-11: chạy đủ 2 chiều Console ↔ máy HS qua localhost |
 | 0B Tài liệu học C++/Qt `docs/LEARNING.md` | ✅ Xong 2026-11-11 |
-| GĐ1 | **Đang thực hiện** (duyệt 2026-11-11), bắt đầu từ bước 1 (ngôn ngữ) |
+| GĐ1 | **Đang thực hiện** (duyệt 2026-11-11) |
+
+#### Tiến độ GĐ1 (thứ tự thực hiện 1 → 6 → 5 → 2 → 3 → 4/7 → 8)
+| Bước | Trạng thái |
+|---|---|
+| 1. Ngôn ngữ Tiếng Việt / English | ✅ Xong 2026-11-11: mặc định Tiếng Việt, nút đổi ngôn ngữ trong Console, dịch 100%, bộ cài tiếng Việt; đã kiểm tra trên máy GV |
+| 6. Clear desktop (`itlab-cleardesktop`) | ✅ Đã viết và cài máy GV 2026-11-11; chờ kiểm thử đóng ứng dụng trên máy HS |
+| 5. Collect nâng cao | 🟡 Đã có danh sách chọn nguồn/loại file; còn xem trước file và nút "Duyệt…" cho 1 máy |
+| 2. Nhiều phòng (A/B/C + gán phòng khi cài) | Chưa bắt đầu |
+| 3. Phân quyền theo phòng | Chưa bắt đầu |
+| 4/7. Hoàn thiện nhỏ (scan, ảnh khoá, firewall) | Chưa bắt đầu |
+| 8. Kiểm thử phòng thật | Chưa bắt đầu |
 | GĐ2 → GĐ6 | Chưa duyệt |
 
 ### Việc bạn cần chuẩn bị cho GĐ0
