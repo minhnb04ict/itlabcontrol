@@ -136,7 +136,7 @@ void MainWindow::apply()
 	const auto showError = [this](const ConfigurationManager& configurationManager) {
 		vCritical() << configurationManager.errorString().toUtf8().constData();
 
-		QMessageBox::critical(this, tr("Veyon Configurator"), configurationManager.errorString());
+		QMessageBox::critical(this, tr("ITLabControl Configurator"), configurationManager.errorString());
 	};
 
 	ConfigurationManager configurationManager;

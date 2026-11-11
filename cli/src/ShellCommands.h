@@ -51,12 +51,12 @@ public:
 
 	QString description() const override
 	{
-		return tr( "Interactive shell and script execution for Veyon CLI" );
+		return tr( "Interactive shell and script execution for ITLabControl CLI" );
 	}
 
 	QString vendor() const override
 	{
-		return QStringLiteral( "Veyon Community" );
+		return QStringLiteral( "ITLabControl contributors" );
 	}
 
 	QString copyright() const override

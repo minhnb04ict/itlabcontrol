@@ -46,12 +46,12 @@ public:
 
 	QString description() const override
 	{
-		return tr("LDAP/AD support for Veyon");
+		return tr("LDAP/AD support for ITLabControl");
 	}
 
 	QString vendor() const override
 	{
-		return QStringLiteral( "Veyon Community" );
+		return QStringLiteral( "ITLabControl contributors" );
 	}
 
 	QString copyright() const override

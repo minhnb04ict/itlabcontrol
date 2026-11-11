@@ -53,12 +53,12 @@ public:
 
 	QString description() const override
 	{
-		return tr( "Test internal Veyon components and functions" );
+		return tr( "Test internal ITLabControl components and functions" );
 	}
 
 	QString vendor() const override
 	{
-		return QStringLiteral( "Veyon Community" );
+		return QStringLiteral( "ITLabControl contributors" );
 	}
 
 	QString copyright() const override
@@ -73,7 +73,7 @@ public:
 
 	QString commandLineModuleHelp() const override
 	{
-		return tr( "Commands for testing internal components and functions of Veyon" );
+		return tr( "Commands for testing internal components and functions of ITLabControl" );
 	}
 
 	QStringList commands() const override;

@@ -60,7 +60,7 @@ if(VEYON_BUILD_WINDOWS)
 	set_target_properties(veyon-core PROPERTIES PREFIX "")
 	add_windows_resources(veyon-core
 		NAME VeyonCore
-		DESCRIPTION "Veyon Core Library")
+		DESCRIPTION "ITLabControl Core Library")
 	if(NOT WITH_CORE_ONLY)
 		install(TARGETS veyon-core RUNTIME DESTINATION ${VEYON_LIB_DIR})
 	endif()

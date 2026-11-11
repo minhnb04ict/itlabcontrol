@@ -13,7 +13,7 @@ function(add_windows_resources TARGET)
 	endif()
 
 	if (NOT arg_DESCRIPTION)
-		set(arg_DESCRIPTION "Veyon ${arg_NAME}")
+		set(arg_DESCRIPTION "ITLabControl ${arg_NAME}")
 	endif()
 
 	if (arg_CONSOLE)

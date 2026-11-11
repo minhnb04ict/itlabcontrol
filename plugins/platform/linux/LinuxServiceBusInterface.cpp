@@ -147,7 +147,7 @@ bool LinuxServiceBusInterface::verifyCaller() const
 	if(uid != 0 && m_sessionUserCheck(uid) == false)
 	{
 		vCritical() << "rejecting authentication request from uid" << uid
-					<< "- not an active Veyon session user";
+					<< "- not an active ITLabControl session user";
 		return false;
 	}
 

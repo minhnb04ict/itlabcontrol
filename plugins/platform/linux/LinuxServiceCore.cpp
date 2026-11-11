@@ -404,14 +404,14 @@ void LinuxServiceCore::startServer( const QString& sessionPath )
 	// do not start server for non-graphical sessions
 	if( sessionType == LinuxSessionFunctions::Type::TTY )
 	{
-		vDebug() << "Not starting Veyon Server in TTY session";
+		vDebug() << "Not starting ITLabControl Server in TTY session";
 		return;
 	}
 
 	// do not start server for sessions with unspecified type
 	if (sessionType == LinuxSessionFunctions::Type::Unspecified)
 	{
-		vDebug() << "Not starting Veyon Server in a session with unspecified type";
+		vDebug() << "Not starting ITLabControl Server in a session with unspecified type";
 		return;
 	}
 

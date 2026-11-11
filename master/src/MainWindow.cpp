@@ -364,10 +364,10 @@ bool MainWindow::initAuthentication()
 		QMessageBox::information(nullptr,
 								 tr("Authentication impossible"),
 								 tr("No authentication key files were found or your current ones "
-									"are outdated. Please create new key files using Veyon "
+									"are outdated. Please create new key files using ITLabControl "
 									"Configurator. Alternatively set up logon authentication "
-									"using Veyon Configurator. Otherwise you won't be "
-									"able to access computers using Veyon."));
+									"using ITLabControl Configurator. Otherwise you won't be "
+									"able to access computers using ITLabControl."));
 	}
 
 	return false;
@@ -431,7 +431,7 @@ void MainWindow::closeEvent( QCloseEvent* event )
 		const Feature& activeFeature = VeyonCore::featureManager().feature( m_master.currentMode() );
 
 		QMessageBox::information(this, tr("Feature active"),
-								 tr("The feature \"%1\" is still active. Please stop it before closing Veyon.")
+								 tr("The feature \"%1\" is still active. Please stop it before closing ITLabControl.")
 								 .arg(activeFeature.displayName()));
 		event->ignore();
 		return;

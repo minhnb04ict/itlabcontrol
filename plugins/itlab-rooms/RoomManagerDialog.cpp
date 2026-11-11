@@ -745,7 +745,7 @@ QWidget* RoomManagerDialog::createDiscoveryTab()
 	addLayout->addWidget( addByDeclaredRoomButton );
 
 	auto hint = new QLabel( tr( "Only computers with ITLabControl and the same authentication key answer. "
-								"Other computers (e.g. with Veyon) are shown as not accessible." ), tab );
+								"Other computers (e.g. with ITLabControl) are shown as not accessible." ), tab );
 	hint->setWordWrap( true );
 
 	auto layout = new QVBoxLayout( tab );
@@ -934,7 +934,7 @@ void RoomManagerDialog::queryComputer( const QString& ipAddress )
 			it->item->setText( 5, tr( "Querying..." ) );
 			break;
 		case ComputerControlInterface::State::AuthenticationFailed:
-			it->item->setText( 5, tr( "Not accessible (other authentication key, e.g. Veyon)" ) );
+			it->item->setText( 5, tr( "Not accessible (other authentication key, e.g. ITLabControl)" ) );
 			break;
 		case ComputerControlInterface::State::AccessControlFailed:
 			it->item->setText( 5, tr( "Access denied" ) );
