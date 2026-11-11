@@ -20,6 +20,9 @@ Console giáo viên kết nối tới **chính máy đang chạy** qua `127.0.0.
 D:\Projects\itlab-build\itlabcontrol-4.11.4.0-win64-setup.exe /S /NoInterception
 ```
 
+- **Đóng Teacher Console và Configurator trước khi cài.** Nếu đang mở, chúng giữ các file plugin,
+  bộ cài ở chế độ im lặng **không ghi đè được và cũng không báo lỗi**, nên máy vẫn chạy bản cũ.
+  Kiểm tra: so sánh `Get-FileHash` của plugin trong `C:\Program Files\ITLabControl\plugins` với bản vừa build.
 - `/S`: cài im lặng, không hiện giao diện. Cài đè lên bản cũ được, giữ nguyên cấu hình.
 - `/NoInterception`: **không** cài driver bàn phím/chuột trên máy phát triển.
 

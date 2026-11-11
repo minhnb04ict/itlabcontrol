@@ -214,6 +214,11 @@ bool ItlabHelloFeaturePlugin::handleFeatureMessage( VeyonWorkerInterface& worker
 								message.argument( Argument::Text ).toString(),
 								QMessageBox::Ok );
 	box->setAttribute( Qt::WA_DeleteOnClose );
+	// ⚠ QUAN TRỌNG: mặc định Qt THOÁT chương trình khi cửa sổ cuối cùng đóng lại.
+	// Nếu để mặc định, Worker thoát ngay khi học sinh bấm OK, trước khi tin nhắn
+	// xác nhận kịp gửi đi qua mạng → Console không bao giờ nhận được (BƯỚC 4 mất).
+	// Tắt thuộc tính này để Worker tiếp tục chạy nền; lần sau dùng lại luôn.
+	box->setAttribute( Qt::WA_QuitOnClose, false );
 
 	// Khi học sinh đóng hộp thoại (bấm OK) → gửi xác nhận về Server     → BƯỚC 3
 	// Lambda [&worker, requestId]: đoạn mã chạy sau, "bắt" lại worker và requestId để dùng.
