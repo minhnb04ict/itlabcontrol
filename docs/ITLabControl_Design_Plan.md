@@ -139,7 +139,7 @@ Trạng thái: ✅ Veyon có sẵn · 🟡 có một phần, cần mở rộng �
 | | Điểm danh (Student Register) | ❌ | `itlab-attendance` | 3 |
 | | Hẹn giờ tiết học, mục tiêu bài học | ❌ | `itlab-lesson` | 3 |
 | | Nhóm trưởng (Group Leader) | ❌ | Chưa ưu tiên | 6 |
-| **File** | GV gửi file / GV thu bài | ✅ DistributeFiles / FileCollect | Thêm thư mục theo lớp/ngày, đặt tên theo học sinh, hiện tiến độ | 1 |
+| **File** | GV gửi file / GV thu bài | 🟡 DistributeFiles / FileCollect (Collect phải gõ tay đường dẫn trên máy HS) | **Collect dễ dùng hơn** (mục 3.1); thư mục theo lớp/ngày, đặt tên theo học sinh, hiện tiến độ | 1 |
 | | **HS chủ động nộp bài** | ❌ | `itlab-submitwork` (xem mục 3.1) | 3 |
 | | **Trình quản lý file hai chiều** (duyệt thư mục máy HS, kéo thả) | ❌ | `itlab-filemanager` (xem mục 3.1) | 3 |
 | | Clipboard | ✅ ClipboardExchange | – | 1 |
@@ -174,6 +174,19 @@ Dọn màn hình máy HS trước khi bắt đầu hoạt động mới (trình 
 - **Không bao giờ đóng:** tiến trình hệ thống Windows (explorer, dwm, winlogon…), tiến trình ITLabControl, và danh sách ứng dụng được bảo vệ do GV/IT cấu hình (ví dụ phần mềm thi).
 - Áp dụng cho các máy đang chọn hoặc cả phòng; Console có hộp xác nhận trước khi đóng ứng dụng.
 - **Kỹ thuật:** plugin Veyon; Worker trong phiên người dùng liệt kê cửa sổ (`EnumWindows`) để thu nhỏ; với chế độ đóng, Server kết thúc ngay các tiến trình có cửa sổ trong phiên của HS (trừ danh sách loại trừ ở trên).
+
+#### Collect dễ dùng hơn (GĐ1, duyệt 2026-11-11)
+Hiện trạng Veyon: Collect lấy mọi file trong **một thư mục cố định** trên máy HS, GV phải **gõ tay** đường dẫn
+(trống = Documents của HS); chế độ "hỏi HS chọn file" có khai báo nhưng bị ẩn và chưa cài đặt.
+
+- **Chọn nguồn bằng danh sách**, thay cho ô gõ tay: Documents, Desktop, Downloads, thư mục bài làm chung
+  (mặc định `C:BaiLam`, IT cấu hình được), hoặc "Đường dẫn khác…" cho trường hợp đặc biệt.
+- **Xem trước**: trước khi thu, Console hiện danh sách file sẽ thu trên từng máy (tên, dung lượng, ngày sửa);
+  GV bỏ chọn file không cần rồi mới bấm "Thu".
+- **Lọc nhanh** theo loại file: Word, Excel, PowerPoint, PDF, ảnh, tất cả.
+- **Nơi lưu** mặc định `Phòng/Lớp/Ngày/Tên HS` trên máy GV, mở thư mục kết quả bằng một nút sau khi thu xong.
+- **Kỹ thuật:** mở rộng plugin `filetransfer` của Veyon (đã có kênh truyền file và luồng thu); phần xem trước
+  dùng lệnh liệt kê file chạy ở Worker trên máy HS.
 
 #### Khảo sát nhanh: `itlab-survey` (GĐ3, đưa lên từ GĐ4)
 - **Dạng câu hỏi:** chọn 1 / chọn nhiều đáp án, Đúng–Sai, Có–Không, thang điểm 1–5, trả lời ngắn (văn bản).
@@ -225,7 +238,7 @@ Dọn màn hình máy HS trước khi bắt đầu hoạt động mới (trình 
 2. **Quản lý nhiều phòng:** nhập CSV `Phòng, Tên máy, IP/hostname, MAC, Vai trò (GV/HS)`; dò máy theo dải IP; bố cục lưới mặc định 8×4 khớp sơ đồ phòng.
 3. **Phân quyền theo phòng:** mẫu ACL "máy GV phòng X chỉ điều khiển máy HS phòng X"; tài khoản quản trị điều khiển được mọi phòng.
 4. Scan xoay vòng có cấu hình chu kỳ; ảnh màn hình khoá tuỳ chỉnh (logo trường).
-5. Gửi/thu bài: thư mục mặc định theo `Phòng/Lớp/Ngày/Tên HS`, có hiển thị tiến độ.
+5. Gửi/thu bài: thư mục mặc định theo `Phòng/Lớp/Ngày/Tên HS`, có hiển thị tiến độ; **Collect dễ dùng hơn** (đặc tả mục 3.1).
 6. **`itlab-cleardesktop`**: dọn màn hình HS (thu nhỏ tất cả / đóng ngay mọi ứng dụng), xem đặc tả mục 3.1. Đây là plugin `itlab-*` đầu tiên sau `itlab-hello`.
 7. Cấu hình Windows Firewall tự động khi cài; hướng dẫn mở cổng 11100/11400 trên router khi khác subnet.
 8. Kiểm thử đầy đủ: Wake-on-LAN (lưu ý khác subnet cần directed broadcast), tắt/khởi động lại, đăng nhập từ xa, trình chiếu tới 31 máy.
@@ -328,7 +341,7 @@ GĐ6                                         ───── liên tục ──�
 | 0A.1 Repo GitHub, nhánh `main`/`upstream`, submodule | ✅ Xong |
 | 0A.2 Build trên Windows bằng MSYS2 (`docs/BUILD.md`) | ✅ Xong |
 | 0A.3 Đóng gói và bộ cài NSIS (`scripts/msys2/package.sh`) | ✅ Xong; CI GitHub Actions `itlab-windows.yml` chạy thành công 2026-11-11 |
-| 0A.4 Kiểm thử (`docs/LAB.md`) | 🟡 Tiêu chí (1) localhost **đạt** 2026-11-10: Remote view, Text message, Screenshot. Tiêu chí (2) trên máy thật: chờ |
+| 0A.4 Kiểm thử (`docs/LAB.md`) | ✅ Tiêu chí (1) localhost **đạt** 2026-11-10. Tiêu chí (2) máy thật (GV NBVH ↔ HS T36-ICT2-30) **đạt** 2026-11-11: Lock (chặn cả Ctrl+Alt+Del), Xin chào, Demo, Distribute, Remote control. Collect: chờ xác nhận |
 | 0A.5 Đổi thương hiệu ITLabControl | ✅ Xong (còn icon/logo) |
 | 0A.6 README, giấy phép | ✅ Xong |
 | 0B Plugin mẫu `itlab-hello` | ✅ Xong 2026-11-11: chạy đủ 2 chiều Console ↔ máy HS qua localhost |
