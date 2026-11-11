@@ -49,12 +49,18 @@ ItlabClearDesktopFeaturePlugin::ItlabClearDesktopFeaturePlugin( QObject* parent 
 						  Feature::Uid( "4adf79ac-b24e-4032-b7b0-2d5f306e88e8" ),
 						  m_clearDesktopFeature.uid(),
 						  tr( "Minimize all windows" ), {}, {} ),
+	m_restoreAllFeature( QStringLiteral("ItlabClearDesktopRestoreAll"),
+						 Feature::Flag::Action | Feature::Flag::AllComponents,
+						 Feature::Uid( "e1fad23a-cd6b-4517-a5e2-872901674876" ),
+						 m_clearDesktopFeature.uid(),
+						 tr( "Restore all windows" ), {}, {} ),
 	m_closeAllFeature( QStringLiteral("ItlabClearDesktopCloseAll"),
 					   Feature::Flag::Action | Feature::Flag::AllComponents,
 					   Feature::Uid( "5b870b3f-0b5c-46e9-92e4-80cecf7afe9e" ),
 					   m_clearDesktopFeature.uid(),
 					   tr( "Close all applications" ), {}, {} ),
-	m_features( { m_clearDesktopFeature, m_minimizeAllFeature, m_closeAllFeature } )
+	// thứ tự trong menu: Thu nhỏ, Mở rộng, Đóng
+	m_features( { m_clearDesktopFeature, m_minimizeAllFeature, m_restoreAllFeature, m_closeAllFeature } )
 {
 }
 
@@ -77,6 +83,11 @@ bool ItlabClearDesktopFeaturePlugin::startFeature( VeyonMasterInterface& master,
 	if( feature == m_clearDesktopFeature || feature == m_minimizeAllFeature )
 	{
 		return controlFeature( m_minimizeAllFeature.uid(), Operation::Start, {}, computerControlInterfaces );
+	}
+
+	if( feature == m_restoreAllFeature )
+	{
+		return controlFeature( m_restoreAllFeature.uid(), Operation::Start, {}, computerControlInterfaces );
 	}
 
 	if( feature == m_closeAllFeature )
@@ -121,6 +132,13 @@ bool ItlabClearDesktopFeaturePlugin::controlFeature( Feature::Uid featureUid, Op
 	if( featureUid == m_clearDesktopFeature.uid() || featureUid == m_minimizeAllFeature.uid() )
 	{
 		sendFeatureMessage( FeatureMessage{ m_clearDesktopFeature.uid(), FeatureCommand::MinimizeAllWindows },
+							computerControlInterfaces );
+		return true;
+	}
+
+	if( featureUid == m_restoreAllFeature.uid() )
+	{
+		sendFeatureMessage( FeatureMessage{ m_clearDesktopFeature.uid(), FeatureCommand::RestoreAllWindows },
 							computerControlInterfaces );
 		return true;
 	}
@@ -182,6 +200,9 @@ bool ItlabClearDesktopFeaturePlugin::handleFeatureMessage( VeyonWorkerInterface&
 		return true;
 	case FeatureCommand::CloseAllApplications:
 		closeAllApplications();
+		return true;
+	case FeatureCommand::RestoreAllWindows:
+		restoreAllWindows();
 		return true;
 	}
 
@@ -302,15 +323,61 @@ QStringList ItlabClearDesktopFeaturePlugin::protectedProcessNames()
 
 
 
+// cửa sổ đã thu nhỏ ở lần "Thu nhỏ tất cả" gần nhất (Worker chạy liên tục nên còn nhớ được)
+static std::vector<HWND> s_lastMinimizedWindows;
+
+
+
 void ItlabClearDesktopFeaturePlugin::minimizeAllWindows()
 {
 	const auto windows = applicationWindows( protectedProcessNames() );
+	s_lastMinimizedWindows.clear();
 	for( const auto& window : windows )
 	{
+		// chỉ nhớ cửa sổ đang mở, để "Mở rộng" không mở lại cửa sổ học sinh đã tự thu nhỏ từ trước
+		if( IsIconic( window.handle ) == FALSE )
+		{
+			s_lastMinimizedWindows.push_back( window.handle );
+		}
 		ShowWindowAsync( window.handle, SW_MINIMIZE );
 	}
 
 	vDebug() << "minimized" << windows.size() << "windows";
+}
+
+
+
+void ItlabClearDesktopFeaturePlugin::restoreAllWindows()
+{
+	// Mở lại đúng các cửa sổ vừa bị thu nhỏ, về kích thước trước đó (không phóng to toàn màn hình).
+	// Nếu không còn danh sách (Worker đã khởi động lại), mở lại mọi cửa sổ ứng dụng đang thu nhỏ.
+	int restored = 0;
+	if( s_lastMinimizedWindows.empty() == false )
+	{
+		for( const auto handle : s_lastMinimizedWindows )
+		{
+			if( IsWindow( handle ) && IsIconic( handle ) )
+			{
+				ShowWindowAsync( handle, SW_RESTORE );
+				++restored;
+			}
+		}
+		s_lastMinimizedWindows.clear();
+	}
+	else
+	{
+		const auto windows = applicationWindows( protectedProcessNames() );
+		for( const auto& window : windows )
+		{
+			if( IsIconic( window.handle ) )
+			{
+				ShowWindowAsync( window.handle, SW_RESTORE );
+				++restored;
+			}
+		}
+	}
+
+	vDebug() << "restored" << restored << "windows";
 }
 
 

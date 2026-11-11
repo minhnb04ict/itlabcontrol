@@ -2337,6 +2337,10 @@ Make sure that the names of the keys belonging to each other are identical on al
         <translation>Thu nhỏ tất cả cửa sổ</translation>
     </message>
     <message>
+        <source>Restore all windows</source>
+        <translation>Mở rộng tất cả cửa sổ</translation>
+    </message>
+    <message>
         <source>Close all applications</source>
         <translation>Đóng tất cả ứng dụng</translation>
     </message>

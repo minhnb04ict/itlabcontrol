@@ -21,6 +21,7 @@
  *
  *  Nút trên Console có menu con:
  *    - Bấm thẳng vào nút / "Thu nhỏ tất cả cửa sổ": thu nhỏ mọi cửa sổ trên máy HS (không mất dữ liệu)
+ *    - "Mở rộng tất cả cửa sổ": mở lại các cửa sổ vừa thu nhỏ về kích thước trước đó
  *    - "Đóng tất cả ứng dụng": đóng NGAY mọi ứng dụng đang mở (bài chưa lưu sẽ mất),
  *      có hộp xác nhận cho GV; luôn bỏ qua máy localhost (máy GV)
  *
@@ -97,17 +98,20 @@ public:
 private:
 	enum class FeatureCommand {
 		MinimizeAllWindows,
-		CloseAllApplications
+		CloseAllApplications,
+		RestoreAllWindows   // thêm ở cuối để giữ nguyên số của các lệnh cũ
 	};
 
 	// tên file (chữ thường) của các tiến trình không bao giờ bị thu nhỏ/đóng
 	static QStringList protectedProcessNames();
 
 	static void minimizeAllWindows();
+	static void restoreAllWindows();
 	static void closeAllApplications();
 
 	const Feature m_clearDesktopFeature;
 	const Feature m_minimizeAllFeature;
+	const Feature m_restoreAllFeature;
 	const Feature m_closeAllFeature;
 	const FeatureList m_features;
 
