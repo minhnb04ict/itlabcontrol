@@ -181,6 +181,11 @@ Hiện trạng Veyon: Collect lấy mọi file trong **một thư mục cố đ�
 
 - **Chọn nguồn bằng danh sách**, thay cho ô gõ tay: Documents, Desktop, Downloads, thư mục bài làm chung
   (mặc định `C:\BaiLam`, IT cấu hình được), hoặc "Đường dẫn khác…" cho trường hợp đặc biệt.
+  ✅ **Đã làm 2026-11-11** (danh sách nguồn + loại file; tra đúng thư mục thật kể cả khi dùng OneDrive), đã kiểm thử trên máy thật.
+- **Duyệt thư mục khi thu từ 1 máy** (yêu cầu 2026-11-11): khi GV chỉ chọn **một** máy, cạnh ô nguồn có nút
+  **"Duyệt…"** mở cửa sổ duyệt **ổ đĩa và thư mục của máy HS đó** (như hộp chọn thư mục của Windows), chọn được
+  thư mục hoặc từng file cần thu. **Vẫn gõ tay đường dẫn được** như hiện nay. Khi chọn nhiều máy, nút này ẩn,
+  chỉ dùng danh sách chọn sẵn. Thành phần duyệt thư mục từ xa này sẽ được dùng lại cho `itlab-filemanager` (GĐ3).
 - **Xem trước**: trước khi thu, Console hiện danh sách file sẽ thu trên từng máy (tên, dung lượng, ngày sửa);
   GV bỏ chọn file không cần rồi mới bấm "Thu".
 - **Lọc nhanh** theo loại file: Word, Excel, PowerPoint, PDF, ảnh, tất cả.
@@ -333,7 +338,7 @@ GĐ6                                         ───── liên tục ──�
 | Giai đoạn | Trạng thái |
 |---|---|
 | Bối cảnh và kiến trúc (mục 0–3) | Đã chốt câu trả lời 2026-11-10 |
-| GĐ0: Nền tảng và học C++/Qt | **Đang thực hiện** (duyệt 2026-11-10) |
+| GĐ0: Nền tảng và học C++/Qt | ✅ **Hoàn thành 2026-11-11** (duyệt bắt đầu 2026-11-10) |
 
 #### Tiến độ GĐ0
 | Bước | Trạng thái |
@@ -341,12 +346,13 @@ GĐ6                                         ───── liên tục ──�
 | 0A.1 Repo GitHub, nhánh `main`/`upstream`, submodule | ✅ Xong |
 | 0A.2 Build trên Windows bằng MSYS2 (`docs/BUILD.md`) | ✅ Xong |
 | 0A.3 Đóng gói và bộ cài NSIS (`scripts/msys2/package.sh`) | ✅ Xong; CI GitHub Actions `itlab-windows.yml` chạy thành công 2026-11-11 |
-| 0A.4 Kiểm thử (`docs/LAB.md`) | ✅ Tiêu chí (1) localhost **đạt** 2026-11-10. Tiêu chí (2) máy thật (GV NBVH ↔ HS T36-ICT2-30) **đạt** 2026-11-11: Lock (chặn cả Ctrl+Alt+Del), Xin chào, Demo, Distribute, Remote control. Collect: chờ xác nhận |
+| 0A.4 Kiểm thử (`docs/LAB.md`) | ✅ Tiêu chí (1) localhost **đạt** 2026-11-10. Tiêu chí (2) máy thật (GV NBVH ↔ HS T36-ICT2-30) **đạt** 2026-11-11: Lock (chặn cả Ctrl+Alt+Del), Xin chào, Demo, Distribute, Remote control, Collect (sau khi thêm danh sách chọn nguồn) |
 | 0A.5 Đổi thương hiệu ITLabControl | ✅ Xong (còn icon/logo) |
 | 0A.6 README, giấy phép | ✅ Xong |
 | 0B Plugin mẫu `itlab-hello` | ✅ Xong 2026-11-11: chạy đủ 2 chiều Console ↔ máy HS qua localhost |
 | 0B Tài liệu học C++/Qt `docs/LEARNING.md` | ✅ Xong 2026-11-11 |
-| GĐ1 → GĐ6 | Chưa duyệt |
+| GĐ1 | **Chờ duyệt kế hoạch chi tiết** |
+| GĐ2 → GĐ6 | Chưa duyệt |
 
 ### Việc bạn cần chuẩn bị cho GĐ0
 - Tài khoản GitHub (cá nhân hoặc tổ chức) để tạo repo công khai `itlabcontrol`.
