@@ -191,10 +191,12 @@ int RoomManagerDialog::findComputerIndex( const QString& name, const QString& ho
 	for( int i = 0; i < m_objects.size(); ++i )
 	{
 		const auto object = m_objects[i].toObject();
+		// khớp theo tên hiển thị, hoặc theo địa chỉ (máy đã đổi tên hiển thị vẫn nhận ra qua tên máy thật/IP)
+		const auto objectAddress = object.value( keyHostAddress ).toString();
 		if( isHost( object ) &&
 			( object.value( keyName ).toString().compare( name, Qt::CaseInsensitive ) == 0 ||
-			  ( hostAddress.isEmpty() == false &&
-				object.value( keyHostAddress ).toString().compare( hostAddress, Qt::CaseInsensitive ) == 0 ) ) )
+			  objectAddress.compare( name, Qt::CaseInsensitive ) == 0 ||
+			  ( hostAddress.isEmpty() == false && objectAddress.compare( hostAddress, Qt::CaseInsensitive ) == 0 ) ) )
 		{
 			return i;
 		}
@@ -335,7 +337,9 @@ QWidget* RoomManagerDialog::createRoomsTab()
 	m_roomsTree->setSelectionMode( QAbstractItemView::ExtendedSelection );
 
 	auto addRoomButton = new QPushButton( tr( "Add room" ), tab );
-	auto renameRoomButton = new QPushButton( tr( "Rename room" ), tab );
+	auto renameRoomButton = new QPushButton( tr( "Rename" ), tab );
+	renameRoomButton->setToolTip( tr( "Rename the selected room or computer (double-click works as well). "
+									  "Renaming a computer only changes its display name, the host address stays unchanged." ) );
 	auto addComputersButton = new QPushButton( tr( "Add computers by name" ), tab );
 	auto moveButton = new QPushButton( tr( "Move to room" ), tab );
 	auto writeRoomButton = new QPushButton( tr( "Save room on student computers" ), tab );
@@ -345,7 +349,8 @@ QWidget* RoomManagerDialog::createRoomsTab()
 									 "so they report this room when computers are discovered." ) );
 
 	connect( addRoomButton, &QPushButton::clicked, this, &RoomManagerDialog::addRoom );
-	connect( renameRoomButton, &QPushButton::clicked, this, &RoomManagerDialog::renameRoom );
+	connect( renameRoomButton, &QPushButton::clicked, this, &RoomManagerDialog::renameSelected );
+	connect( m_roomsTree, &QTreeWidget::itemDoubleClicked, this, &RoomManagerDialog::renameSelected );
 	connect( addComputersButton, &QPushButton::clicked, this, &RoomManagerDialog::addComputersByName );
 	connect( moveButton, &QPushButton::clicked, this, &RoomManagerDialog::moveSelectedComputers );
 	connect( writeRoomButton, &QPushButton::clicked, this, &RoomManagerDialog::writeRoomToSelectedComputers );
@@ -387,15 +392,71 @@ void RoomManagerDialog::addRoom()
 
 
 
-void RoomManagerDialog::renameRoom()
+void RoomManagerDialog::renameSelected()
 {
 	const auto item = m_roomsTree->currentItem();
-	if( item == nullptr || item->data( 0, RoleIsRoom ).toBool() == false )
+	if( item == nullptr )
 	{
-		QMessageBox::information( this, tr( "Rename room" ), tr( "Please select a room first." ) );
+		QMessageBox::information( this, tr( "Rename" ), tr( "Please select a room or computer first." ) );
 		return;
 	}
 
+	if( item->data( 0, RoleIsRoom ).toBool() )
+	{
+		renameRoom( item );
+	}
+	else
+	{
+		renameComputer( item );
+	}
+}
+
+
+
+void RoomManagerDialog::renameComputer( QTreeWidgetItem* item )
+{
+	const auto uid = item->data( 0, RoleUid ).toString();
+	const auto name = QInputDialog::getText( this, tr( "Rename computer" ),
+											 tr( "Display name of the computer (the host address stays unchanged):" ),
+											 QLineEdit::Normal, item->text( 0 ) ).simplified();
+	if( name.isEmpty() || name == item->text( 0 ) )
+	{
+		return;
+	}
+
+	for( const auto& value : std::as_const( m_objects ) )
+	{
+		const auto object = value.toObject();
+		if( isHost( object ) && object.value( keyUid ).toString() != uid &&
+			object.value( keyName ).toString().compare( name, Qt::CaseInsensitive ) == 0 )
+		{
+			QMessageBox::information( this, tr( "Rename computer" ), tr( "A computer with this name already exists." ) );
+			return;
+		}
+	}
+
+	for( int i = 0; i < m_objects.size(); ++i )
+	{
+		auto object = m_objects[i].toObject();
+		if( object.value( keyUid ).toString() == uid )
+		{
+			// chỉ đổi tên hiển thị; nếu máy chưa có địa chỉ riêng thì giữ tên cũ làm địa chỉ để vẫn kết nối được
+			if( object.value( keyHostAddress ).toString().isEmpty() )
+			{
+				object[keyHostAddress] = object.value( keyName ).toString();
+			}
+			object[keyName] = name;
+			m_objects[i] = object;
+		}
+	}
+	setModified();
+	refreshRoomsTree();
+}
+
+
+
+void RoomManagerDialog::renameRoom( QTreeWidgetItem* item )
+{
 	const auto uid = item->data( 0, RoleUid ).toString();
 	const auto name = QInputDialog::getText( this, tr( "Rename room" ), tr( "Room name:" ),
 											 QLineEdit::Normal, item->text( 0 ) ).simplified();

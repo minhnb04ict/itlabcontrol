@@ -4269,6 +4269,30 @@ Vui lòng lưu bài và đóng tất cả chương trình.</translation>
         <translation>Xoá các phòng và máy đã chọn? Xoá một phòng sẽ xoá luôn tất cả máy trong phòng đó.</translation>
     </message>
     <message>
+        <source>Rename</source>
+        <translation>Đổi tên</translation>
+    </message>
+    <message>
+        <source>Rename the selected room or computer (double-click works as well). Renaming a computer only changes its display name, the host address stays unchanged.</source>
+        <translation>Đổi tên phòng hoặc máy đang chọn (bấm đúp cũng được). Đổi tên máy chỉ đổi tên hiển thị, địa chỉ kết nối giữ nguyên.</translation>
+    </message>
+    <message>
+        <source>Please select a room or computer first.</source>
+        <translation>Vui lòng chọn một phòng hoặc máy trước.</translation>
+    </message>
+    <message>
+        <source>Rename computer</source>
+        <translation>Đổi tên máy</translation>
+    </message>
+    <message>
+        <source>Display name of the computer (the host address stays unchanged):</source>
+        <translation>Tên hiển thị của máy (địa chỉ kết nối giữ nguyên):</translation>
+    </message>
+    <message>
+        <source>A computer with this name already exists.</source>
+        <translation>Đã có máy với tên này.</translation>
+    </message>
+    <message>
         <source>Enter one computer per line, either as name only (e.g. T36-ICT2-20) or as name and IP address separated by a comma (e.g. T36-ICT2-20, 172.18.217.20):</source>
         <translation>Nhập mỗi máy một dòng, chỉ tên máy (ví dụ T36-ICT2-20) hoặc tên máy và địa chỉ IP cách nhau bằng dấu phẩy (ví dụ T36-ICT2-20, 172.18.217.20):</translation>
     </message>

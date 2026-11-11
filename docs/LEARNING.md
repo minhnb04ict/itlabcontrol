@@ -3,6 +3,9 @@
 Tài liệu dành cho người **chưa làm C++/Qt**, học **vừa đủ để viết plugin `itlab-*`**, không học dàn trải.
 Mọi ví dụ lấy từ mã của dự án, chủ yếu từ plugin mẫu [`plugins/itlab-hello`](../plugins/itlab-hello/).
 
+> Plugin mẫu `itlab-hello` (nút "Xin chào") **mặc định không build** và không có trong bộ cài.
+> Để học và thử nghiệm, bật lại trong thư mục build: `cmake -DWITH_ITLAB_SAMPLES=ON .` rồi `ninja`.
+
 > Yêu cầu trước: đã build được dự án theo [BUILD.md](BUILD.md) và cài thử theo [LAB.md](LAB.md).
 
 ---

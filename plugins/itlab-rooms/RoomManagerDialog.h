@@ -70,7 +70,9 @@ private:
 
 	// thẻ "Phòng và máy"
 	void addRoom();
-	void renameRoom();
+	void renameSelected();
+	void renameRoom( QTreeWidgetItem* item );
+	void renameComputer( QTreeWidgetItem* item );
 	void removeSelected();
 	void addComputersByName();
 	void moveSelectedComputers();
