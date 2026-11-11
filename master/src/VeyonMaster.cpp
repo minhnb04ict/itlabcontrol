@@ -28,6 +28,7 @@
 #include "VeyonMaster.h"
 #include "BuiltinFeatures.h"
 #include "ComputerControlListModel.h"
+#include "ComputerGroupManager.h"
 #include "ComputerMonitoringModel.h"
 #include "FeatureManager.h"
 #include "VeyonConfiguration.h"
@@ -80,6 +81,8 @@ VeyonMaster::VeyonMaster( QObject* parent ) :
 	m_computerMonitoringModel->setSortRole( Qt::InitialSortOrderRole );
 	m_computerMonitoringModel->setStateRole( ComputerControlListModel::StateRole );
 	m_computerMonitoringModel->sort( 0 );
+
+	m_computerGroupManager = new ComputerGroupManager( *m_userConfig, m_computerMonitoringModel, this );
 
 	m_mainWindow = new MainWindow( *this );
 }

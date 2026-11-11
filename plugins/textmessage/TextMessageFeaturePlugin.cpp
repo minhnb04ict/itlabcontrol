@@ -22,6 +22,7 @@
  *
  */
 
+#include <QLabel>
 #include <QMessageBox>
 
 #include "TextMessageFeaturePlugin.h"
@@ -151,6 +152,11 @@ bool TextMessageFeaturePlugin::handleFeatureMessage( VeyonWorkerInterface& worke
 										   message.argument( Argument::Text ).toString() );
 		messageBox->setTextFormat( Qt::RichText );
 		messageBox->setTextInteractionFlags( Qt::TextBrowserInteraction | Qt::TextSelectableByKeyboard );
+		// ITLabControl: clicking a link opens it in the student's web browser
+		if( auto label = messageBox->findChild<QLabel *>( QStringLiteral("qt_msgbox_label") ) )
+		{
+			label->setOpenExternalLinks( true );
+		}
 		messageBox->setAttribute( Qt::WA_DeleteOnClose );
 		messageBox->show();
 		VeyonCore::platform().coreFunctions().raiseWindow(messageBox, true);

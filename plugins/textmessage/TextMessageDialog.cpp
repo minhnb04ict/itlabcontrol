@@ -23,6 +23,9 @@
  */
 
 #include <QMessageBox>
+#include <QRegularExpression>
+#include <QTextCursor>
+#include <QTextDocument>
 
 #include "TextMessageDialog.h"
 #include "VeyonCore.h"
@@ -65,8 +68,60 @@ TextMessageDialog::~TextMessageDialog()
 
 
 
+// ITLabControl: turn web addresses typed as plain text into clickable links
+static void linkifyDocument( QTextDocument* document )
+{
+	static const QRegularExpression urlRegEx( QStringLiteral(R"(\b(?:(?:https?|ftp)://|www\.)[^\s<>"]+)"),
+											   QRegularExpression::CaseInsensitiveOption );
+	static const QString trailingPunctuation = QStringLiteral(".,;:!?)]}'");
+
+	QTextCursor cursor( document );
+	while( true )
+	{
+		cursor = document->find( urlRegEx, cursor );
+		if( cursor.isNull() )
+		{
+			break;
+		}
+
+		const int start = cursor.selectionStart();
+		int end = cursor.selectionEnd();
+		QString url = cursor.selectedText();
+		while( url.isEmpty() == false && trailingPunctuation.contains( url.back() ) )
+		{
+			url.chop( 1 );
+			--end;
+		}
+
+		cursor.setPosition( end );
+		if( url.isEmpty() )
+		{
+			continue;
+		}
+
+		QTextCursor linkCursor( document );
+		linkCursor.setPosition( start );
+		linkCursor.setPosition( end, QTextCursor::KeepAnchor );
+		if( linkCursor.charFormat().isAnchor() )
+		{
+			continue; // already a link (e.g. pasted from a web page)
+		}
+
+		QTextCharFormat linkFormat;
+		linkFormat.setAnchor( true );
+		linkFormat.setAnchorHref( url.startsWith( QLatin1String("www."), Qt::CaseInsensitive ) ?
+									  QStringLiteral("https://") + url : url );
+		linkFormat.setForeground( QColor( 0, 102, 204 ) );
+		linkFormat.setFontUnderline( true );
+		linkCursor.mergeCharFormat( linkFormat );
+	}
+}
+
+
+
 void TextMessageDialog::accept()
 {
+	linkifyDocument( ui->textEdit->document() );
 	m_msgStr = ui->textEdit->toPlainText().trimmed().isEmpty() ? QString{} : ui->textEdit->toHtml();
 	m_titleStr = ui->titleEdit->text().trimmed();
 	QDialog::accept();

@@ -1129,6 +1129,139 @@ Make sure that the names of the keys belonging to each other are identical on al
     </message>
 </context>
 <context>
+    <name>ComputerGroupManager</name>
+    <message>
+        <source>Group %1</source>
+        <translation>Nhóm %1</translation>
+    </message>
+</context>
+<context>
+    <name>ComputerGroupMenu</name>
+    <message>
+        <source>Choose a group to show only its computers. All functions of the tool bar then apply to this group only.</source>
+        <translation>Chọn một nhóm để chỉ hiển thị các máy của nhóm đó. Khi đó mọi chức năng trên thanh công cụ chỉ áp dụng cho nhóm này.</translation>
+    </message>
+    <message>
+        <source>Groups</source>
+        <translation>Nhóm</translation>
+    </message>
+    <message>
+        <source>Add to group</source>
+        <translation>Thêm vào nhóm</translation>
+    </message>
+    <message>
+        <source>New group...</source>
+        <translation>Nhóm mới...</translation>
+    </message>
+    <message>
+        <source>Remove from group &quot;%1&quot;</source>
+        <translation>Xoá khỏi nhóm &quot;%1&quot;</translation>
+    </message>
+    <message>
+        <source>Manage groups...</source>
+        <translation>Quản lý nhóm...</translation>
+    </message>
+    <message>
+        <source>All computers (%1)</source>
+        <translation>Tất cả máy (%1)</translation>
+    </message>
+    <message>
+        <source>%1 (%2 computers)</source>
+        <translation>%1 (%2 máy)</translation>
+    </message>
+    <message>
+        <source>New group from selected computers...</source>
+        <translation>Tạo nhóm mới từ các máy đang chọn...</translation>
+    </message>
+    <message>
+        <source>New group from selected computers (select computers first)</source>
+        <translation>Tạo nhóm mới từ các máy đang chọn (hãy chọn máy trước)</translation>
+    </message>
+    <message>
+        <source>Group: %1 (%2 computers)</source>
+        <translation>Nhóm: %1 (%2 máy)</translation>
+    </message>
+    <message>
+        <source>Group: all computers</source>
+        <translation>Nhóm: tất cả máy</translation>
+    </message>
+    <message>
+        <source>New group</source>
+        <translation>Nhóm mới</translation>
+    </message>
+    <message>
+        <source>Name of the new group with %1 computers:</source>
+        <translation>Tên nhóm mới gồm %1 máy:</translation>
+    </message>
+</context>
+<context>
+    <name>ComputerGroupsDialog</name>
+    <message>
+        <source>Rename</source>
+        <translation>Đổi tên</translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation>Xoá</translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation>Chọn tất cả</translation>
+    </message>
+    <message>
+        <source>Select none</source>
+        <translation>Bỏ chọn tất cả</translation>
+    </message>
+    <message>
+        <source>Manage groups</source>
+        <translation>Quản lý nhóm</translation>
+    </message>
+    <message>
+        <source>Add group</source>
+        <translation>Thêm nhóm</translation>
+    </message>
+    <message>
+        <source>Groups</source>
+        <translation>Nhóm</translation>
+    </message>
+    <message>
+        <source>Tick the computers which belong to the selected group. A computer may belong to several groups. Choose a group in the main window to apply all functions to this group only.</source>
+        <translation>Đánh dấu các máy thuộc nhóm đang chọn. Một máy có thể thuộc nhiều nhóm. Chọn nhóm ở cửa sổ chính để mọi chức năng chỉ áp dụng cho nhóm đó.</translation>
+    </message>
+    <message>
+        <source>Click &quot;Add group&quot; to create the first group.</source>
+        <translation>Bấm &quot;Thêm nhóm&quot; để tạo nhóm đầu tiên.</translation>
+    </message>
+    <message>
+        <source>Select a group on the left.</source>
+        <translation>Chọn một nhóm ở bên trái.</translation>
+    </message>
+    <message>
+        <source>Computers in group &quot;%1&quot;: %2</source>
+        <translation>Số máy trong nhóm &quot;%1&quot;: %2</translation>
+    </message>
+    <message>
+        <source>Group %1</source>
+        <translation>Nhóm %1</translation>
+    </message>
+    <message>
+        <source>Group name:</source>
+        <translation>Tên nhóm:</translation>
+    </message>
+    <message>
+        <source>Rename group</source>
+        <translation>Đổi tên nhóm</translation>
+    </message>
+    <message>
+        <source>Remove group</source>
+        <translation>Xoá nhóm</translation>
+    </message>
+    <message>
+        <source>Do you really want to remove the group &quot;%1&quot;? The computers themselves are not affected.</source>
+        <translation>Bạn có chắc muốn xoá nhóm &quot;%1&quot;? Các máy trong nhóm không bị ảnh hưởng.</translation>
+    </message>
+</context>
+<context>
     <name>ComputerManager</name>
     <message>
         <source>User</source>
@@ -2325,8 +2458,8 @@ Make sure that the names of the keys belonging to each other are identical on al
 <context>
     <name>ItlabClearDesktopFeaturePlugin</name>
     <message>
-        <source>Clear desktop</source>
-        <translation>Dọn màn hình</translation>
+        <source>Screen management</source>
+        <translation>Quản lý màn hình</translation>
     </message>
     <message>
         <source>Click this button to minimize all windows on the selected computers. Use the menu of this button to close all applications instead.</source>
@@ -2354,7 +2487,7 @@ Make sure that the names of the keys belonging to each other are identical on al
     </message>
     <message>
         <source>Clear the desktop of student computers by minimizing or closing all applications</source>
-        <translation>Dọn màn hình máy học sinh bằng cách thu nhỏ hoặc đóng tất cả ứng dụng</translation>
+        <translation>Quản lý màn hình máy học sinh: thu nhỏ, mở rộng hoặc đóng tất cả ứng dụng</translation>
     </message>
 </context>
 <context>

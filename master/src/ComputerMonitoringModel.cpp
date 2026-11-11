@@ -82,8 +82,30 @@ void ComputerMonitoringModel::setFilterNonEmptyUserLoginNames( bool enabled )
 
 
 
+void ComputerMonitoringModel::setGroupFilter( bool enabled, const QSet<QUuid>& members )
+{
+	beginResetModel();
+	m_groupFilterEnabled = enabled;
+	m_groupFilterMembers = enabled ? members : QSet<QUuid>{};
+	endResetModel();
+}
+
+
+
 bool ComputerMonitoringModel::filterAcceptsRow( int sourceRow, const QModelIndex& sourceParent ) const
 {
+	if( m_groupFilterEnabled )
+	{
+		const auto controlInterface = sourceModel()->data( sourceModel()->index( sourceRow, 0, sourceParent ),
+														   ComputerControlListModel::ControlInterfaceRole )
+										  .value<ComputerControlInterface::Pointer>();
+		if( controlInterface.isNull() ||
+			m_groupFilterMembers.contains( controlInterface->computer().networkObjectUid() ) == false )
+		{
+			return false;
+		}
+	}
+
 	if( m_stateFilter != ComputerControlInterface::State::None &&
 		m_stateRole >= 0 &&
 		sourceModel()->data( sourceModel()->index( sourceRow, 0, sourceParent ),

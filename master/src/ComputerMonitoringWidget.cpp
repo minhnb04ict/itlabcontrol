@@ -29,6 +29,7 @@
 #include <QTimer>
 
 #include "ComputerControlListModel.h"
+#include "ComputerGroupMenu.h"
 #include "ComputerItemDelegate.h"
 #include "ComputerMonitoringModel.h"
 #include "ComputerMonitoringWidget.h"
@@ -179,7 +180,15 @@ void ComputerMonitoringWidget::alignComputers()
 
 void ComputerMonitoringWidget::showContextMenu( QPoint globalPos )
 {
-	populateFeatureMenu( selectedComputerControlInterfaces() );
+	const auto selected = selectedComputerControlInterfaces();
+	populateFeatureMenu( selected );
+
+	// ITLabControl: add the selected computers to a group or remove them from it
+	if( selected.isEmpty() == false )
+	{
+		m_featureMenu->addSeparator();
+		ComputerGroupMenu::addContextMenu( m_featureMenu, *master(), this, selected );
+	}
 
 	m_featureMenu->exec( globalPos );
 }

@@ -156,6 +156,8 @@ Ghi lại mọi chỗ sửa lõi Veyon để dễ merge về sau:
 | `plugins/platform/windows/{SasEventListener,WindowsUserFunctions,WindowsServiceCore}.cpp` | Tên sự kiện hệ thống `Global\ITLabControl…` | Dịch vụ ITLabControl và Veyon không điều khiển nhầm tiến trình của nhau |
 | `core/src/Logger.cpp`, `configurator/src/GeneralConfigurationPage.cpp` | File log `ITLabControl*.log` | Không ghi lẫn log với Veyon |
 | `nsis/veyon.nsi.in` | Khoá `App Paths\itlabcontrol.exe`; không gỡ driver Interception khi còn Veyon; làm mới icon sau khi cài; xoá cổng cũ 11xxx đã lưu trong cấu hình (chỉ khi đúng bằng mặc định của Veyon) | Không cài đè vào thư mục Veyon, không làm hỏng Veyon khi gỡ ITLabControl |
+| `master/src/ComputerGroup*.{h,cpp}`, `ComputerGroupsDialog.*` (mới); `ComputerMonitoringModel`, `ComputerMonitoringWidget`, `VeyonMaster`, `UserConfig`, `MainWindow` | Chia nhóm: nút "Nhóm" trên thanh trạng thái, bộ lọc theo nhóm, menu chuột phải | Chọn nhóm thì chỉ hiện máy của nhóm, nên mọi nút trên thanh công cụ áp dụng cho nhóm đó |
+| `plugins/textmessage/TextMessage{Dialog,FeaturePlugin}.cpp` | Tự chuyển địa chỉ web thành link; máy HS bấm link mở trình duyệt | Gửi link cho HS mở nhanh |
 | `master/src/MainWindow.cpp`, `configurator/src/MainWindow.cpp` | Tiêu đề cửa sổ | Hiển thị tên ITLabControl |
 | `cmake/modules/WindowsBuildHelpers.cmake` | Thông tin phiên bản của file .exe/.dll | ProductName/CompanyName = ITLabControl, giữ ghi công Veyon |
 | `nsis/veyon.nsi.in` | Tên bộ cài, thư mục cài, Start Menu, shortcut | Bộ cài mang tên ITLabControl |

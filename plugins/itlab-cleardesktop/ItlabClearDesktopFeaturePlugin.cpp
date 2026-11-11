@@ -34,12 +34,12 @@
 
 ItlabClearDesktopFeaturePlugin::ItlabClearDesktopFeaturePlugin( QObject* parent ) :
 	QObject( parent ),
-	// Tính năng cha: nút "Dọn màn hình" trên thanh công cụ (bấm thẳng = thu nhỏ tất cả)
+	// Tính năng cha: nút "Quản lý màn hình" trên thanh công cụ (bấm thẳng = thu nhỏ tất cả)
 	m_clearDesktopFeature( QStringLiteral("ItlabClearDesktop"),
 						   Feature::Flag::Action | Feature::Flag::AllComponents,
 						   Feature::Uid( "a9baa88a-d76b-4b4a-a6b6-82609cc6f628" ),
 						   Feature::Uid(),
-						   tr( "Clear desktop" ), {},
+						   tr( "Screen management" ), {},
 						   tr( "Click this button to minimize all windows on the selected computers. "
 							   "Use the menu of this button to close all applications instead." ),
 						   QStringLiteral(":/itlab-cleardesktop/itlab-cleardesktop.png") ),

@@ -138,6 +138,7 @@ Trạng thái: ✅ Veyon có sẵn · 🟡 có một phần, cần mở rộng �
 | | Danh sách lớp theo học sinh | ❌ | `itlab-classroom` | 3 |
 | | Điểm danh (Student Register) | ❌ | `itlab-attendance` | 3 |
 | | Hẹn giờ tiết học, mục tiêu bài học | ❌ | `itlab-lesson` | 3 |
+| | **Chia nhóm trong lớp** (GV tự chia, thao tác theo nhóm) | ❌ | Console: nút "Nhóm" + menu chuột phải ✅ 2026-11-11 | 1 |
 | | Nhóm trưởng (Group Leader) | ❌ | Chưa ưu tiên | 6 |
 | **File** | GV gửi file / GV thu bài | 🟡 DistributeFiles / FileCollect (Collect phải gõ tay đường dẫn trên máy HS) | **Collect dễ dùng hơn** (mục 3.1); thư mục theo lớp/ngày, đặt tên theo học sinh, hiện tiến độ | 1 |
 | | **HS chủ động nộp bài** | ❌ | `itlab-submitwork` (xem mục 3.1) | 3 |
@@ -194,6 +195,8 @@ Hiện trạng Veyon: Collect lấy mọi file trong **một thư mục cố đ�
   dùng lệnh liệt kê file chạy ở Worker trên máy HS.
 
 #### Khảo sát nhanh: `itlab-survey` (GĐ3, đưa lên từ GĐ4)
+> Thiết kế chi tiết (11 dạng câu hỏi, màn hình, kỹ thuật, chia giai đoạn): **`docs/ITLabControl_Survey_Design.md`** (2026-11-11, chờ duyệt).
+
 - **Dạng câu hỏi:** chọn 1 / chọn nhiều đáp án, Đúng–Sai, Có–Không, thang điểm 1–5, trả lời ngắn (văn bản).
 - **Gửi câu hỏi:** GV gõ nhanh hoặc chọn từ ngân hàng câu hỏi đã lưu (file dùng chung), có thể đặt thời gian trả lời.
 - **Phía HS:** cửa sổ câu hỏi luôn nằm trên cùng, gửi đáp án một lần.
@@ -386,7 +389,8 @@ GĐ6                                         ───── liên tục ──�
 | 1. Ngôn ngữ Tiếng Việt / English | ✅ Xong 2026-11-11: mặc định Tiếng Việt, nút đổi ngôn ngữ trong Console, dịch 100%, bộ cài tiếng Việt; đã kiểm tra trên máy GV |
 | 6. Clear desktop (`itlab-cleardesktop`) | ✅ Đã viết và cài máy GV 2026-11-11; chờ kiểm thử đóng ứng dụng trên máy HS |
 | 5. Collect nâng cao | 🟡 Đã có danh sách chọn nguồn/loại file; còn xem trước file và nút "Duyệt…" cho 1 máy |
-| 2. Nhiều phòng (A/B/C + gán phòng khi cài) | Chưa bắt đầu |
+| 2. Nhiều phòng (A/B/C + gán phòng khi cài) | ✅ Xong 2026-11-11: plugin Quản lý phòng (theo tên, theo mẫu tên, tự dò), trang "Phòng máy" trong Configurator, đổi tên máy; đã kiểm thử trên máy thật |
+| Bổ sung theo yêu cầu | ✅ 2026-11-11: đổi thương hiệu + logo, thanh công cụ Xem/Điều khiển cố định, "Mở rộng tất cả cửa sổ", cài song song với Veyon (cổng 14xxx), nút "Dọn màn hình" đổi thành **"Quản lý màn hình"**, link trong tin nhắn bấm mở được, **chia nhóm trong lớp** |
 | 3. Phân quyền theo phòng | Chưa bắt đầu |
 | 4/7. Hoàn thiện nhỏ (scan, ảnh khoá, firewall) | Chưa bắt đầu |
 | 8. Kiểm thử phòng thật | Chưa bắt đầu |

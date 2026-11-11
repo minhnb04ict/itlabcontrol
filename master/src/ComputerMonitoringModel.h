@@ -24,7 +24,9 @@
 
 #pragma once
 
+#include <QSet>
 #include <QSortFilterProxyModel>
+#include <QUuid>
 
 #include "ComputerControlInterface.h"
 
@@ -62,6 +64,15 @@ public:
 
 	void setFilterNonEmptyUserLoginNames( bool enabled );
 
+	// ITLabControl: show only the computers of a group (network object UIDs);
+	// toolbar features then apply to this group only
+	bool groupFilterEnabled() const
+	{
+		return m_groupFilterEnabled;
+	}
+
+	void setGroupFilter( bool enabled, const QSet<QUuid>& members );
+
 protected:
 	bool filterAcceptsRow( int sourceRow, const QModelIndex& sourceParent ) const override;
 
@@ -70,5 +81,7 @@ private:
 	int m_userLoginNameRole{-1};
 	ComputerControlInterface::State m_stateFilter{ComputerControlInterface::State::None};
 	bool m_filterNonEmptyUserLoginNames{false};
+	bool m_groupFilterEnabled{false};
+	QSet<QUuid> m_groupFilterMembers;
 
 };

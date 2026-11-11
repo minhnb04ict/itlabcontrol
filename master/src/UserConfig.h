@@ -44,6 +44,7 @@ public:
 
 #define FOREACH_PERSONAL_CONFIG_PROPERTY(OP)						\
 	OP( UserConfig, VeyonMaster::userConfig(), QJsonArray, checkedNetworkObjects, setCheckedNetworkObjects, "CheckedNetworkObjects", "UI", QJsonArray(), Configuration::Property::Flag::Standard )	\
+	OP( UserConfig, VeyonMaster::userConfig(), QJsonArray, computerGroups, setComputerGroups, "ComputerGroups", "UI", QJsonArray(), Configuration::Property::Flag::Standard )	\
 	OP( UserConfig, VeyonMaster::userConfig(), QJsonArray, computerPositions, setComputerPositions, "ComputerPositions", "UI", QJsonArray(), Configuration::Property::Flag::Standard )	\
 	OP( UserConfig, VeyonMaster::userConfig(), bool, useCustomComputerPositions, setUseCustomComputerPositions, "UseCustomComputerPositions", "UI", false, Configuration::Property::Flag::Standard )	\
 	OP( UserConfig, VeyonMaster::userConfig(), bool, filterPoweredOnComputers, setFilterPoweredOnComputers, "FilterPoweredOnComputers", "UI", false, Configuration::Property::Flag::Standard )	\

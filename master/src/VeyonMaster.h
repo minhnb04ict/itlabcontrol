@@ -33,6 +33,7 @@ class QModelIndex;
 
 class BuiltinFeatures;
 class ComputerControlListModel;
+class ComputerGroupManager;
 class ComputerManager;
 class ComputerMonitoringModel;
 class MainWindow;
@@ -63,6 +64,11 @@ public:
 	ComputerMonitoringModel* computerMonitoringModel() const
 	{
 		return m_computerMonitoringModel;
+	}
+
+	ComputerGroupManager& computerGroups()
+	{
+		return *m_computerGroupManager;
 	}
 
 	const FeatureList& features() const
@@ -109,6 +115,7 @@ private:
 	ComputerManager* m_computerManager;
 	ComputerControlListModel* m_computerControlListModel;
 	ComputerMonitoringModel* m_computerMonitoringModel;
+	ComputerGroupManager* m_computerGroupManager{nullptr};
 
 	ComputerControlInterface m_localSessionControlInterface;
 

@@ -41,6 +41,7 @@
 #include "BuiltinFeatures.h"
 #include "AuthenticationCredentials.h"
 #include "ComputerControlListModel.h"
+#include "ComputerGroupMenu.h"
 #include "ComputerManager.h"
 #include "ComputerSelectPanel.h"
 #include "ScreenshotManagementPanel.h"
@@ -78,6 +79,8 @@ MainWindow::MainWindow( VeyonMaster &masterCore, QWidget* parent ) :
 	// add widgets to status bar
 	ui->statusBar->addWidget( ui->panelButtons );
 	ui->statusBar->addWidget( ui->spacerLabel1 );
+	// ITLabControl: choose a group of computers to work with
+	ui->statusBar->addWidget( ComputerGroupMenu::createStatusBarButton( m_master, this ) );
 	ui->statusBar->addWidget( ui->filterLineEdit, 2 );
 	ui->statusBar->addWidget( ui->filterPoweredOnComputersButton );
 	ui->statusBar->addWidget( ui->filterComputersWithLoggedOnUsersButton );
