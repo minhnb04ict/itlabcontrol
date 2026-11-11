@@ -29,7 +29,7 @@
 
 #define FOREACH_HTTP_API_CONFIG_PROPERTY(OP) \
     OP( WebApiConfiguration, m_configuration, bool, httpServerEnabled, setHttpServerEnabled, "HttpServerEnabled", "WebAPI", false, Configuration::Property::Flag::Advanced )	\
-    OP( WebApiConfiguration, m_configuration, int, httpServerPort, setHttpServerPort, "HttpServerPort", "WebAPI", 11080, Configuration::Property::Flag::Advanced )	\
+    OP( WebApiConfiguration, m_configuration, int, httpServerPort, setHttpServerPort, "HttpServerPort", "WebAPI", 14080, Configuration::Property::Flag::Advanced )	\
     OP( WebApiConfiguration, m_configuration, int, connectionLifetime, setConnectionLifetime, "ConnectionLifetime", "WebAPI", 3, Configuration::Property::Flag::Advanced )	\
     OP( WebApiConfiguration, m_configuration, int, connectionIdleTimeout, setConnectionIdleTimeout, "ConnectionIdleTimeout", "WebAPI", 60, Configuration::Property::Flag::Advanced )	\
     OP( WebApiConfiguration, m_configuration, int, connectionAuthenticationTimeout, setConnectionAuthenticationTimeout, "ConnectionAuthenticationTimeout", "WebAPI", 15, Configuration::Property::Flag::Advanced )	\

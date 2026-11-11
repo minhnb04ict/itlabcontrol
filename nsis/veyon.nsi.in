@@ -14,7 +14,9 @@ Unicode true
 !define MAIN_APP_EXE "veyon-master.exe"
 !define INSTALL_TYPE "SetShellVarContext all"
 !define REG_ROOT "HKLM"
-!define REG_APP_PATH "Software\Microsoft\Windows\CurrentVersion\App Paths\${MAIN_APP_EXE}"
+; ITLabControl: own App Paths key (Veyon uses "veyon-master.exe"); InstallDirRegKey reads it, so sharing
+; Veyon's key could make the installer default to Veyon's folder
+!define REG_APP_PATH "Software\Microsoft\Windows\CurrentVersion\App Paths\itlabcontrol.exe"
 !define UNINSTALL_PATH "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"
 
 ######################################################################
@@ -221,12 +223,20 @@ CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME} Website.lnk" "$INSTDIR\${APP
 ${EndIf}
 
 WriteRegStr ${REG_ROOT} "${REG_APP_PATH}" "" "$INSTDIR\${MAIN_APP_EXE}"
+# ITLabControl: earlier versions wrote "App Paths\veyon-master.exe", which belongs to Veyon.
+# Remove it only if it points to this installation, so an installed Veyon is not affected.
+ReadRegStr $R2 ${REG_ROOT} "Software\Microsoft\Windows\CurrentVersion\App Paths\veyon-master.exe" ""
+${If} $R2 == "$INSTDIR\${MAIN_APP_EXE}"
+  DeleteRegKey ${REG_ROOT} "Software\Microsoft\Windows\CurrentVersion\App Paths\veyon-master.exe"
+${EndIf}
 WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "DisplayName" "${APP_NAME}"
 WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "UninstallString" "$INSTDIR\uninstall.exe"
 WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "DisplayIcon" "$INSTDIR\${MAIN_APP_EXE}"
 WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "DisplayVersion" "${VERSION}"
 WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "Publisher" "${COMP_NAME}"
 WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "URLInfoAbout" "${WEB_SITE}"
+# ITLabControl: tell Windows to refresh cached icons (the .exe paths stay the same across versions)
+System::Call 'shell32::SHChangeNotify(i 0x08000000, i 0, p 0, p 0)'
 SectionEnd
 
 ######################################################################
@@ -237,7 +247,11 @@ ${INSTALL_TYPE}
 ExecWait '"$INSTDIR\veyon-wcli.exe" config set Service/SoftwareSASEnabled 0'
 ExecWait '"$INSTDIR\veyon-wcli.exe" config set Network/FirewallExceptionEnabled 0'
 ExecWait '"$INSTDIR\veyon-wcli.exe" service unregister'
-ExecWait '"$INSTDIR\interception\install-interception.exe" /uninstall'
+# ITLabControl: the Interception driver is shared with Veyon - keep it if Veyon is still installed
+ReadRegStr $R2 ${REG_ROOT} "Software\Microsoft\Windows\CurrentVersion\Uninstall\Veyon" "UninstallString"
+${If} $R2 == ""
+  ExecWait '"$INSTDIR\interception\install-interception.exe" /uninstall'
+${EndIf}
 # make sure the service is stopped and all file handles are released
 Sleep 2000
 

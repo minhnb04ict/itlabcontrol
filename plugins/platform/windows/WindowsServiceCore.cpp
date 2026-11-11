@@ -91,7 +91,7 @@ bool WindowsServiceCore::runAsService()
 
 void WindowsServiceCore::manageServerInstances()
 {
-	m_serverShutdownEvent = CreateEvent( nullptr, false, false, L"Global\\SessionEventVeyon" );
+	m_serverShutdownEvent = CreateEvent( nullptr, false, false, L"Global\\SessionEventITLabControl" /* ITLabControl: own name, coexists with Veyon */ );
 	ResetEvent( m_serverShutdownEvent );
 
 	if( m_sessionManager.mode() != PlatformSessionManager::Mode::Local )

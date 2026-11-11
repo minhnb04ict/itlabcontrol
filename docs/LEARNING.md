@@ -141,7 +141,7 @@ Cùng một file `.dll` được nạp vào 3 chương trình. Mỗi chương tr
 
 ```
  MÁY GIÁO VIÊN                     MÁY HỌC SINH
-┌───────────────────┐  TCP 11100  ┌──────────────────────┐  TCP 11300  ┌───────────────────────┐
+┌───────────────────┐  TCP 14100  ┌──────────────────────┐  TCP 14300  ┌───────────────────────┐
 │ MASTER            │────────────►│ SERVER               │────────────►│ WORKER                │
 │ veyon-master.exe  │◄────────────│ veyon-server.exe     │◄────────────│ veyon-worker.exe      │
 │ (Teacher Console) │             │ (chạy nền, quyền cao)│             │ (trong phiên của HS,  │
@@ -226,8 +226,8 @@ Mức log: 1 Critical, 2 Error, 3 Warning, 4 Info, **5 Debug**. Trả về mặc
 Sau khi đổi, **mở lại Teacher Console** để Console cũng ghi log mới.
 
 ### 7.2 Đọc log
-Thư mục `C:\ProgramData\ITLabControl\logs`: `VeyonMaster.log`, `VeyonServer.log`,
-`VeyonFeatureWorker-<UUID tính năng>.log`. Các dòng quan trọng:
+Thư mục `C:\ProgramData\ITLabControl\logs`: `ITLabControlMaster.log`, `ITLabControlServer.log`,
+`ITLabControlFeatureWorker-<UUID tính năng>.log`. Các dòng quan trọng:
 ```
 FeatureManager::handleFeatureMessage(): [WORKER] FeatureMessage(ItlabHello,0,{…})   ← Worker nhận lệnh
 FeatureWorkerManagerConnection::sendMessage(): FeatureMessage(ItlabHello,1,{…})      ← Worker gửi trả lời

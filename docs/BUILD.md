@@ -152,6 +152,10 @@ Ghi lại mọi chỗ sửa lõi Veyon để dễ merge về sau:
 | `plugins/platform/windows/WindowsFilesystemFunctions.cpp` | Thư mục dữ liệu `%PROGRAMDATA%\ITLabControl`, `%APPDATA%\ITLabControl` | Khoá xác thực và dữ liệu tách khỏi Veyon |
 | `core/src/ComputerControlInterface.cpp` | `removeLocalHostInterfaces()` nhận biết máy cục bộ **không tra DNS** | Bản gốc tra tên từng máy trên luồng giao diện; máy không tra được tên làm Console đứng vài giây khi Khoá máy, Trình chiếu, Đóng tất cả ứng dụng |
 | `plugins/remoteaccess/RemoteAccessWidget.cpp` | Thanh công cụ cố định, màn hình HS nằm bên dưới | Không che màn hình HS, luôn thấy nút điều khiển |
+| `core/src/VeyonConfigurationProperties.h`, `plugins/webapi/WebApiConfiguration.h` | Cổng mặc định 14100/14200/14300/14400, Web API 14080 (Veyon: 11xxx) | **Cài song song với Veyon** không tranh cổng |
+| `plugins/platform/windows/{SasEventListener,WindowsUserFunctions,WindowsServiceCore}.cpp` | Tên sự kiện hệ thống `Global\ITLabControl…` | Dịch vụ ITLabControl và Veyon không điều khiển nhầm tiến trình của nhau |
+| `core/src/Logger.cpp`, `configurator/src/GeneralConfigurationPage.cpp` | File log `ITLabControl*.log` | Không ghi lẫn log với Veyon |
+| `nsis/veyon.nsi.in` | Khoá `App Paths\itlabcontrol.exe`; không gỡ driver Interception khi còn Veyon; làm mới icon sau khi cài | Không cài đè vào thư mục Veyon, không làm hỏng Veyon khi gỡ ITLabControl |
 | `master/src/MainWindow.cpp`, `configurator/src/MainWindow.cpp` | Tiêu đề cửa sổ | Hiển thị tên ITLabControl |
 | `cmake/modules/WindowsBuildHelpers.cmake` | Thông tin phiên bản của file .exe/.dll | ProductName/CompanyName = ITLabControl, giữ ghi công Veyon |
 | `nsis/veyon.nsi.in` | Tên bộ cài, thư mục cài, Start Menu, shortcut | Bộ cài mang tên ITLabControl |

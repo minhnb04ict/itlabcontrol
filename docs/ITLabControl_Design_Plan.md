@@ -24,7 +24,7 @@ Veyon đã có sẵn khoảng 40% tính năng cốt lõi của NetSupport School
 - Kiến trúc **plugin**: tính năng mới viết thành plugin, hạn chế sửa lõi, dễ cập nhật theo upstream.
 - Qt6/C++, CMake, có sẵn bộ cài NSIS và platform plugin Windows hoàn chỉnh (`plugins/platform/windows`). ITLabControl chỉ build Windows.
 - Bảo mật bằng cặp khoá RSA hoặc xác thực tài khoản đăng nhập, có ACL (Access Control Rules).
-- Có Web API (cổng 11080) để làm console web hoặc mobile sau này.
+- Có Web API (cổng 14080) để làm console web hoặc mobile sau này.
 
 ### 1.2 Ràng buộc giấy phép (quan trọng)
 - Veyon dùng giấy phép **GPLv2**, nên ITLabControl, vốn là sản phẩm phái sinh, **bắt buộc theo GPLv2**.
@@ -52,22 +52,22 @@ Nguyên tắc: **mọi tính năng mới là plugin `itlab-*`**. Chỉ sửa lõ
 | Thành phần | Tiến trình Veyon | Tên ITLabControl | Chạy ở đâu | Vai trò |
 |---|---|---|---|---|
 | Service | `veyon-service` | ITLab Agent Service | Máy học sinh, Windows Service (SYSTEM) | Khởi chạy Server cho từng phiên người dùng |
-| Server | `veyon-server` | ITLab Agent | Máy học sinh, trong phiên người dùng | VNC server + nhận lệnh tính năng (TCP **11100**) |
+| Server | `veyon-server` | ITLab Agent | Máy học sinh, trong phiên người dùng | VNC server + nhận lệnh tính năng (TCP **14100**) |
 | Worker | `veyon-worker` | ITLab Worker | Máy học sinh | Hiển thị UI tính năng (khoá màn hình, tin nhắn, trình chiếu…) |
 | Master | `veyon-master` | **ITLab Teacher Console** | Máy giáo viên | Console điều khiển |
 | Configurator | `veyon-configurator` | ITLab Configurator | Mọi máy | Cấu hình, quản lý khoá, phòng máy |
 | CLI | `veyon-cli` | `itlab-cli` | Mọi máy | Script, triển khai hàng loạt |
 | *(mới)* | – | **ITLab Hub** (tuỳ chọn, giai đoạn 5) | Server trường | Lưu tập trung: lớp, điểm danh, nhật ký, báo cáo, chính sách |
 
-Cổng mặc định của Veyon: 11100 (Server), 11200 (VNC nội bộ), 11300 (Feature Worker Manager), 11400 (Demo/trình chiếu), 11080 (Web API).
+Cổng mạng của ITLabControl: 14100 (Server), 14200 (VNC nội bộ), 14300 (Feature Worker Manager), 14400 (trình chiếu), 14080 (Web API). Veyon gốc dùng 11100–11400 và 11080; ITLabControl dùng dải 14xxx riêng để **cài song song được với Veyon** trên cùng một máy.
 
 ### 2.1b Mô hình mạng (1 GV + 31 HS mỗi phòng, nhiều phòng)
 ```
  Phòng A (VLAN/subnet 10.1.1.0/24)        Phòng B (10.1.2.0/24)
  ┌──────────┐   ┌─────────── 31 HS ──┐     ┌──────────┐  ┌── 31 HS ──┐
- │ Máy GV A │──►│ Agent :11100       │     │ Máy GV B │─►│ Agent      │
+ │ Máy GV A │──►│ Agent :14100       │     │ Máy GV B │─►│ Agent      │
  └──────────┘   └────────────────────┘     └──────────┘  └────────────┘
-        │  (khác subnet: route trực tiếp qua router, mở firewall 11100/11400)
+        │  (khác subnet: route trực tiếp qua router, mở firewall 14100/14400)
         ▼
  ┌──────────────────────────────┐  tuỳ chọn, GĐ5: lưu tập trung, relay khi NAT,
  │ ITLab Hub (server trường)    │  đồng bộ danh sách phòng và chính sách
@@ -264,14 +264,14 @@ Hiện trạng Veyon: Collect lấy mọi file trong **một thư mục cố đ�
    - Nền tảng: Veyon cho phép để trống địa chỉ, khi đó **tên máy được dùng làm địa chỉ** và tra IP lúc kết nối (không lo IP DHCP thay đổi). Mạng trường hiện tra tên qua mDNS/LLMNR (WORKGROUP, không AD), nên **chạy tốt khi máy GV và HS cùng subnet**; khác subnet cần DNS của trường hoặc phương án D (GĐ5).
    - **A. Gõ tên máy:** có sẵn trong Veyon (để trống địa chỉ). Dùng cho vài máy lẻ.
    - **B. Tạo phòng theo mẫu tên:** GV nhập **tiền tố + khoảng số + hậu tố (tuỳ chọn) + số chữ số** (ví dụ `T36-ICT2-` `01–31`, `P201-PC` `1–30`, `LABA-` `01–31` `-HS`); Console hiện danh sách xem trước để sửa/xoá từng dòng rồi tạo cả phòng. Phù hợp khi tên máy có đánh số theo quy luật.
-   - **C. Tự dò máy:** Console quét subnet tìm máy đang chạy ITLabControl (cổng 11100), hiện tên máy, IP, MAC, người đăng nhập; **gom nhóm chỉ là gợi ý** (theo phòng đã gán, hoặc theo tiền tố tên); GV tick chọn và gán vào phòng bất kỳ. Dùng được với tên máy không theo quy luật.
+   - **C. Tự dò máy:** Console quét subnet tìm máy đang chạy ITLabControl (cổng 14100), hiện tên máy, IP, MAC, người đăng nhập; **gom nhóm chỉ là gợi ý** (theo phòng đã gán, hoặc theo tiền tố tên); GV tick chọn và gán vào phòng bất kỳ. Dùng được với tên máy không theo quy luật.
    - **Gán phòng khi cài đặt máy HS** (duyệt 2026-11-11): script cài máy HS hỏi tên phòng (hoặc nhận tham số `/Room="Phòng 201"` khi cài hàng loạt) và lưu vào cấu hình máy HS. Khi tự dò (C), máy HS báo phòng của mình và Console **tự xếp đúng phòng**, GV chỉ cần bấm "Thêm tất cả". Không phụ thuộc cách đặt tên máy.
    - Nhập CSV giữ làm phương án phụ cho IT. Bố cục lưới mặc định 8×4 khớp sơ đồ phòng.
 3. **Phân quyền theo phòng:** mẫu ACL "máy GV phòng X chỉ điều khiển máy HS phòng X"; tài khoản quản trị điều khiển được mọi phòng.
 4. Scan xoay vòng có cấu hình chu kỳ; ảnh màn hình khoá tuỳ chỉnh (logo trường).
 5. Gửi/thu bài: thư mục mặc định theo `Phòng/Lớp/Ngày/Tên HS`, có hiển thị tiến độ; **Collect dễ dùng hơn** (đặc tả mục 3.1).
 6. **`itlab-cleardesktop`**: dọn màn hình HS (thu nhỏ tất cả / đóng ngay mọi ứng dụng), xem đặc tả mục 3.1. Đây là plugin `itlab-*` đầu tiên sau `itlab-hello`.
-7. Cấu hình Windows Firewall tự động khi cài; hướng dẫn mở cổng 11100/11400 trên router khi khác subnet.
+7. Cấu hình Windows Firewall tự động khi cài; hướng dẫn mở cổng 14100/14400 trên router khi khác subnet.
 8. Kiểm thử đầy đủ: Wake-on-LAN (lưu ý khác subnet cần directed broadcast), tắt/khởi động lại, đăng nhập từ xa, trình chiếu tới 31 máy.
 
 **Tiêu chí duyệt:** dạy được một tiết hoàn chỉnh (dọn màn hình, chiếu màn hình, khoá máy, gửi và thu bài) bằng tiếng Việt; GV phòng A không thấy được phòng B.

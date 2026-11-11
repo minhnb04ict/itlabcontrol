@@ -213,14 +213,14 @@ void GeneralConfigurationPage::clearLogFiles()
 	}
 
 	bool success = true;
-	const QStringList logFilesFilter( { QStringLiteral("Veyon*.log") } );
+	const QStringList logFilesFilter( { QStringLiteral("ITLabControl*.log") } );
 
 	QDir d( VeyonCore::filesystem().expandPath( VeyonCore::config().logFileDirectory() ) );
 	const auto localLogFiles = d.entryList( logFilesFilter );
 
 	for( const auto& f : localLogFiles )
 	{
-		if( f.startsWith( QLatin1String("VeyonConfigurator") ) )
+		if( f.startsWith( QLatin1String("ITLabControlConfigurator") ) )
 		{
 			d.remove( f );
 		}
@@ -234,7 +234,7 @@ void GeneralConfigurationPage::clearLogFiles()
 	const auto globalLogFiles = d.entryList( logFilesFilter );
 	for( const auto& f : globalLogFiles )
 	{
-		if( f != QLatin1String("VeyonConfigurator.log") )
+		if( f != QLatin1String("ITLabControlConfigurator.log") )
 		{
 			success &= d.remove( f );
 		}
