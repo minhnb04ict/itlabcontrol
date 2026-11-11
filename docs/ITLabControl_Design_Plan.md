@@ -239,8 +239,32 @@ Hiện trạng Veyon: Collect lấy mọi file trong **một thư mục cố đ�
 
 ### Giai đoạn 1: Tính năng cốt lõi, nhiều phòng, Việt hoá, Clear desktop (4–5 tuần)
 **Mục tiêu:** hoàn thiện tính năng có sẵn của Veyon cho phòng máy 1 GV + 31 HS, nhiều phòng.
-1. Việt hoá toàn bộ giao diện (Console, Configurator, thông báo phía HS) qua `translations/veyon_vi.ts`, đồng thời gửi bản dịch ngược lại cho Veyon.
-2. **Quản lý nhiều phòng:** nhập CSV `Phòng, Tên máy, IP/hostname, MAC, Vai trò (GV/HS)`; dò máy theo dải IP; bố cục lưới mặc định 8×4 khớp sơ đồ phòng.
+> Kế hoạch chi tiết GĐ1 được duyệt 2026-11-11. Thứ tự thực hiện: 1 → 6 → 5 → 2 → 3 → 4/7 → 8.
+
+1. **Ngôn ngữ Tiếng Việt / English** (duyệt 2026-11-11):
+   - Sửa lỗi build bản dịch (`lupdate` vượt giới hạn dòng lệnh: đọc danh sách file từ file).
+   - **Mặc định Tiếng Việt** khi chưa chọn ngôn ngữ, không phụ thuộc ngôn ngữ Windows.
+   - **Đổi nhanh trong Console**: mục "Ngôn ngữ: Tiếng Việt / English", lưu riêng cho từng GV (không cần quyền admin), áp dụng khi mở lại Console. Configurator giữ thiết lập chung cho cả máy (áp cho phía HS).
+   - **Dịch đủ 100%** `translations/veyon_vi.ts` (hiện mới 170/1.176 chuỗi) theo **bảng thuật ngữ** bên dưới; gửi bản dịch ngược lại cho Veyon.
+   - Plugin `itlab-*`: chuỗi gốc bằng **tiếng Anh**, tiếng Việt nằm trong file dịch (sửa lại `itlab-hello`).
+   - Bộ cài: tiếng Việt mặc định, chọn được English.
+
+   **Bảng thuật ngữ (duyệt 2026-11-11):**
+   | Tiếng Anh | Tiếng Việt |
+   |---|---|
+   | Master / Teacher Console | Bảng điều khiển giáo viên |
+   | Computer | Máy |
+   | Location | Phòng |
+   | Lock / Unlock | Khoá máy / Mở khoá |
+   | Demo | Trình chiếu |
+   | Remote view / Remote control | Xem màn hình / Điều khiển |
+   | Distribute / Collect | Gửi file / Thu bài |
+   | Power on / Reboot / Power down | Bật máy / Khởi động lại / Tắt máy |
+2. **Quản lý nhiều phòng: thêm máy bằng tên** (duyệt 2026-11-11, thay cho nhập CSV/IP làm cách chính):
+   - Nền tảng: Veyon cho phép để trống địa chỉ, khi đó **tên máy được dùng làm địa chỉ** và tra IP lúc kết nối (không lo IP DHCP thay đổi). Mạng trường hiện tra tên qua mDNS/LLMNR (WORKGROUP, không AD), nên **chạy tốt khi máy GV và HS cùng subnet**; khác subnet cần DNS của trường hoặc phương án D (GĐ5).
+   - **B. Tạo phòng theo mẫu tên:** GV nhập tiền tố (`T36-ICT2-`) và khoảng số (`01–31`), Console tạo cả phòng một lần.
+   - **C. Tự dò máy:** Console quét subnet tìm máy đang chạy ITLabControl (cổng 11100), lấy tên máy, **tự gom theo tiền tố tên thành phòng**; GV tick chọn rồi thêm.
+   - Nhập CSV giữ làm phương án phụ cho IT. Bố cục lưới mặc định 8×4 khớp sơ đồ phòng.
 3. **Phân quyền theo phòng:** mẫu ACL "máy GV phòng X chỉ điều khiển máy HS phòng X"; tài khoản quản trị điều khiển được mọi phòng.
 4. Scan xoay vòng có cấu hình chu kỳ; ảnh màn hình khoá tuỳ chỉnh (logo trường).
 5. Gửi/thu bài: thư mục mặc định theo `Phòng/Lớp/Ngày/Tên HS`, có hiển thị tiến độ; **Collect dễ dùng hơn** (đặc tả mục 3.1).
@@ -293,6 +317,7 @@ Hiện trạng Veyon: Collect lấy mọi file trong **một thư mục cố đ�
 
 ### Giai đoạn 5: Quản trị tập trung (4–6 tuần)
 1. **ITLab Hub** (server trường, chạy Windows/Linux, có Docker): lưu lớp, điểm danh, kết quả kiểm tra, nhật ký thao tác; đồng bộ chính sách; relay kết nối khi khác subnet.
+   - **D. Lưu cả tên lẫn IP gần nhất** của mỗi máy: kết nối bằng tên trước, không được thì dùng IP (giải quyết khác subnet khi tên không tra được).
 2. `itlab-inventory`: kiểm kê phần cứng/phần mềm, xuất báo cáo.
 3. Triển khai hàng loạt: bộ cài MSI, hướng dẫn GPO, cài silent bằng CLI.
 4. Bảo vệ agent: chặn tắt service, mật khẩu khi gỡ cài đặt, cảnh báo khi agent mất kết nối.
@@ -351,7 +376,7 @@ GĐ6                                         ───── liên tục ──�
 | 0A.6 README, giấy phép | ✅ Xong |
 | 0B Plugin mẫu `itlab-hello` | ✅ Xong 2026-11-11: chạy đủ 2 chiều Console ↔ máy HS qua localhost |
 | 0B Tài liệu học C++/Qt `docs/LEARNING.md` | ✅ Xong 2026-11-11 |
-| GĐ1 | **Chờ duyệt kế hoạch chi tiết** |
+| GĐ1 | **Đang thực hiện** (duyệt 2026-11-11), bắt đầu từ bước 1 (ngôn ngữ) |
 | GĐ2 → GĐ6 | Chưa duyệt |
 
 ### Việc bạn cần chuẩn bị cho GĐ0
