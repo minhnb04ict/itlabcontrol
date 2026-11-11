@@ -13,6 +13,8 @@ jobs:
         dist:
           - debian.11
           - fedora.44
+    # ITLabControl: only run in the upstream Veyon repository
+    if: github.repository == 'veyon/veyon'
     runs-on: ubuntu-latest
     container: veyon/ci.linux.${{matrix.dist}}
     steps:

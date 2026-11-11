@@ -1,0 +1,98 @@
+# ITLabControl - build bộ cài Windows bằng MSYS2 UCRT64
+#
+# - Mỗi lần push / pull request: build và đính kèm bộ cài vào trang của lần chạy (Artifacts).
+# - Mỗi lần push tag dạng vX.Y.Z: tạo thêm GitHub Release chứa bộ cài.
+#
+# Các bước giống hệt docs/BUILD.md.
+
+name: "ITLabControl Windows build"
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ "v*.*.*" ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Phiên bản Interception đã kiểm chứng (oblitum/Interception)
+  INTERCEPTION_COMMIT: 39eecbbc46a52e0402f783b872ef62b0254a896a
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - name: Lấy mã nguồn
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Cài MSYS2 và thư viện
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: git
+          pacboy: >-
+            toolchain:p cmake:p ninja:p
+            qt6-base:p qt6-tools:p qt6-translations:p qt6-httpserver:p
+            qca-qt6:p openssl:p lzo2:p libjpeg-turbo:p libpng:p zlib:p
+            openldap:p cyrus-sasl:p libvncserver:p nsis:p
+
+      - name: Build thư viện Interception
+        run: |
+          git clone https://github.com/oblitum/Interception.git /tmp/Interception
+          cd /tmp/Interception && git checkout "$INTERCEPTION_COMMIT"
+          cd library
+          gcc -O2 -shared -DINTERCEPTION_EXPORT -o interception.dll interception.c \
+            -Wl,--out-implib,libinterception.dll.a
+          cp interception.dll /ucrt64/bin/
+          cp libinterception.dll.a /ucrt64/lib/
+          cp interception.h /ucrt64/include/
+
+      - name: Cấu hình (CMake)
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DWITH_LTO=OFF \
+            -DWITH_TRANSLATIONS=OFF
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Đóng gói bộ cài
+        run: bash scripts/msys2/package.sh build --installer
+
+      - name: Kiểm tra nhanh thư mục đóng gói
+        shell: cmd
+        run: |
+          cd build\package
+          veyon-cli.exe about
+          veyon-cli.exe plugin list
+
+      - name: Đính kèm bộ cài vào lần chạy
+        uses: actions/upload-artifact@v4
+        with:
+          name: itlabcontrol-windows-installer
+          path: build/itlabcontrol-*-setup.exe
+          if-no-files-found: error
+
+      - name: Tạo GitHub Release (khi push tag vX.Y.Z)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/itlabcontrol-*-setup.exe
+          generate_release_notes: true
