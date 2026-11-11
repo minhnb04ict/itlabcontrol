@@ -22,6 +22,9 @@
  *
  */
 
+#include <QHostInfo>
+#include <QNetworkInterface>
+
 #include "AccessControlProvider.h"
 #include "BuiltinFeatures.h"
 #include "ComputerControlInterface.h"
@@ -646,11 +649,38 @@ QDebug operator<<(QDebug stream, const ComputerControlInterfaceList& computerCon
 
 
 
+// ITLabControl: decide whether a computer is the local computer WITHOUT name resolution.
+// HostAddress::isLocalHost() resolves host names synchronously; for a computer whose name cannot be
+// resolved (switched off, renamed) Windows needs several seconds per lookup, which froze the Teacher
+// Console for seconds before e.g. locking or closing applications.
+static bool isLocalHostWithoutLookup( const QString& hostName )
+{
+	const auto host = HostAddress::parseHost( hostName ).trimmed();
+	if( host.isEmpty() )
+	{
+		return false;
+	}
+
+	QHostAddress ipAddress;
+	if( ipAddress.setAddress( host ) )
+	{
+		return ipAddress.isLoopback() || QNetworkInterface::allAddresses().contains( ipAddress );
+	}
+
+	const auto name = host.toLower();
+	const auto localName = QHostInfo::localHostName().toLower();
+	return name == QLatin1String("localhost") ||
+		   name == localName ||
+		   name.section( QLatin1Char('.'), 0, 0 ) == localName.section( QLatin1Char('.'), 0, 0 );
+}
+
+
+
 void ComputerControlInterfaceList::removeLocalHostInterfaces()
 {
 	for (auto it = begin(); it != end(); )
 	{
-		if (HostAddress(HostAddress::parseHost((*it)->computer().hostName())).isLocalHost())
+		if (isLocalHostWithoutLookup((*it)->computer().hostName()))
 		{
 			it = erase(it);
 		}

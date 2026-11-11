@@ -150,6 +150,8 @@ Ghi lại mọi chỗ sửa lõi Veyon để dễ merge về sau:
 | `core/src/VeyonCore.cpp` | Tên tổ chức/ứng dụng của Qt = ITLabControl | Cấu hình lưu ở registry riêng, không đụng Veyon nếu máy có cài Veyon |
 | `plugins/platform/windows/WindowsServiceFunctions.cpp` | Tên service = `ITLabControlService` | Cài song song được với Veyon |
 | `plugins/platform/windows/WindowsFilesystemFunctions.cpp` | Thư mục dữ liệu `%PROGRAMDATA%\ITLabControl`, `%APPDATA%\ITLabControl` | Khoá xác thực và dữ liệu tách khỏi Veyon |
+| `core/src/ComputerControlInterface.cpp` | `removeLocalHostInterfaces()` nhận biết máy cục bộ **không tra DNS** | Bản gốc tra tên từng máy trên luồng giao diện; máy không tra được tên làm Console đứng vài giây khi Khoá máy, Trình chiếu, Đóng tất cả ứng dụng |
+| `plugins/remoteaccess/RemoteAccessWidget.cpp` | Thanh công cụ cố định, màn hình HS nằm bên dưới | Không che màn hình HS, luôn thấy nút điều khiển |
 | `master/src/MainWindow.cpp`, `configurator/src/MainWindow.cpp` | Tiêu đề cửa sổ | Hiển thị tên ITLabControl |
 | `cmake/modules/WindowsBuildHelpers.cmake` | Thông tin phiên bản của file .exe/.dll | ProductName/CompanyName = ITLabControl, giữ ghi công Veyon |
 | `nsis/veyon.nsi.in` | Tên bộ cài, thư mục cài, Start Menu, shortcut | Bộ cài mang tên ITLabControl |
