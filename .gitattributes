@@ -3,3 +3,6 @@
 
 # script Windows .cmd can CRLF
 *.cmd text eol=crlf
+
+# script PowerShell can BOM UTF-8 va CRLF
+*.ps1 text eol=crlf
