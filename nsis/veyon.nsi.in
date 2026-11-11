@@ -96,6 +96,13 @@ RequestExecutionLevel admin
 
 ######################################################################
 
+!macro ITLAB_DROP_OLD_PORT GROUP KEY OLDVALUE
+  ReadRegStr $R3 HKLM "SOFTWARE\ITLabControl\ITLabControl\${GROUP}" "${KEY}"
+  ${If} $R3 == "${OLDVALUE}"
+    DeleteRegValue HKLM "SOFTWARE\ITLabControl\ITLabControl\${GROUP}" "${KEY}"
+  ${EndIf}
+!macroend
+
 Section "$(SEC_SERVICE_NAME)" SEC_SERVICE
 SectionIn RO
 ${INSTALL_TYPE}
@@ -156,6 +163,17 @@ ${If} $R1 != ""
 	   MessageBox MB_OK|MB_ICONSTOP "$(TXT_CONFIG_IMPORT_FAILED)"
   ${EndIf}
 ${EndIf}
+# ITLabControl: earlier builds used Veyon's default ports (11xxx). Configurations saved by
+# those builds store the old values explicitly, which would keep ITLabControl on Veyon's ports.
+# Remove a stored port only if it still equals Veyon's default, so the new 14xxx defaults apply;
+# ports deliberately set to other values are kept.
+SetRegView 64
+!insertmacro ITLAB_DROP_OLD_PORT "Network" "VeyonServerPort" "11100"
+!insertmacro ITLAB_DROP_OLD_PORT "Network" "VncServerPort" "11200"
+!insertmacro ITLAB_DROP_OLD_PORT "Network" "FeatureWorkerManagerPort" "11300"
+!insertmacro ITLAB_DROP_OLD_PORT "Network" "DemoServerPort" "11400"
+!insertmacro ITLAB_DROP_OLD_PORT "WebAPI" "HttpServerPort" "11080"
+SetRegView lastused
 ExecWait '"$INSTDIR\veyon-wcli.exe" service start'
 SectionEnd
 
