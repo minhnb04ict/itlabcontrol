@@ -180,7 +180,7 @@ Hiện trạng Veyon: Collect lấy mọi file trong **một thư mục cố đ�
 (trống = Documents của HS); chế độ "hỏi HS chọn file" có khai báo nhưng bị ẩn và chưa cài đặt.
 
 - **Chọn nguồn bằng danh sách**, thay cho ô gõ tay: Documents, Desktop, Downloads, thư mục bài làm chung
-  (mặc định `C:BaiLam`, IT cấu hình được), hoặc "Đường dẫn khác…" cho trường hợp đặc biệt.
+  (mặc định `C:\BaiLam`, IT cấu hình được), hoặc "Đường dẫn khác…" cho trường hợp đặc biệt.
 - **Xem trước**: trước khi thu, Console hiện danh sách file sẽ thu trên từng máy (tên, dung lượng, ngày sửa);
   GV bỏ chọn file không cần rồi mới bấm "Thu".
 - **Lọc nhanh** theo loại file: Word, Excel, PowerPoint, PDF, ảnh, tất cả.
