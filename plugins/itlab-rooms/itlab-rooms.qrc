@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/itlab-rooms">
+        <file>itlab-rooms.png</file>
+    </qresource>
+</RCC>

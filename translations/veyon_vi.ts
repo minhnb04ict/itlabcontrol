@@ -2381,6 +2381,17 @@ Make sure that the names of the keys belonging to each other are identical on al
     </message>
 </context>
 <context>
+    <name>ItlabRoomsPlugin</name>
+    <message>
+        <source>Rooms</source>
+        <translation>Quản lý phòng</translation>
+    </message>
+    <message>
+        <source>Manage rooms and computers, discover computers and assign rooms</source>
+        <translation>Quản lý phòng và máy, tự dò máy và gán phòng</translation>
+    </message>
+</context>
+<context>
     <name>LdapBrowseDialog</name>
     <message>
         <source>Browse LDAP</source>
@@ -4154,6 +4165,324 @@ Vui lòng lưu bài và đóng tất cả chương trình.</translation>
     <message>
         <source>All screens</source>
         <translation>Tất cả màn hình</translation>
+    </message>
+</context>
+<context>
+    <name>RoomConfigurationPage</name>
+    <message>
+        <source>Room</source>
+        <translation>Phòng máy</translation>
+    </message>
+    <message>
+        <source>Enter the room this computer belongs to. When the teacher discovers computers in the Teacher Console, computers are assigned to rooms automatically by this name. Upper/lower case, Vietnamese diacritics and extra spaces are ignored.</source>
+        <translation>Nhập tên phòng của máy này. Khi giáo viên dùng chức năng tự dò máy trên Bảng điều khiển giáo viên, máy sẽ được tự xếp vào phòng theo tên này. Không phân biệt chữ hoa/thường, có dấu hay không dấu và khoảng trắng thừa.</translation>
+    </message>
+    <message>
+        <source>e.g. Room 201</source>
+        <translation>ví dụ Phòng 201</translation>
+    </message>
+    <message>
+        <source>Room of this computer:</source>
+        <translation>Phòng của máy này:</translation>
+    </message>
+</context>
+<context>
+    <name>RoomManagerDialog</name>
+    <message>
+        <source>Rooms</source>
+        <translation>Quản lý phòng</translation>
+    </message>
+    <message>
+        <source>Rooms and computers</source>
+        <translation>Phòng và máy</translation>
+    </message>
+    <message>
+        <source>Add by name pattern</source>
+        <translation>Tạo theo mẫu tên</translation>
+    </message>
+    <message>
+        <source>Discover computers</source>
+        <translation>Tự dò máy</translation>
+    </message>
+    <message>
+        <source>There are unsaved changes. Click &quot;Save&quot; to apply them.</source>
+        <translation>Có thay đổi chưa lưu. Bấm &quot;Lưu&quot; để áp dụng.</translation>
+    </message>
+    <message>
+        <source>Room / computer</source>
+        <translation>Phòng / máy</translation>
+    </message>
+    <message>
+        <source>Host address</source>
+        <translation>Địa chỉ máy</translation>
+    </message>
+    <message>
+        <source>MAC address</source>
+        <translation>Địa chỉ MAC</translation>
+    </message>
+    <message>
+        <source>Add room</source>
+        <translation>Thêm phòng</translation>
+    </message>
+    <message>
+        <source>Rename room</source>
+        <translation>Đổi tên phòng</translation>
+    </message>
+    <message>
+        <source>Add computers by name</source>
+        <translation>Thêm máy theo tên</translation>
+    </message>
+    <message>
+        <source>Move to room</source>
+        <translation>Chuyển sang phòng</translation>
+    </message>
+    <message>
+        <source>Save room on student computers</source>
+        <translation>Ghi tên phòng vào máy học sinh</translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation>Xoá</translation>
+    </message>
+    <message>
+        <source>Writes the room name into the configuration of the selected computers, so they report this room when computers are discovered.</source>
+        <translation>Ghi tên phòng vào cấu hình của các máy đã chọn, để khi tự dò máy chúng báo đúng phòng này.</translation>
+    </message>
+    <message>
+        <source>Room name:</source>
+        <translation>Tên phòng:</translation>
+    </message>
+    <message>
+        <source>A room with this name already exists.</source>
+        <translation>Đã có phòng với tên này.</translation>
+    </message>
+    <message>
+        <source>Please select a room first.</source>
+        <translation>Vui lòng chọn một phòng trước.</translation>
+    </message>
+    <message>
+        <source>Remove the selected rooms and computers? Removing a room also removes all computers in it.</source>
+        <translation>Xoá các phòng và máy đã chọn? Xoá một phòng sẽ xoá luôn tất cả máy trong phòng đó.</translation>
+    </message>
+    <message>
+        <source>Enter one computer per line, either as name only (e.g. T36-ICT2-20) or as name and IP address separated by a comma (e.g. T36-ICT2-20, 172.18.217.20):</source>
+        <translation>Nhập mỗi máy một dòng, chỉ tên máy (ví dụ T36-ICT2-20) hoặc tên máy và địa chỉ IP cách nhau bằng dấu phẩy (ví dụ T36-ICT2-20, 172.18.217.20):</translation>
+    </message>
+    <message>
+        <source>%1 computers added to room &quot;%2&quot;. Click &quot;Save&quot; to apply.</source>
+        <translation>Đã thêm %1 máy vào phòng &quot;%2&quot;. Bấm &quot;Lưu&quot; để áp dụng.</translation>
+    </message>
+    <message>
+        <source>Please select one or more computers first.</source>
+        <translation>Vui lòng chọn một hoặc nhiều máy trước.</translation>
+    </message>
+    <message>
+        <source>Target room:</source>
+        <translation>Phòng đích:</translation>
+    </message>
+    <message>
+        <source>Please select one or more computers in a room first.</source>
+        <translation>Vui lòng chọn một hoặc nhiều máy trong một phòng trước.</translation>
+    </message>
+    <message>
+        <source>e.g. T36-ICT2-</source>
+        <translation>ví dụ T36-ICT2-</translation>
+    </message>
+    <message>
+        <source>Minimum number of digits, e.g. 2 gives 01, 02, ... and 1 gives 1, 2, ...</source>
+        <translation>Số chữ số tối thiểu, ví dụ 2 cho 01, 02, ... và 1 cho 1, 2, ...</translation>
+    </message>
+    <message>
+        <source>optional</source>
+        <translation>không bắt buộc</translation>
+    </message>
+    <message>
+        <source>Add to room</source>
+        <translation>Thêm vào phòng</translation>
+    </message>
+    <message>
+        <source>to</source>
+        <translation>đến</translation>
+    </message>
+    <message>
+        <source>Room:</source>
+        <translation>Phòng:</translation>
+    </message>
+    <message>
+        <source>Name prefix:</source>
+        <translation>Tiền tố tên:</translation>
+    </message>
+    <message>
+        <source>Numbers:</source>
+        <translation>Số thứ tự:</translation>
+    </message>
+    <message>
+        <source>Digits:</source>
+        <translation>Số chữ số:</translation>
+    </message>
+    <message>
+        <source>Name suffix:</source>
+        <translation>Hậu tố tên:</translation>
+    </message>
+    <message>
+        <source>Computers are added by name. Unwanted entries can be removed in the preview (select and press Delete).</source>
+        <translation>Máy được thêm theo tên. Có thể bỏ các dòng không cần trong phần xem trước (chọn rồi bấm phím Delete).</translation>
+    </message>
+    <message>
+        <source>Preview:</source>
+        <translation>Xem trước:</translation>
+    </message>
+    <message>
+        <source>Please enter or select a room.</source>
+        <translation>Vui lòng nhập hoặc chọn một phòng.</translation>
+    </message>
+    <message>
+        <source>Please enter a name prefix and number range.</source>
+        <translation>Vui lòng nhập tiền tố tên và khoảng số thứ tự.</translation>
+    </message>
+    <message>
+        <source>Examples: 172.18.217.1-254, 10.0.0.0/24, 10.0.1.5 (separate multiple entries by commas)</source>
+        <translation>Ví dụ: 172.18.217.1-254, 10.0.0.0/24, 10.0.1.5 (nhiều mục cách nhau bằng dấu phẩy)</translation>
+    </message>
+    <message>
+        <source>Discover</source>
+        <translation>Dò máy</translation>
+    </message>
+    <message>
+        <source>Computer name</source>
+        <translation>Tên máy</translation>
+    </message>
+    <message>
+        <source>IP address</source>
+        <translation>Địa chỉ IP</translation>
+    </message>
+    <message>
+        <source>Room (computer)</source>
+        <translation>Phòng (khai báo trên máy)</translation>
+    </message>
+    <message>
+        <source>User</source>
+        <translation>Người dùng</translation>
+    </message>
+    <message>
+        <source>Status</source>
+        <translation>Trạng thái</translation>
+    </message>
+    <message>
+        <source>Also save the room on the student computers</source>
+        <translation>Đồng thời ghi tên phòng vào máy học sinh</translation>
+    </message>
+    <message>
+        <source>Add checked computers to room</source>
+        <translation>Thêm máy đã đánh dấu vào phòng</translation>
+    </message>
+    <message>
+        <source>Add checked computers to their own rooms</source>
+        <translation>Thêm máy đã đánh dấu theo phòng của từng máy</translation>
+    </message>
+    <message>
+        <source>Uses the room configured on each computer; missing rooms are created.</source>
+        <translation>Dùng tên phòng đã khai báo trên từng máy; phòng nào chưa có sẽ được tạo mới.</translation>
+    </message>
+    <message>
+        <source>Network range:</source>
+        <translation>Dải mạng:</translation>
+    </message>
+    <message>
+        <source>Only computers with ITLabControl and the same authentication key answer. Other computers (e.g. with Veyon) are shown as not accessible.</source>
+        <translation>Chỉ máy cài ITLabControl và cùng khoá xác thực mới trả lời. Các máy khác (ví dụ đang dùng Veyon) hiện là không truy cập được.</translation>
+    </message>
+    <message>
+        <source>Please enter a valid network range.</source>
+        <translation>Vui lòng nhập dải mạng hợp lệ.</translation>
+    </message>
+    <message>
+        <source>Searching %1 addresses...</source>
+        <translation>Đang tìm trên %1 địa chỉ...</translation>
+    </message>
+    <message>
+        <source>Querying %1 computers...</source>
+        <translation>Đang hỏi thông tin %1 máy...</translation>
+    </message>
+    <message>
+        <source>Connecting...</source>
+        <translation>Đang kết nối...</translation>
+    </message>
+    <message>
+        <source>Querying...</source>
+        <translation>Đang hỏi thông tin...</translation>
+    </message>
+    <message>
+        <source>Not accessible (other authentication key, e.g. Veyon)</source>
+        <translation>Không truy cập được (khác khoá xác thực, ví dụ Veyon)</translation>
+    </message>
+    <message>
+        <source>Access denied</source>
+        <translation>Truy cập bị từ chối</translation>
+    </message>
+    <message>
+        <source>No answer</source>
+        <translation>Không trả lời</translation>
+    </message>
+    <message>
+        <source>%1 computers with ITLabControl found.</source>
+        <translation>Tìm thấy %1 máy cài ITLabControl.</translation>
+    </message>
+    <message>
+        <source>%1 computers added. Click &quot;Save&quot; to apply.</source>
+        <translation>Đã thêm %1 máy. Bấm &quot;Lưu&quot; để áp dụng.</translation>
+    </message>
+    <message>
+        <source>%1 computers were skipped because no room is configured on them.</source>
+        <translation>Bỏ qua %1 máy vì chưa khai báo phòng trên máy.</translation>
+    </message>
+    <message>
+        <source>Ready</source>
+        <translation>Sẵn sàng</translation>
+    </message>
+    <message>
+        <source>Already in room &quot;%1&quot;</source>
+        <translation>Đã có trong phòng &quot;%1&quot;</translation>
+    </message>
+    <message>
+        <source>Room &quot;%1&quot; saved on computer %2.</source>
+        <translation>Đã ghi phòng &quot;%1&quot; vào máy %2.</translation>
+    </message>
+    <message>
+        <source>Rooms and computers saved.</source>
+        <translation>Đã lưu phòng và máy.</translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation>Lưu</translation>
+    </message>
+    <message>
+        <source>The rooms and computers could not be saved.</source>
+        <translation>Không lưu được phòng và máy.</translation>
+    </message>
+    <message>
+        <source>Could not save the room on computer %1 (not reachable).</source>
+        <translation>Không ghi được phòng vào máy %1 (không kết nối được).</translation>
+    </message>
+    <message>
+        <source>Saving room &quot;%1&quot; on computer %2...</source>
+        <translation>Đang ghi phòng &quot;%1&quot; vào máy %2...</translation>
+    </message>
+    <message>
+        <source>The ITLabControl service on this computer is not reachable. Please check that the service is running and this computer accepts connections from itself.</source>
+        <translation>Không kết nối được dịch vụ ITLabControl trên máy này. Vui lòng kiểm tra dịch vụ đang chạy và máy này cho phép kết nối tới chính nó.</translation>
+    </message>
+    <message>
+        <source>Saving...</source>
+        <translation>Đang lưu...</translation>
+    </message>
+    <message>
+        <source>The ITLabControl service on this computer did not answer.</source>
+        <translation>Dịch vụ ITLabControl trên máy này không trả lời.</translation>
+    </message>
+    <message>
+        <source>There are unsaved changes. Save them now?</source>
+        <translation>Có thay đổi chưa lưu. Lưu ngay?</translation>
     </message>
 </context>
 <context>
