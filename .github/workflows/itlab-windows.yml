@@ -35,7 +35,7 @@ jobs:
 
     steps:
       - name: Lấy mã nguồn
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           fetch-depth: 0
@@ -45,12 +45,25 @@ jobs:
         with:
           msystem: UCRT64
           update: true
-          install: git
-          pacboy: >-
-            toolchain:p cmake:p ninja:p
-            qt6-base:p qt6-tools:p qt6-translations:p qt6-httpserver:p
-            qca-qt6:p openssl:p lzo2:p libjpeg-turbo:p libpng:p zlib:p
-            openldap:p cyrus-sasl:p libvncserver:p nsis:p
+          install: >-
+            git
+            mingw-w64-ucrt-x86_64-toolchain
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-ninja
+            mingw-w64-ucrt-x86_64-qt6-base
+            mingw-w64-ucrt-x86_64-qt6-tools
+            mingw-w64-ucrt-x86_64-qt6-translations
+            mingw-w64-ucrt-x86_64-qt6-httpserver
+            mingw-w64-ucrt-x86_64-qca-qt6
+            mingw-w64-ucrt-x86_64-openssl
+            mingw-w64-ucrt-x86_64-lzo2
+            mingw-w64-ucrt-x86_64-libjpeg-turbo
+            mingw-w64-ucrt-x86_64-libpng
+            mingw-w64-ucrt-x86_64-zlib
+            mingw-w64-ucrt-x86_64-openldap
+            mingw-w64-ucrt-x86_64-cyrus-sasl
+            mingw-w64-ucrt-x86_64-libvncserver
+            mingw-w64-ucrt-x86_64-nsis
 
       - name: Build thư viện Interception
         run: |

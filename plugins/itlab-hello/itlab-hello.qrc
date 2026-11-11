@@ -1,0 +1,7 @@
+<!-- Tài nguyên (resource) nhúng vào trong file .dll.
+     Trong mã C++, file này được gọi bằng đường dẫn ":/itlab-hello/itlab-hello.png" -->
+<RCC>
+    <qresource prefix="/itlab-hello">
+        <file>itlab-hello.png</file>
+    </qresource>
+</RCC>
