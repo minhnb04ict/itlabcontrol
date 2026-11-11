@@ -2323,6 +2323,37 @@ Make sure that the names of the keys belonging to each other are identical on al
     </message>
 </context>
 <context>
+    <name>ItlabClearDesktopFeaturePlugin</name>
+    <message>
+        <source>Clear desktop</source>
+        <translation>Dọn màn hình</translation>
+    </message>
+    <message>
+        <source>Click this button to minimize all windows on the selected computers. Use the menu of this button to close all applications instead.</source>
+        <translation>Bấm nút này để thu nhỏ tất cả cửa sổ trên các máy đã chọn. Dùng menu của nút này nếu muốn đóng tất cả ứng dụng.</translation>
+    </message>
+    <message>
+        <source>Minimize all windows</source>
+        <translation>Thu nhỏ tất cả cửa sổ</translation>
+    </message>
+    <message>
+        <source>Close all applications</source>
+        <translation>Đóng tất cả ứng dụng</translation>
+    </message>
+    <message>
+        <source>All applications on the selected computers will be closed immediately. Unsaved work of the students will be lost!&lt;br&gt;&lt;br&gt;Do you really want to continue?</source>
+        <translation>Tất cả ứng dụng trên các máy đã chọn sẽ bị đóng ngay lập tức. Bài làm chưa lưu của học sinh sẽ bị mất!&lt;br&gt;&lt;br&gt;Bạn có chắc chắn muốn tiếp tục?</translation>
+    </message>
+    <message>
+        <source>Applications are never closed on this computer (the teacher computer).</source>
+        <translation>Không bao giờ đóng ứng dụng trên chính máy này (máy giáo viên).</translation>
+    </message>
+    <message>
+        <source>Clear the desktop of student computers by minimizing or closing all applications</source>
+        <translation>Dọn màn hình máy học sinh bằng cách thu nhỏ hoặc đóng tất cả ứng dụng</translation>
+    </message>
+</context>
+<context>
     <name>ItlabHelloFeaturePlugin</name>
     <message>
         <source>Say hello</source>
@@ -3298,6 +3329,10 @@ Make sure that the names of the keys belonging to each other are identical on al
         <translation>Chỉ hiện máy đang có người đăng nhập</translation>
     </message>
     <message>
+        <source>ITLabControl Configurator %1</source>
+        <translation>ITLabControl - Công cụ cấu hình %1</translation>
+    </message>
+    <message>
         <source>Load settings from file</source>
         <translation>Nạp thiết lập từ file</translation>
     </message>
@@ -3332,6 +3367,10 @@ Make sure that the names of the keys belonging to each other are identical on al
     <message>
         <source>The local configuration backend reported that the configuration is not writable! Please run Veyon Configurator with higher privileges.</source>
         <translation>Bộ lưu cấu hình cục bộ báo không ghi được cấu hình! Vui lòng chạy ITLabControl Configurator với quyền cao hơn.</translation>
+    </message>
+    <message>
+        <source>ITLabControl Teacher Console</source>
+        <translation>ITLabControl - Bảng điều khiển giáo viên</translation>
     </message>
     <message>
         <source>Language</source>

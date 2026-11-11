@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/itlab-cleardesktop">
+        <file>itlab-cleardesktop.png</file>
+    </qresource>
+</RCC>

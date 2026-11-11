@@ -56,7 +56,7 @@ MainWindow::MainWindow( QWidget* parent ) :
 	ui->setupUi( this );
 
 	// ITLabControl branding
-	setWindowTitle(QStringLiteral("%1 %2").arg(QStringLiteral(ITLAB_CONFIGURATOR_NAME), VeyonCore::versionString()));
+	setWindowTitle(tr("ITLabControl Configurator %1").arg(VeyonCore::versionString()));
 
 	loadConfigurationPagePlugins();
 

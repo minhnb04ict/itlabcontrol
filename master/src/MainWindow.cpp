@@ -69,7 +69,8 @@ MainWindow::MainWindow( VeyonMaster &masterCore, QWidget* parent ) :
 	ui->setupUi( this );
 
 	// ITLabControl branding
-	setWindowTitle(QStringLiteral(ITLAB_MASTER_NAME));
+	// (translatable, therefore not taken from ITLAB_MASTER_NAME)
+	setWindowTitle(tr("ITLabControl Teacher Console"));
 
 	restoreState( QByteArray::fromBase64( m_master.userConfig().windowState().toUtf8() ) );
 	restoreGeometry( QByteArray::fromBase64( m_master.userConfig().windowGeometry().toUtf8() ) );
