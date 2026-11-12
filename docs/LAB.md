@@ -159,7 +159,10 @@ Bật máy dùng gói Wake-on-LAN (WOL) gửi tới địa chỉ MAC của máy 
 4. **BIOS/UEFI máy HS** (phần mềm không chỉnh được, IT làm 1 lần mỗi máy): bật *Wake on LAN* / *Power On by PCI-E* /
    *Resume by LAN*; tắt *ErP* / *Deep Sleep* / *EuP 2013*.
 5. **Laptop:** thường chỉ bật được khi cắm sạc và cắm **dây mạng**; qua Wi-Fi không bật được.
-6. Thử từ dòng lệnh trên máy GV (cùng mạng con với máy HS): `veyon-cli power on 1C:69:7A:93:4A:CF` (thay bằng MAC của máy HS).
+6. **Script kiểm tra:** chạy `KIEM-TRA-BAT-MAY.cmd` (Run as administrator) trên máy HS khi máy đang bật. Script ghi ra file
+   `KIEM-TRA-BAT-MAY-<tên máy>.txt` cho biết card mạng đang dùng (card trong máy / **card USB, dock** / Wi-Fi), trạng thái
+   Wake-on-LAN, Fast startup, pin, và hỏi có bật luôn các thiết lập không. Card USB/dock thường không bật được máy sau khi Shut down.
+7. Thử từ dòng lệnh trên máy GV (cùng mạng con với máy HS): `veyon-cli power on 1C:69:7A:93:4A:CF` (thay bằng MAC của máy HS).
 
 **Khi có lỗi:** ghi lại giờ xảy ra, gửi kèm các file log trong `C:\Windows\Temp\ITLabControl*.log` (máy HS)
 và `%TEMP%\ITLabControl*.log` (máy GV). Cách bật log chi tiết: `docs/LEARNING.md` mục 7.1.
