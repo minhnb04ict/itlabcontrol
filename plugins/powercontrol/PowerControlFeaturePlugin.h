@@ -41,7 +41,9 @@ class PowerControlFeaturePlugin : public QObject,
 public:
 	enum class Argument
 	{
-		ShutdownTimeout
+		ShutdownTimeout,
+		// ITLabControl: MAC addresses a powered-on computer broadcasts WOL packets for in its own network
+		MacAddresses
 	};
 	Q_ENUM(Argument)
 
@@ -115,6 +117,7 @@ protected:
 private:
 	bool confirmFeatureExecution( const Feature& feature, bool all, QWidget* parent );
 	static bool broadcastWOLPacket( QString macAddress );
+	void relayWakeOnLan( VeyonMasterInterface& master, const ComputerControlInterfaceList& computerControlInterfaces );
 
 	void confirmShutdown();
 	void displayShutdownTimeout( int shutdownTimeout );

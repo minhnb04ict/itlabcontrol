@@ -142,9 +142,24 @@ Ghi **Đạt / Không đạt** và ghi chú (máy nào, hiện tượng gì). M�
 | 15 | Tự dò máy | Quản lý phòng → Tự dò | Máy HS tự xếp đúng phòng | |
 | 16 | Đổi tên máy | Đổi tên hiển thị 1 máy | Tên mới hiện ngay, giữ sau khi mở lại Console | |
 | 17 | Tắt / Khởi động lại | Chọn 2 máy → Khởi động lại | Hai máy khởi động lại | |
-| 18 | Bật máy (WOL) | Tắt 1 máy, bấm Bật máy | Máy bật lên (cần bật WOL trong BIOS) | |
+| 18 | Bật máy (WOL) | Tắt 1 máy (Shut down), chờ 1 phút, bấm Bật máy | Máy bật lên trong ~30 giây (xem mục 2.6 nếu không bật) | |
 | 19 | Song song với Veyon | Máy có cài Veyon gốc | Veyon và ITLab cùng chạy, không ảnh hưởng nhau | |
 | 20 | Hiệu năng | Console mở 30 phút với 31 máy | Không đứng, CPU máy GV ổn định | |
+
+### 2.6 "Bật máy" không hoạt động
+
+Bật máy dùng gói Wake-on-LAN (WOL) gửi tới địa chỉ MAC của máy HS. Gói này là gói *broadcast*, **không đi qua router**.
+
+1. **Máy GV và máy HS phải cùng mạng con**, hoặc trong phòng phải còn **ít nhất một máy HS đang bật**. Từ bản 2026-11-12, Console
+   nhờ tối đa 2 máy đang bật của cùng phòng phát gói bật máy ngay trong mạng của phòng.
+   Kiểm tra mạng con: `ipconfig` trên máy GV và máy HS, ba số đầu của IPv4 (với mặt nạ 255.255.255.0) phải giống nhau.
+2. **Máy HS có địa chỉ MAC** trong Quản lý phòng (tự có khi thêm máy bằng "Tự dò máy").
+3. **Windows trên máy HS:** script cài máy HS đã tự bật *Wake on Magic Packet*, *Shutdown Wake-On-Lan* cho card mạng và
+   **tắt Fast startup** (Fast startup làm card mạng không nhận gói bật máy sau khi Shut down). Máy cài bằng bản cũ hơn: chạy lại script.
+4. **BIOS/UEFI máy HS** (phần mềm không chỉnh được, IT làm 1 lần mỗi máy): bật *Wake on LAN* / *Power On by PCI-E* /
+   *Resume by LAN*; tắt *ErP* / *Deep Sleep* / *EuP 2013*.
+5. **Laptop:** thường chỉ bật được khi cắm sạc và cắm **dây mạng**; qua Wi-Fi không bật được.
+6. Thử từ dòng lệnh trên máy GV (cùng mạng con với máy HS): `veyon-cli power on 1C:69:7A:93:4A:CF` (thay bằng MAC của máy HS).
 
 **Khi có lỗi:** ghi lại giờ xảy ra, gửi kèm các file log trong `C:\Windows\Temp\ITLabControl*.log` (máy HS)
 và `%TEMP%\ITLabControl*.log` (máy GV). Cách bật log chi tiết: `docs/LEARNING.md` mục 7.1.

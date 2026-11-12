@@ -28,6 +28,7 @@
 #include <QNetworkInterface>
 #include <QProgressBar>
 #include <QProgressDialog>
+#include <QSet>
 #include <QUdpSocket>
 
 #include "Computer.h"
@@ -184,6 +185,7 @@ bool PowerControlFeaturePlugin::startFeature( VeyonMasterInterface& master, cons
 {
 	if( feature == m_powerOnFeature )
 	{
+		relayWakeOnLan( master, computerControlInterfaces );
 		return controlFeature( feature.uid(), Operation::Start, {}, computerControlInterfaces );
 	}
 
@@ -249,12 +251,83 @@ bool PowerControlFeaturePlugin::handleFeatureMessage( VeyonServerInterface& serv
 	{
 		VeyonCore::platform().coreFunctions().reboot();
 	}
+	else if( message.featureUid() == m_powerOnFeature.uid() && message.hasArgument( Argument::MacAddresses ) )
+	{
+		// ITLabControl: wake other computers of this network on behalf of the teacher computer
+		const auto macAddresses = message.argument( Argument::MacAddresses ).toStringList();
+		for( const auto& macAddress : macAddresses )
+		{
+			broadcastWOLPacket( macAddress );
+		}
+	}
 	else
 	{
 		return false;
 	}
 
 	return true;
+}
+
+
+
+void PowerControlFeaturePlugin::relayWakeOnLan( VeyonMasterInterface& master,
+												const ComputerControlInterfaceList& computerControlInterfaces )
+{
+	// Wake-on-LAN packets are broadcasts and do not cross routers. If the teacher computer is in
+	// another network, powered-on computers of the same rooms broadcast the packets in their network.
+	static constexpr int RelaysPerRoom = 2;
+
+	const auto directory = VeyonCore::networkObjectDirectoryManager().configuredDirectory();
+
+	QStringList macAddresses;
+	QSet<QString> rooms;
+	for( const auto& controlInterface : computerControlInterfaces )
+	{
+		// computers which are connected are already powered on
+		if( controlInterface->state() == ComputerControlInterface::State::Connected )
+		{
+			continue;
+		}
+
+		auto macAddress = controlInterface->computer().macAddress();
+		if( macAddress.isEmpty() && directory )
+		{
+			macAddress = directory->queryObjectAttribute( controlInterface->computer().networkObjectUid(),
+														  NetworkObject::Attribute::MacAddress ).toString();
+		}
+		if( macAddress.isEmpty() == false )
+		{
+			macAddresses.append( macAddress );
+			rooms.insert( controlInterface->computer().location() );
+		}
+	}
+
+	if( macAddresses.isEmpty() )
+	{
+		return;
+	}
+
+	QMap<QString, int> relaysPerRoom;
+	ComputerControlInterfaceList relays;
+	for( const auto& controlInterface : master.allComputerControlInterfaces() )
+	{
+		const auto room = controlInterface->computer().location();
+		if( controlInterface->state() == ComputerControlInterface::State::Connected &&
+			rooms.contains( room ) &&
+			relaysPerRoom.value( room ) < RelaysPerRoom )
+		{
+			relays.append( controlInterface );
+			relaysPerRoom[room] += 1;
+		}
+	}
+
+	if( relays.isEmpty() == false )
+	{
+		vDebug() << "relaying WOL packets for" << macAddresses << "via" << relays.size() << "computers";
+		sendFeatureMessage( FeatureMessage{ m_powerOnFeature.uid(), FeatureMessage::Command::Default }
+								.addArgument( Argument::MacAddresses, macAddresses ),
+							relays );
+	}
 }
 
 

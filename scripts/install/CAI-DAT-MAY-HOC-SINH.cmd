@@ -85,6 +85,10 @@ if exist "%~dp0man-hinh-khoa.png" (
   copy /y "%~dp0man-hinh-khoa.png" "%ProgramData%\ITLabControl\lock-screen.png" >nul
 )
 
+echo        Bat Wake-on-LAN cho card mang va tat Fast startup (de "Bat may" tu xa hoat dong)...
+powershell -NoProfile -ExecutionPolicy Bypass -Command "Get-NetAdapter -Physical | ForEach-Object { $n = $_.Name; Set-NetAdapterPowerManagement -Name $n -WakeOnMagicPacket Enabled -ErrorAction SilentlyContinue; foreach ($k in '*WakeOnMagicPacket','S5WakeOnLan','EnablePME') { Set-NetAdapterAdvancedProperty -Name $n -RegistryKeyword $k -RegistryValue 1 -NoRestart -ErrorAction SilentlyContinue }; powercfg -deviceenablewake $_.InterfaceDescription 2>$null | Out-Null }"
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Power" /v HiberbootEnabled /t REG_DWORD /d 0 /f >nul
+
 echo [5/5] Khoi dong lai dich vu...
 veyon-cli.exe service restart
 veyon-cli.exe service status
