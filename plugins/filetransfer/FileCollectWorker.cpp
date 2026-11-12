@@ -22,8 +22,11 @@
  *
  */
 
+#include <QDateTime>
 #include <QDir>
 #include <QFileInfo>
+#include <QSet>
+#include <QStandardPaths>
 
 #include "FileCollectWorker.h"
 #include "FileTransferPlugin.h"
@@ -110,6 +113,122 @@ FileCollectWorker::FileCollectWorker(FileTransferPlugin* plugin,
 
 FileCollectWorker::~FileCollectWorker()
 {
+}
+
+
+
+QVariantList FileCollectWorker::fileSizes() const
+{
+	QVariantList sizes;
+	sizes.reserve(m_files.size());
+	for (const auto& file : m_files)
+	{
+		sizes.append(QFileInfo(m_sourceDirectory + file).size());
+	}
+	return sizes;
+}
+
+
+
+QVariantList FileCollectWorker::fileModificationTimes() const
+{
+	QVariantList times;
+	times.reserve(m_files.size());
+	for (const auto& file : m_files)
+	{
+		times.append(QFileInfo(m_sourceDirectory + file).lastModified().toMSecsSinceEpoch());
+	}
+	return times;
+}
+
+
+
+void FileCollectWorker::selectFiles(const QStringList& files)
+{
+	if (m_currentFileIndex >= 0)
+	{
+		vWarning() << "can't change file selection after transfers have started";
+		return;
+	}
+
+	const QSet<QString> selected(files.begin(), files.end());
+	QStringList remainingFiles;
+	for (const auto& file : std::as_const(m_files))
+	{
+		if (selected.contains(file))
+		{
+			remainingFiles.append(file);
+		}
+	}
+	m_files = remainingFiles;
+}
+
+
+
+QVariantList FileCollectWorker::listDirectory(const QString& path, QString* errorString)
+{
+	QVariantList entries;
+
+	const auto makeEntry = [](const QString& name, const QString& entryPath, bool isDir, qint64 size, qint64 modified) {
+		return QVariantMap{
+			{ QStringLiteral("name"), name },
+			{ QStringLiteral("path"), QDir::toNativeSeparators(entryPath) },
+			{ QStringLiteral("dir"), isDir },
+			{ QStringLiteral("size"), size },
+			{ QStringLiteral("modified"), modified },
+		};
+	};
+
+	if (path.isEmpty())
+	{
+		// starting points: personal folders of the logged on user, then all drives
+		const QList<QPair<QString, QStandardPaths::StandardLocation>> userFolders{
+			{ tr("Documents"), QStandardPaths::DocumentsLocation },
+			{ tr("Desktop"), QStandardPaths::DesktopLocation },
+			{ tr("Downloads"), QStandardPaths::DownloadLocation },
+			{ tr("User folder"), QStandardPaths::HomeLocation },
+		};
+		for (const auto& folder : userFolders)
+		{
+			const auto folderPath = QStandardPaths::writableLocation(folder.second);
+			if (folderPath.isEmpty() == false && QDir(folderPath).exists())
+			{
+				entries.append(makeEntry(folder.first, folderPath, true, 0, 0));
+			}
+		}
+
+		const auto drives = QDir::drives();
+		for (const auto& drive : drives)
+		{
+			entries.append(makeEntry(QDir::toNativeSeparators(drive.absoluteFilePath()), drive.absoluteFilePath(), true, 0, 0));
+		}
+
+		return entries;
+	}
+
+	const QDir dir(QDir::fromNativeSeparators(VeyonCore::filesystem().expandPath(path)));
+	if (dir.exists() == false)
+	{
+		if (errorString)
+		{
+			*errorString = tr("The folder %1 does not exist.").arg(path);
+		}
+		return entries;
+	}
+
+	const auto infos = dir.entryInfoList(QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot | QDir::Readable,
+										 QDir::DirsFirst | QDir::Name | QDir::IgnoreCase);
+	for (const auto& info : infos)
+	{
+		if (info.isHidden())
+		{
+			continue;
+		}
+		entries.append(makeEntry(info.fileName(), info.absoluteFilePath(), info.isDir(),
+								 info.isDir() ? 0 : info.size(), info.lastModified().toMSecsSinceEpoch()));
+	}
+
+	return entries;
 }
 
 
@@ -237,7 +356,9 @@ QStringList FileCollectWorker::filterFilesByPattern(const QStringList& files, co
 	std::transform(globPatterns.begin(), globPatterns.end(),
 				   std::back_inserter(regExes),
 				   [](const QString& glob) {
-		return QRegularExpression(QString(glob).replace(u'*', QStringLiteral(".*")),
+		// ITLabControl: match whole file names ("*.doc" must not match "x.docx", "." is literal)
+		return QRegularExpression(QRegularExpression::wildcardToRegularExpression(
+									  glob, QRegularExpression::NonPathWildcardConversion),
 								  QRegularExpression::CaseInsensitiveOption);
 	});
 

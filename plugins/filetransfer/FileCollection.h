@@ -32,7 +32,9 @@ struct FileCollection {
 		Initializing,
 		ReadyForNextFileTransfer,
 		FileTransferRunning,
-		Finished
+		Finished,
+		// ITLabControl: file list received, teacher chooses the files before collecting
+		Previewed
 	};
 
 	using Id = QUuid;
@@ -44,6 +46,10 @@ struct FileCollection {
 
 	QString name = {};
 	QStringList files = {};
+	// ITLabControl: details for the preview (same order as files; may be empty with older clients)
+	QList<qint64> fileSizes = {};
+	QList<qint64> fileModificationTimes = {}; // ms since epoch
+	QList<bool> fileChecked = {};
 	int processedFilesCount = 0;
 
 	TransferId currentTransferId = {};
@@ -53,6 +59,68 @@ struct FileCollection {
 	bool operator!=(const FileCollection& other) const
 	{
 		return other.id != id;
+	}
+
+	bool isFileChecked(int index) const
+	{
+		return fileChecked.value(index, true);
+	}
+
+	QStringList checkedFiles() const
+	{
+		QStringList result;
+		for (int i = 0; i < files.size(); ++i)
+		{
+			if (isFileChecked(i))
+			{
+				result.append(files[i]);
+			}
+		}
+		return result;
+	}
+
+	int checkedFilesCount() const
+	{
+		int count = 0;
+		for (int i = 0; i < files.size(); ++i)
+		{
+			count += isFileChecked(i) ? 1 : 0;
+		}
+		return count;
+	}
+
+	qint64 checkedFilesSize() const
+	{
+		qint64 size = 0;
+		for (int i = 0; i < files.size(); ++i)
+		{
+			if (isFileChecked(i))
+			{
+				size += fileSizes.value(i, 0);
+			}
+		}
+		return size;
+	}
+
+	// keeps only the given files (in their current order) together with their details
+	void restrictToFiles(const QStringList& selectedFiles)
+	{
+		QStringList newFiles;
+		QList<qint64> newSizes;
+		QList<qint64> newTimes;
+		for (int i = 0; i < files.size(); ++i)
+		{
+			if (selectedFiles.contains(files[i]))
+			{
+				newFiles.append(files[i]);
+				newSizes.append(fileSizes.value(i, 0));
+				newTimes.append(fileModificationTimes.value(i, 0));
+			}
+		}
+		files = newFiles;
+		fileSizes = newSizes;
+		fileModificationTimes = newTimes;
+		fileChecked.clear();
 	}
 
 	int currentFileProgress() const

@@ -26,6 +26,7 @@
 #include "PlatformInputDeviceFunctions.h"
 
 #include <QApplication>
+#include <QFontMetrics>
 #include <QPainter>
 #include <QScreen>
 #include <QWindow>
@@ -95,6 +96,14 @@ LockWidget::~LockWidget()
 
 
 
+void LockWidget::setMessage( const QString& message )
+{
+	m_message = message;
+	update();
+}
+
+
+
 void LockWidget::paintEvent( QPaintEvent* event )
 {
 	Q_UNUSED(event);
@@ -107,11 +116,36 @@ void LockWidget::paintEvent( QPaintEvent* event )
 		break;
 
 	case BackgroundPixmap:
+	{
 		p.fillRect( rect(), QColor( 64, 64, 64 ) );
-		p.drawPixmap( ( width() - m_background.width() ) / 2,
-					  ( height() - m_background.height() ) / 2,
-					  m_background );
+
+		// ITLabControl: scale large images (e.g. a school logo) to at most half of the screen
+		// and show an optional message below
+		auto image = m_background;
+		const QSize maximumSize( width() / 2, height() / 2 );
+		if( image.width() > maximumSize.width() || image.height() > maximumSize.height() )
+		{
+			image = image.scaled( maximumSize, Qt::KeepAspectRatio, Qt::SmoothTransformation );
+		}
+
+		QFont font = p.font();
+		font.setPixelSize( qMax( 20, height() / 30 ) );
+		font.setBold( true );
+		const QFontMetrics metrics( font );
+		const auto textHeight = m_message.isEmpty() ? 0 : metrics.height() * 2;
+
+		const auto imageTop = ( height() - image.height() - textHeight ) / 2;
+		p.drawPixmap( ( width() - image.width() ) / 2, imageTop, image );
+
+		if( m_message.isEmpty() == false )
+		{
+			p.setFont( font );
+			p.setPen( QColor( 235, 235, 235 ) );
+			p.drawText( QRect( 0, imageTop + image.height() + metrics.height() / 2, width(), metrics.height() * 3 / 2 ),
+						Qt::AlignHCenter | Qt::AlignTop, m_message );
+		}
 		break;
+	}
 
 	default:
 		break;

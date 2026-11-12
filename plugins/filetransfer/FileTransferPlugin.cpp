@@ -169,7 +169,16 @@ bool FileTransferPlugin::handleFeatureMessage(ComputerControlInterface::Pointer 
 		case FeatureCommand::InitFileCollection:
 			m_fileCollectController->initCollection(computerControlInterface,
 													collectionId,
-													message.argument(Argument::Files).toStringList());
+													message.argument(Argument::Files).toStringList(),
+													message.argument(Argument::FileSizes).toList(),
+													message.argument(Argument::FileModificationTimes).toList());
+			break;
+		case FeatureCommand::ListDirectory:
+			Q_EMIT m_fileCollectController->directoryListingReceived(computerControlInterface,
+																	 collectionId,
+																	 message.argument(Argument::DirectoryPath).toString(),
+																	 message.argument(Argument::DirectoryEntries).toList(),
+																	 message.argument(Argument::ErrorString).toString());
 			break;
 		case FeatureCommand::StartFileTransfer:
 			m_fileCollectController->startFileTransfer(computerControlInterface,
@@ -417,6 +426,39 @@ void FileTransferPlugin::sendStartFileTransferMessage(const FileCollection& coll
 
 
 
+void FileTransferPlugin::sendSelectFilesMessage(const FileCollection& collection,
+												ComputerControlInterface::Pointer computerControlInterface)
+{
+	computerControlInterface->sendFeatureMessage(
+				FeatureMessage(m_collectFilesFeature.uid(), FeatureCommand::SelectFiles)
+				.addArgument(Argument::CollectionId, collection.id)
+				.addArgument(Argument::Files, collection.files));
+}
+
+
+
+void FileTransferPlugin::sendListDirectoryMessage(const QUuid& browseId, const QString& path,
+												  ComputerControlInterface::Pointer computerControlInterface)
+{
+	// the browse ID is passed as collection ID so that the server routes the reply back to this master
+	computerControlInterface->sendFeatureMessage(
+				FeatureMessage(m_collectFilesFeature.uid(), FeatureCommand::ListDirectory)
+				.addArgument(Argument::CollectionId, browseId)
+				.addArgument(Argument::DirectoryPath, path));
+}
+
+
+
+void FileTransferPlugin::sendFinishBrowsingMessage(const QUuid& browseId,
+												   ComputerControlInterface::Pointer computerControlInterface)
+{
+	computerControlInterface->sendFeatureMessage(
+				FeatureMessage(m_collectFilesFeature.uid(), FeatureCommand::FinishFileCollection)
+				.addArgument(Argument::CollectionId, browseId));
+}
+
+
+
 void FileTransferPlugin::sendContinueFileTransferMessage(const FileCollection& collection,
 														 ComputerControlInterface::Pointer computerControlInterface)
 {
@@ -619,8 +661,33 @@ bool FileTransferPlugin::handleCollectFilesMessage(VeyonWorkerInterface& worker,
 			fileCollectWorker = new FileCollectWorker(this, sourceDir, filePattern, collectRecursively);
 			m_fileCollectWorkers[collectionId] = fileCollectWorker;
 		}
-		worker.sendFeatureMessageReply(reply.addArgument(Argument::Files, fileCollectWorker->files()));
+		worker.sendFeatureMessageReply(reply.addArgument(Argument::Files, fileCollectWorker->files())
+									   .addArgument(Argument::FileSizes, fileCollectWorker->fileSizes())
+									   .addArgument(Argument::FileModificationTimes, fileCollectWorker->fileModificationTimes()));
 		return true;
+
+	case FeatureCommand::SelectFiles:
+		if (fileCollectWorker)
+		{
+			fileCollectWorker->selectFiles(message.argument(Argument::Files).toStringList());
+			return true;
+		}
+		break;
+
+	case FeatureCommand::ListDirectory:
+	{
+		const auto path = message.argument(Argument::DirectoryPath).toString();
+		QString errorString;
+		const auto entries = FileCollectWorker::listDirectory(path, &errorString);
+		reply.addArgument(Argument::DirectoryPath, path)
+				.addArgument(Argument::DirectoryEntries, entries);
+		if (errorString.isEmpty() == false)
+		{
+			reply.addArgument(Argument::ErrorString, errorString);
+		}
+		worker.sendFeatureMessageReply(reply);
+		return true;
+	}
 
 	case FeatureCommand::StartFileTransfer:
 		if (fileCollectWorker)
@@ -689,9 +756,9 @@ bool FileTransferPlugin::handleCollectFilesMessage(VeyonWorkerInterface& worker,
 		{
 			m_fileCollectWorkers.remove(collectionId);
 			fileCollectWorker->deleteLater();
-			return true;
 		}
-		break;
+		// ITLabControl: also sent after browsing folders, where no collect worker exists
+		return true;
 
 	default:
 		break;

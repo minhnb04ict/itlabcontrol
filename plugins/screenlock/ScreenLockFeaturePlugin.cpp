@@ -27,7 +27,9 @@
 #include "ScreenLockFeaturePlugin.h"
 #include "ComputerControlInterface.h"
 #include "FeatureWorkerManager.h"
+#include "Filesystem.h"
 #include "LockWidget.h"
+#include "VeyonConfiguration.h"
 #include "PlatformCoreFunctions.h"
 #include "PlatformInputDeviceFunctions.h"
 #include "PlatformSessionFunctions.h"
@@ -167,8 +169,20 @@ bool ScreenLockFeaturePlugin::handleFeatureMessage( VeyonWorkerInterface& worker
 					mode = LockWidget::DesktopVisible;
 				}
 
-				m_lockWidget = new LockWidget( mode,
-											   QPixmap( QStringLiteral(":/screenlock/locked-screen-background.png" ) ) );
+				// ITLabControl: optional school logo (set in the Configurator, page "Room") and message
+				QPixmap background( VeyonCore::filesystem().expandPath( QStringLiteral("%GLOBALAPPDATA%/lock-screen.png") ) );
+				if( background.isNull() )
+				{
+					background = QPixmap( QStringLiteral(":/screenlock/locked-screen-background.png" ) );
+				}
+
+				m_lockWidget = new LockWidget( mode, background );
+
+				if( mode == LockWidget::BackgroundPixmap )
+				{
+					m_lockWidget->setMessage( VeyonCore::config().value( QStringLiteral("LockScreenText"), QStringLiteral("ITLab"),
+																		 tr( "This computer is locked by the teacher" ) ).toString() );
+				}
 			}
 			return true;
 

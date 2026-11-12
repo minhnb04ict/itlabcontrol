@@ -43,11 +43,15 @@ public:
 	explicit LockWidget( Mode mode, const QPixmap& background = QPixmap(), QWidget* parent = nullptr );
 	~LockWidget() override;
 
+	// ITLabControl: text shown below the background image (e.g. "Locked by the teacher")
+	void setMessage( const QString& message );
+
 
 private:
 	void paintEvent( QPaintEvent * ) override;
 
 	QPixmap m_background;
 	Mode m_mode;
+	QString m_message;
 
 } ;

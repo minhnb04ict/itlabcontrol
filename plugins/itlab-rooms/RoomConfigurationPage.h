@@ -15,6 +15,7 @@
 
 #include "ConfigurationPage.h"
 
+class QLabel;
 class QLineEdit;
 
 // Cho phép sửa tên phòng của máy này (lưu ở ITLab/Room) ngay trên máy học sinh
@@ -29,7 +30,28 @@ public:
 	void connectWidgetsToProperties() override;
 	void applyConfiguration() override;
 
+	// "Phòng 201" -> "phong-201" (authentication key names only allow [A-Za-z0-9_-])
+	static QString keyNameForRoom( const QString& room );
+
 private:
+	// ITLabControl: one authentication key pair per room, so that the teacher computer of
+	// room A can not control the student computers of room B
+	void updateKeyStatus();
+	void createRoomKey();
+	void restrictToKeys();
+
+	static QStringList keyNames( bool privateKeys );
+	bool runCli( const QStringList& arguments, QString* output = nullptr );
+
+	// ITLabControl: school logo and message on the locked screen
+	static QString lockScreenImagePath();
+	void updateLockScreenPreview();
+	void chooseLockScreenImage();
+	void resetLockScreenImage();
+
 	QLineEdit* m_roomEdit;
+	QLabel* m_keyStatusLabel;
+	QLabel* m_lockScreenPreview;
+	QLineEdit* m_lockScreenTextEdit;
 
 };

@@ -30,6 +30,7 @@ namespace Ui {
 class FileCollectDialog;
 }
 
+class QPushButton;
 class FileCollectController;
 class FileCollectTreeModel;
 
@@ -44,6 +45,13 @@ private:
 	void start();
 	void openOutputDirectory();
 
+	// ITLabControl
+	void applySettings();
+	void preview();
+	void browseSource();
+	void handleSettingsChanged(bool sourceEditedByUser);
+	void updateSelectionInfo();
+
 	void accept() override;
 	void reject() override;
 
@@ -51,5 +59,7 @@ private:
 
 	FileCollectController* m_controller;
 	FileCollectTreeModel* m_model;
+	QPushButton* m_previewButton{nullptr};
+	bool m_settingSourceFromBrowser{false};
 
 };

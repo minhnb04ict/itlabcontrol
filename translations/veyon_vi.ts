@@ -1898,6 +1898,14 @@ Make sure that the names of the keys belonging to each other are identical on al
         <translation>Chọn loại file hoặc nhập mẫu tên file, ví dụ *.docx;*.pdf</translation>
     </message>
     <message>
+        <source>Browse...</source>
+        <translation>Duyệt...</translation>
+    </message>
+    <message>
+        <source>Browse the folders of the selected student computer and choose a folder or single files</source>
+        <translation>Duyệt thư mục của máy học sinh đang chọn để chọn một thư mục hoặc từng file</translation>
+    </message>
+    <message>
         <source>Select a folder or enter a path relative to the user profile (e.g. Documents/Lop10) or an absolute path (e.g. C:\BaiLam)</source>
         <translation>Chọn thư mục hoặc nhập đường dẫn tính từ thư mục người dùng (ví dụ Documents/Lop10) hoặc đường dẫn đầy đủ (ví dụ C:\BaiLam)</translation>
     </message>
@@ -1974,12 +1982,28 @@ Make sure that the names of the keys belonging to each other are identical on al
         <translation>File văn bản (*.txt)</translation>
     </message>
     <message>
+        <source>Preview files</source>
+        <translation>Xem trước</translation>
+    </message>
+    <message>
+        <source>Show the files which would be collected from each computer. Untick the files you do not need, then click &quot;Start&quot;.</source>
+        <translation>Hiện danh sách file sẽ thu trên từng máy. Bỏ đánh dấu các file không cần, rồi bấm &quot;Bắt đầu&quot;.</translation>
+    </message>
+    <message>
         <source>Select destination directory</source>
         <translation>Chọn thư mục lưu</translation>
     </message>
     <message>
         <source>Open output directory</source>
         <translation>Mở thư mục kết quả</translation>
+    </message>
+    <message>
+        <source>No files selected</source>
+        <translation>Chưa chọn file nào</translation>
+    </message>
+    <message>
+        <source>No file is ticked in the preview. Tick the files to collect or change the settings.</source>
+        <translation>Không có file nào được đánh dấu trong danh sách xem trước. Hãy đánh dấu file cần thu hoặc đổi thiết lập.</translation>
     </message>
     <message>
         <source>Enter collection name</source>
@@ -1997,6 +2021,22 @@ Make sure that the names of the keys belonging to each other are identical on al
         <source>The output directory &quot;%1&quot; does not exist and could not be created. Please check the configuration and the file permissions for the configured destination directory.</source>
         <translation>Thư mục kết quả &quot;%1&quot; không tồn tại và không tạo được. Vui lòng kiểm tra cấu hình và quyền truy cập của thư mục lưu đã cấu hình.</translation>
     </message>
+    <message>
+        <source>Only the %1 chosen files will be collected: %2</source>
+        <translation>Chỉ thu %1 file đã chọn: %2</translation>
+    </message>
+    <message>
+        <source>Preview: %1 of %2 files ticked (%3) on %4 computers. Untick the files you do not need, then click &quot;Start&quot;.</source>
+        <translation>Xem trước: đã đánh dấu %1/%2 file (%3) trên %4 máy. Bỏ đánh dấu các file không cần, rồi bấm &quot;Bắt đầu&quot;.</translation>
+    </message>
+    <message>
+        <source>Waiting for the file lists of the other computers...</source>
+        <translation>Đang chờ danh sách file của các máy còn lại...</translation>
+    </message>
+    <message>
+        <source>Tip: click &quot;Preview files&quot; to see and choose the files before collecting them.</source>
+        <translation>Mẹo: bấm &quot;Xem trước&quot; để xem và chọn file trước khi thu.</translation>
+    </message>
 </context>
 <context>
     <name>FileCollectTreeModel</name>
@@ -2011,6 +2051,41 @@ Make sure that the names of the keys belonging to each other are identical on al
     <message>
         <source>Number of files</source>
         <translation>Số file</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation>Dung lượng</translation>
+    </message>
+    <message>
+        <source>Modified</source>
+        <translation>Ngày sửa</translation>
+    </message>
+    <message>
+        <source>%1 of %2</source>
+        <translation>%1/%2</translation>
+    </message>
+</context>
+<context>
+    <name>FileCollectWorker</name>
+    <message>
+        <source>Documents</source>
+        <translation>Tài liệu (Documents)</translation>
+    </message>
+    <message>
+        <source>Desktop</source>
+        <translation>Màn hình nền (Desktop)</translation>
+    </message>
+    <message>
+        <source>Downloads</source>
+        <translation>Tải về (Downloads)</translation>
+    </message>
+    <message>
+        <source>User folder</source>
+        <translation>Thư mục người dùng</translation>
+    </message>
+    <message>
+        <source>The folder %1 does not exist.</source>
+        <translation>Thư mục %1 không tồn tại.</translation>
     </message>
 </context>
 <context>
@@ -4305,6 +4380,61 @@ Vui lòng lưu bài và đóng tất cả chương trình.</translation>
     </message>
 </context>
 <context>
+    <name>RemoteDirectoryDialog</name>
+    <message>
+        <source>Collect this whole folder</source>
+        <translation>Thu cả thư mục này</translation>
+    </message>
+    <message>
+        <source>Collect selected files</source>
+        <translation>Thu các file đã chọn</translation>
+    </message>
+    <message>
+        <source>Browse folders on %1</source>
+        <translation>Duyệt thư mục trên máy %1</translation>
+    </message>
+    <message>
+        <source>Up one level</source>
+        <translation>Lên thư mục cha</translation>
+    </message>
+    <message>
+        <source>User folders and drives</source>
+        <translation>Thư mục người dùng và ổ đĩa</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>Tên</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation>Dung lượng</translation>
+    </message>
+    <message>
+        <source>Modified</source>
+        <translation>Ngày sửa</translation>
+    </message>
+    <message>
+        <source>Double-click a folder to open it. Hold Ctrl or Shift to select several files.</source>
+        <translation>Nháy đúp vào thư mục để mở. Giữ Ctrl hoặc Shift để chọn nhiều file.</translation>
+    </message>
+    <message>
+        <source>Loading the folder from the student computer...</source>
+        <translation>Đang tải thư mục từ máy học sinh...</translation>
+    </message>
+    <message>
+        <source>The student computer did not answer. Please check that a user is logged on and try again.</source>
+        <translation>Máy học sinh không phản hồi. Hãy kiểm tra máy đã đăng nhập chưa rồi thử lại.</translation>
+    </message>
+    <message>
+        <source>Choose a user folder or a drive.</source>
+        <translation>Chọn một thư mục người dùng hoặc một ổ đĩa.</translation>
+    </message>
+    <message>
+        <source>%1 folders, %2 files</source>
+        <translation>%1 thư mục, %2 file</translation>
+    </message>
+</context>
+<context>
     <name>RoomConfigurationPage</name>
     <message>
         <source>Room</source>
@@ -4321,6 +4451,160 @@ Vui lòng lưu bài và đóng tất cả chương trình.</translation>
     <message>
         <source>Room of this computer:</source>
         <translation>Phòng của máy này:</translation>
+    </message>
+    <message>
+        <source>Control permission per room</source>
+        <translation>Phân quyền điều khiển theo phòng</translation>
+    </message>
+    <message>
+        <source>Each room uses its own authentication key. A student computer can only be controlled by teacher computers which own the key of its room, so the teacher of another room can not control it. Computers of the IT staff may additionally own an administrator key which is installed on all student computers.
+
+1. On the teacher computer: enter the room above, then click &quot;Create key for this room&quot; and save the public key file to a USB drive.
+2. On each student computer of the room: click &quot;Allow only these keys&quot; and choose the key file(s) from the USB drive.</source>
+        <translation>Mỗi phòng dùng một khoá xác thực riêng. Máy học sinh chỉ cho phép máy giáo viên có khoá của phòng mình điều khiển, nên giáo viên phòng khác không điều khiển được. Máy của bộ phận IT có thể có thêm khoá quản trị được cài trên mọi máy học sinh.
+
+1. Trên máy giáo viên: nhập tên phòng ở trên, bấm &quot;Tạo khoá cho phòng này&quot; và lưu file khoá công khai vào USB.
+2. Trên từng máy học sinh của phòng: bấm &quot;Chỉ cho phép các khoá này&quot; và chọn (các) file khoá trên USB.</translation>
+    </message>
+    <message>
+        <source>Create key for this room (teacher computer)...</source>
+        <translation>Tạo khoá cho phòng này (máy giáo viên)...</translation>
+    </message>
+    <message>
+        <source>Allow only these keys (student computer)...</source>
+        <translation>Chỉ cho phép các khoá này (máy học sinh)...</translation>
+    </message>
+    <message>
+        <source>Lock screen</source>
+        <translation>Màn hình khoá</translation>
+    </message>
+    <message>
+        <source>Image (e.g. the school logo) and text shown on this computer while it is locked by the teacher. For many computers put the file &quot;man-hinh-khoa.png&quot; next to the student installation script.</source>
+        <translation>Ảnh (ví dụ logo trường) và dòng chữ hiện trên máy này khi bị giáo viên khoá. Để cài cho nhiều máy, đặt file &quot;man-hinh-khoa.png&quot; cạnh script cài máy học sinh.</translation>
+    </message>
+    <message>
+        <source>This computer is locked by the teacher</source>
+        <translation>Máy đang được giáo viên khoá</translation>
+    </message>
+    <message>
+        <source>Choose image...</source>
+        <translation>Chọn ảnh...</translation>
+    </message>
+    <message>
+        <source>Use default image</source>
+        <translation>Dùng ảnh mặc định</translation>
+    </message>
+    <message>
+        <source>Text:</source>
+        <translation>Dòng chữ:</translation>
+    </message>
+    <message>
+        <source>Default image</source>
+        <translation>Ảnh mặc định</translation>
+    </message>
+    <message>
+        <source>Choose the image for the lock screen</source>
+        <translation>Chọn ảnh cho màn hình khoá</translation>
+    </message>
+    <message>
+        <source>Images (*.png *.jpg *.jpeg *.bmp)</source>
+        <translation>Ảnh (*.png *.jpg *.jpeg *.bmp)</translation>
+    </message>
+    <message>
+        <source>The image could not be saved to %1.</source>
+        <translation>Không lưu được ảnh vào %1.</translation>
+    </message>
+    <message>
+        <source>(none)</source>
+        <translation>(không có)</translation>
+    </message>
+    <message>
+        <source>Private keys on this computer (used by the Teacher Console): %1
+Keys allowed to control this computer: %2</source>
+        <translation>Khoá bí mật trên máy này (Bảng điều khiển giáo viên dùng): %1
+Khoá được phép điều khiển máy này: %2</translation>
+    </message>
+    <message>
+        <source>Room key</source>
+        <translation>Khoá của phòng</translation>
+    </message>
+    <message>
+        <source>Please enter the room of this computer first.</source>
+        <translation>Hãy nhập tên phòng của máy này trước.</translation>
+    </message>
+    <message>
+        <source>The key could not be created:
+%1</source>
+        <translation>Không tạo được khoá:
+%1</translation>
+    </message>
+    <message>
+        <source>Choose where to save the public key (e.g. a USB drive)</source>
+        <translation>Chọn nơi lưu khoá công khai (ví dụ ổ USB)</translation>
+    </message>
+    <message>
+        <source>The public key could not be saved:
+%1</source>
+        <translation>Không lưu được khoá công khai:
+%1</translation>
+    </message>
+    <message>
+        <source>The key &quot;%1&quot; for room &quot;%2&quot; is ready.
+
+The public key was saved as
+%3
+
+Copy this file to the student computers of this room and import it there with &quot;Allow only these keys&quot; (or put it next to the student installation script).</source>
+        <translation>Khoá &quot;%1&quot; của phòng &quot;%2&quot; đã sẵn sàng.
+
+Khoá công khai đã lưu tại
+%3
+
+Chép file này sang các máy học sinh của phòng và nhập bằng nút &quot;Chỉ cho phép các khoá này&quot; (hoặc đặt cạnh script cài máy học sinh).</translation>
+    </message>
+    <message>
+        <source>This computer still owns the private keys %1. The Teacher Console might use one of them instead of the key of this room and could then control other rooms.
+
+Remove these private keys from this computer?</source>
+        <translation>Máy này vẫn còn các khoá bí mật %1. Bảng điều khiển giáo viên có thể dùng nhầm một trong các khoá này thay cho khoá của phòng và điều khiển được phòng khác.
+
+Xoá các khoá bí mật này khỏi máy?</translation>
+    </message>
+    <message>
+        <source>Choose the public key files of the room (and of the IT staff)</source>
+        <translation>Chọn file khoá công khai của phòng (và của bộ phận IT)</translation>
+    </message>
+    <message>
+        <source>Public key files (*_public_key.pem)</source>
+        <translation>File khoá công khai (*_public_key.pem)</translation>
+    </message>
+    <message>
+        <source>The file %1 is not a public key file of ITLabControl.</source>
+        <translation>File %1 không phải file khoá công khai của ITLabControl.</translation>
+    </message>
+    <message>
+        <source>Only teacher computers owning one of the keys %1 will be able to control this computer.%2
+
+Continue?</source>
+        <translation>Chỉ máy giáo viên có một trong các khoá %1 mới điều khiển được máy này.%2
+
+Tiếp tục?</translation>
+    </message>
+    <message>
+        <source>
+The keys %1 will be removed from this computer.</source>
+        <translation>
+Các khoá %1 sẽ bị gỡ khỏi máy này.</translation>
+    </message>
+    <message>
+        <source>Done. Only the teacher computers of these keys can control this computer now.</source>
+        <translation>Xong. Giờ chỉ máy giáo viên có các khoá này điều khiển được máy này.</translation>
+    </message>
+    <message>
+        <source>Some keys could not be imported:
+%1</source>
+        <translation>Không nhập được một số khoá:
+%1</translation>
     </message>
 </context>
 <context>
@@ -4671,6 +4955,10 @@ Vui lòng lưu bài và đóng tất cả chương trình.</translation>
     <message>
         <source>To reclaim all user&apos;s full attention you can lock their computers using this button. In this mode all input devices are locked while the desktop is still visible.</source>
         <translation>Để học sinh tập trung hoàn toàn, bạn có thể khoá máy của các em bằng nút này. Ở chế độ này, bàn phím và chuột bị khoá nhưng màn hình vẫn hiển thị.</translation>
+    </message>
+    <message>
+        <source>This computer is locked by the teacher</source>
+        <translation>Máy đang được giáo viên khoá</translation>
     </message>
     <message>
         <source>Lock screen and input devices of a computer</source>
@@ -5064,6 +5352,10 @@ Ví dụ: [^-]*-(PC[0-9]*)</translation>
     <message>
         <source>Duration:</source>
         <translation>Thời lượng:</translation>
+    </message>
+    <message>
+        <source>Time each computer is shown (2 to 60 seconds)</source>
+        <translation>Thời gian hiện mỗi máy (2 đến 60 giây)</translation>
     </message>
     <message>
         <source>View in separate window</source>

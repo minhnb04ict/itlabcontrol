@@ -31,5 +31,7 @@ build_veyon_plugin(filetransfer
 	FileReadThread.h
 	ProgressItemDelegate.cpp
 	ProgressItemDelegate.h
+	RemoteDirectoryDialog.cpp
+	RemoteDirectoryDialog.h
 	filetransfer.qrc
 	)

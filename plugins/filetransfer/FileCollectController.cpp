@@ -204,16 +204,157 @@ void FileCollectController::start()
 {
 	if (isRunning() == false && m_collections.isEmpty() == false)
 	{
-		for (auto it = m_collections.constBegin(), end = m_collections.constEnd(); it != end; ++it)
-		{
-			m_plugin->sendInitFileCollectionMessage(it.value(), it.key(),
-													m_collectSourceDirectory, m_filePattern, m_subfolderHandling);
-		}
-
 		m_running = true;
 
 		Q_EMIT started();
+
+		if (m_previewRequested)
+		{
+			// ITLabControl: collect only the files ticked in the preview. Collections whose file list
+			// has not arrived yet start as soon as it arrives (see initCollection()).
+			Q_EMIT collectionsAboutToChange();
+			QList<ComputerControlInterface::Pointer> previewedComputers;
+			for (auto it = m_collections.begin(), end = m_collections.end(); it != end; ++it)
+			{
+				auto& collection = it.value();
+				if (collection.state == FileCollection::State::Previewed)
+				{
+					collection.restrictToFiles(collection.checkedFiles());
+					previewedComputers.append(it.key());
+				}
+			}
+			Q_EMIT collectionsChanged();
+
+			for (const auto& computerControlInterface : std::as_const(previewedComputers))
+			{
+				auto& collection = m_collections[computerControlInterface]; // clazy:exclude=detaching-member
+				// the student computer replies FinishFileCollection right away if no file is left
+				m_plugin->sendSelectFilesMessage(collection, computerControlInterface);
+				initiateNextFileTransfer(computerControlInterface, collection);
+			}
+		}
+		else
+		{
+			sendInitMessages();
+		}
 	}
+}
+
+
+
+void FileCollectController::preview()
+{
+	if (isRunning() || m_collections.isEmpty())
+	{
+		return;
+	}
+
+	if (m_previewRequested)
+	{
+		discardPreview();
+	}
+
+	m_previewRequested = true;
+	sendInitMessages();
+
+	Q_EMIT previewChanged();
+}
+
+
+
+void FileCollectController::discardPreview()
+{
+	if (isRunning() || m_previewRequested == false)
+	{
+		return;
+	}
+
+	for (auto it = m_collections.constBegin(), end = m_collections.constEnd(); it != end; ++it)
+	{
+		m_plugin->sendFinishFileCollectionMessage(it.value(), it.key());
+	}
+
+	m_previewRequested = false;
+
+	// recreate the collections with new IDs so that late replies of the old ones are ignored
+	const auto computers = m_collections.keys();
+	setInterfaces(ComputerControlInterfaceList(computers.cbegin(), computers.cend()));
+
+	Q_EMIT previewChanged();
+}
+
+
+
+void FileCollectController::setFileChecked(FileCollection::Id collectionId, int fileIndex, bool checked)
+{
+	auto collection = collectionById(collectionId);
+	if (collection && collection->state == FileCollection::State::Previewed &&
+		fileIndex >= 0 && fileIndex < collection->files.size())
+	{
+		while (collection->fileChecked.size() < collection->files.size())
+		{
+			collection->fileChecked.append(true);
+		}
+		collection->fileChecked[fileIndex] = checked;
+
+		Q_EMIT collectionChanged(collectionId);
+		Q_EMIT previewChanged();
+	}
+}
+
+
+
+void FileCollectController::setAllFilesChecked(FileCollection::Id collectionId, bool checked)
+{
+	auto collection = collectionById(collectionId);
+	if (collection && collection->state == FileCollection::State::Previewed)
+	{
+		collection->fileChecked = QList<bool>(collection->files.size(), checked);
+
+		Q_EMIT collectionChanged(collectionId);
+		Q_EMIT previewChanged();
+	}
+}
+
+
+
+void FileCollectController::requestDirectoryListing(ComputerControlInterface::Pointer computerControlInterface,
+													const QUuid& browseId, const QString& path)
+{
+	m_plugin->sendListDirectoryMessage(browseId, path, computerControlInterface);
+}
+
+
+
+void FileCollectController::finishBrowsing(ComputerControlInterface::Pointer computerControlInterface,
+										   const QUuid& browseId)
+{
+	m_plugin->sendFinishBrowsingMessage(browseId, computerControlInterface);
+}
+
+
+
+void FileCollectController::sendInitMessages()
+{
+	for (auto it = m_collections.constBegin(), end = m_collections.constEnd(); it != end; ++it)
+	{
+		m_plugin->sendInitFileCollectionMessage(it.value(), it.key(),
+												m_collectSourceDirectory, m_filePattern, m_subfolderHandling);
+	}
+}
+
+
+
+FileCollection* FileCollectController::collectionById(FileCollection::Id collectionId)
+{
+	for (auto it = m_collections.begin(), end = m_collections.end(); it != end; ++it) // clazy:exclude=detaching-member
+	{
+		if (it.value().id == collectionId)
+		{
+			return &it.value();
+		}
+	}
+	return nullptr;
 }
 
 
@@ -223,6 +364,7 @@ void FileCollectController::stop()
 	if (isRunning())
 	{
 		m_running = false;
+		m_previewRequested = false;
 
 		Q_EMIT finished();
 		Q_EMIT overallProgressChanged();
@@ -253,16 +395,47 @@ int FileCollectController::overallProgress() const
 
 
 void FileCollectController::initCollection(ComputerControlInterface::Pointer computerControlInterface,
-										   FileCollection::Id collectionId, const QStringList& files)
+										   FileCollection::Id collectionId, const QStringList& files,
+										   const QVariantList& fileSizes, const QVariantList& fileModificationTimes)
 {
 	if (m_collections.value(computerControlInterface).id == collectionId)
 	{
-		Q_EMIT collectionAboutToInitialize(collectionId, files.size());
+		// ITLabControl: keep file details for the preview and apply the selection from the folder browser
+		FileCollection received;
+		received.files = files;
+		for (int i = 0; i < files.size(); ++i)
+		{
+			received.fileSizes.append(fileSizes.value(i).toLongLong());
+			received.fileModificationTimes.append(fileModificationTimes.value(i).toLongLong());
+		}
+		if (m_fileSelection.isEmpty() == false)
+		{
+			received.restrictToFiles(m_fileSelection);
+		}
+
+		Q_EMIT collectionAboutToInitialize(collectionId, received.files.size());
 
 		auto& collection = m_collections[computerControlInterface]; // clazy:exclude=detaching-member
-		collection.files = files;
+		collection.files = received.files;
+		collection.fileSizes = received.fileSizes;
+		collection.fileModificationTimes = received.fileModificationTimes;
+		collection.fileChecked = QList<bool>(collection.files.size(), true);
 
 		Q_EMIT collectionInitialized(collectionId);
+
+		if (isRunning() == false)
+		{
+			// preview only: wait until the teacher starts collecting
+			collection.state = FileCollection::State::Previewed;
+			Q_EMIT collectionChanged(collectionId);
+			Q_EMIT previewChanged();
+			return;
+		}
+
+		if (m_fileSelection.isEmpty() == false)
+		{
+			m_plugin->sendSelectFilesMessage(collection, computerControlInterface);
+		}
 
 		initiateNextFileTransfer(computerControlInterface, collection);
 	}

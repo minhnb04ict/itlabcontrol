@@ -65,17 +65,86 @@ Tất cả đều tách biệt với Veyon nếu máy có cài Veyon.
 
 ---
 
-## Cách 2: Kiểm thử trên máy thật
+## Cách 2: Kiểm thử trên máy thật (triển khai một phòng)
 
-1. Chép `itlabcontrol-*-setup.exe` và khoá công khai `C:\ProgramData\ITLabControl\keys\public\teacher\key` sang USB.
-2. **Máy GV:** chạy bộ cài đầy đủ, nhập khoá **riêng tư** (*private key*) qua Configurator (hoặc tạo khoá mới trên máy GV rồi xuất khoá công khai cho các máy HS).
-3. **Mỗi máy HS:** chạy bộ cài với `/NoMaster`, rồi nhập khoá công khai:
-   ```bat
-   cd /d "C:\Program Files\ITLabControl"
-   veyon-cli authkeys import teacher/public E:\key
-   veyon-cli config set Authentication/Method 1
-   veyon-cli service restart
-   ```
-4. Trên máy GV, thêm phòng và các máy HS theo IP/hostname (hoặc nhập CSV, sẽ có ở GĐ1).
+Làm theo thứ tự 2.1 → 2.5. **Mọi máy (GV và HS) phải cài cùng một phiên bản** ITLabControl.
 
-Hướng dẫn chi tiết cho phòng máy thật sẽ hoàn thiện ở GĐ1, cùng chức năng nhập danh sách máy từ CSV.
+### 2.1 Máy giáo viên (làm 1 lần cho mỗi phòng)
+
+1. Cài `itlabcontrol-*-setup.exe` bản đầy đủ (bấm Next đến hết).
+2. Mở **ITLabControl Configurator → Phòng máy**:
+   - **Phòng của máy này:** gõ tên phòng, ví dụ `Phòng 201`.
+   - Bấm **"Tạo khoá cho phòng này (máy giáo viên)…"**, chọn ổ USB. Máy tạo file `phong-201_public_key.pem` trên USB.
+   - Nếu được hỏi "Xoá các khoá bí mật khác (teacher…)?", chọn **Yes**. Nếu không xoá, Console có thể dùng nhầm khoá chung và điều khiển được cả phòng khác.
+   - (Tuỳ chọn) **Màn hình khoá → Chọn ảnh…**: logo trường; sửa dòng chữ hiện khi khoá máy.
+   - Bấm **Áp dụng**.
+3. Mở Teacher Console → **Quản lý phòng** → tạo phòng `Phòng 201` (theo mẫu tên hoặc tự dò máy).
+
+### 2.2 Chuẩn bị USB cho các máy học sinh của phòng
+
+Thư mục `ITLabControl-HocSinh` trên USB gồm:
+
+| File | Bắt buộc | Ghi chú |
+|---|---|---|
+| `itlabcontrol-*-setup.exe` | ✔ | Cùng phiên bản với máy GV |
+| `CAI-DAT-MAY-HOC-SINH.cmd` | ✔ | Script cài máy HS |
+| `phong-201_public_key.pem` | ✔ | Khoá của **đúng phòng này**, tạo ở bước 2.1 |
+| `quantri_public_key.pem` | | Khoá của bộ phận IT, nếu cần một máy điều khiển được mọi phòng |
+| `man-hinh-khoa.png` | | Logo hiện trên màn hình khoá |
+
+> ⚠️ **Không để khoá của phòng khác hoặc khoá chung cũ `teacher_public_key.pem` trong thư mục.**
+> Script nhập **mọi** file `*_public_key.pem` có trong thư mục, và gỡ mọi khoá cũ không có trong đó.
+
+### 2.3 Mỗi máy học sinh
+
+Chuột phải `CAI-DAT-MAY-HOC-SINH.cmd` → **Run as administrator** → nhập tên phòng (`Phòng 201`) → chờ chữ **XONG** → khởi động lại máy.
+
+Làm bằng giao diện thay cho script (ví dụ khi đổi máy sang phòng khác): **Configurator → Phòng máy**:
+- Sửa **Phòng của máy này**.
+- Bấm **"Chỉ cho phép các khoá này (máy học sinh)…"**, chọn file khoá của phòng (có thể chọn thêm khoá quản trị).
+- Bấm **Áp dụng**.
+
+### 2.4 Máy GV và HS khác mạng con (subnet)
+
+Tường lửa Windows trên từng máy được bộ cài **tự cấu hình** (quy tắc "ITLabControl Server" và "ITLabControl Worker",
+áp cho mọi loại mạng). Chỉ khi máy GV và máy HS nằm ở **hai mạng con khác nhau** mới cần IT cấu hình thêm trên router/tường lửa giữa hai mạng:
+
+| Cổng | Giao thức | Chiều | Dùng cho |
+|---|---|---|---|
+| 14100 | TCP | GV → HS | Kết nối điều khiển chính (xem, khoá, gửi file…) |
+| 14400 | TCP | HS → GV | Trình chiếu màn hình GV |
+| 9 | UDP | GV → mạng HS | Bật máy từ xa (Wake-on-LAN); router cần cho phép *directed broadcast* |
+
+- Cổng 14200 và 14300 chỉ dùng **trong cùng một máy**, không cần mở.
+- Khác mạng con thì tên máy thường **không tra ra được** (không có DNS nội bộ): trong Quản lý phòng hãy nhập máy theo **địa chỉ IP**, hoặc nhờ IT thêm bản ghi DNS.
+- Veyon gốc dùng cổng 11100–11400; ITLabControl dùng 14xxx nên chạy song song được với Veyon.
+
+### 2.5 Phiếu kiểm thử phòng thật
+
+Ghi **Đạt / Không đạt** và ghi chú (máy nào, hiện tượng gì). Mục có ⭐ là tính năng mới, cần chú ý.
+
+| # | Kiểm tra | Cách làm | Kết quả mong đợi | Kết quả |
+|---|---|---|---|---|
+| 1 | Hiện đủ máy | Mở Console, chọn phòng | Đủ 31 máy, có hình màn hình | |
+| 2 | Xem / Điều khiển | Nháy đúp 1 máy; bấm Điều khiển | Thanh công cụ cố định ở trên, điều khiển được chuột/phím | |
+| 3 | Khoá máy ⭐ | Bấm Khoá máy | Mọi máy HS khoá; hiện **logo trường và dòng chữ**; Ctrl+Alt+Del bị chặn | |
+| 4 | Mở khoá | Bấm lại nút | Mọi máy mở khoá | |
+| 5 | Trình chiếu | Trình chiếu toàn màn hình, rồi chế độ cửa sổ | 31 máy thấy màn hình GV, không giật nhiều | |
+| 6 | Tin nhắn có link ⭐ | Gửi tin nhắn có `https://…` | HS bấm link mở được trình duyệt | |
+| 7 | Quản lý màn hình ⭐ | Thu nhỏ / Mở rộng / Đóng tất cả ứng dụng | Đúng hành vi; đóng ứng dụng có hộp xác nhận | |
+| 8 | Gửi file | Gửi 1 file Word cho cả phòng | Mọi máy nhận đủ | |
+| 9 | Thu bài: xem trước ⭐ | Thu bài → **Xem trước** → bỏ tick vài file → Bắt đầu | Chỉ các file được tick về máy GV | |
+| 10 | Thu bài: duyệt 1 máy ⭐ | Chọn 1 máy → Thu bài → **Duyệt…** → chọn vài file | Duyệt được ổ đĩa/thư mục; chỉ thu đúng file đã chọn | |
+| 11 | Chia nhóm ⭐ | Tạo 2 nhóm; chọn Nhóm 1 → Khoá máy | Chỉ máy Nhóm 1 bị khoá | |
+| 12 | Xoay vòng màn hình ⭐ | Mở bảng Slideshow, kéo thời gian lên 30 s | Mỗi máy hiện 30 giây | |
+| 13 | Phân quyền theo phòng ⭐ | Máy GV phòng **khác** (khoá khác) thêm 1 máy HS phòng này | Không điều khiển được (báo lỗi xác thực) | |
+| 14 | Khoá quản trị ⭐ | Máy IT có khoá `quantri` thêm máy HS | Điều khiển được | |
+| 15 | Tự dò máy | Quản lý phòng → Tự dò | Máy HS tự xếp đúng phòng | |
+| 16 | Đổi tên máy | Đổi tên hiển thị 1 máy | Tên mới hiện ngay, giữ sau khi mở lại Console | |
+| 17 | Tắt / Khởi động lại | Chọn 2 máy → Khởi động lại | Hai máy khởi động lại | |
+| 18 | Bật máy (WOL) | Tắt 1 máy, bấm Bật máy | Máy bật lên (cần bật WOL trong BIOS) | |
+| 19 | Song song với Veyon | Máy có cài Veyon gốc | Veyon và ITLab cùng chạy, không ảnh hưởng nhau | |
+| 20 | Hiệu năng | Console mở 30 phút với 31 máy | Không đứng, CPU máy GV ổn định | |
+
+**Khi có lỗi:** ghi lại giờ xảy ra, gửi kèm các file log trong `C:\Windows\Temp\ITLabControl*.log` (máy HS)
+và `%TEMP%\ITLabControl*.log` (máy GV). Cách bật log chi tiết: `docs/LEARNING.md` mục 7.1.

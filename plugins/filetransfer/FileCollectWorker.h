@@ -68,6 +68,17 @@ public:
 		return m_files;
 	}
 
+	// ITLabControl: details for the preview on the teacher computer
+	QVariantList fileSizes() const;
+	QVariantList fileModificationTimes() const;
+
+	// ITLabControl: collect only these files (relative to the source directory)
+	void selectFiles(const QStringList& files);
+
+	// ITLabControl: folders and files of a directory for browsing from the teacher computer;
+	// an empty path returns the user folders and drives
+	static QVariantList listDirectory(const QString& path, QString* errorString);
+
 	QPair<TransferState, QString> startNextTransfer();
 	void skipToNextFile();
 	void cancelCurrentTransfer();

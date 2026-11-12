@@ -38,6 +38,8 @@ public:
 	enum class Column {
 		Name,
 		FileCount,
+		Size,
+		Modified,
 		Progress,
 		ColumnCount
 	};
@@ -53,6 +55,9 @@ public:
 	bool hasChildren(const QModelIndex& parent) const override;
 
 	QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+	// ITLabControl: tick files in the preview
+	bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
+	Qt::ItemFlags flags(const QModelIndex& index) const override;
 
 	QVariant headerData(int section, Qt::Orientation orientation,
 						int role) const override;
@@ -74,6 +79,9 @@ private:
 	}
 
 	bool isValidCollection(const FileCollection& collection) const;
+
+	// returns the collection of a collection or file index and the file row (-1 for collection rows)
+	const FileCollection* collectionOfIndex(const QModelIndex& index, int* fileRow) const;
 
 	QModelIndex indexOfCollection(FileCollection::Id collectionId, int column) const;
 

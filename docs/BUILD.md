@@ -157,6 +157,9 @@ Ghi lại mọi chỗ sửa lõi Veyon để dễ merge về sau:
 | `core/src/Logger.cpp`, `configurator/src/GeneralConfigurationPage.cpp` | File log `ITLabControl*.log` | Không ghi lẫn log với Veyon |
 | `nsis/veyon.nsi.in` | Khoá `App Paths\itlabcontrol.exe`; không gỡ driver Interception khi còn Veyon; làm mới icon sau khi cài; xoá cổng cũ 11xxx đã lưu trong cấu hình (chỉ khi đúng bằng mặc định của Veyon) | Không cài đè vào thư mục Veyon, không làm hỏng Veyon khi gỡ ITLabControl |
 | `master/src/ComputerGroup*.{h,cpp}`, `ComputerGroupsDialog.*` (mới); `ComputerMonitoringModel`, `ComputerMonitoringWidget`, `VeyonMaster`, `UserConfig`, `MainWindow` | Chia nhóm: nút "Nhóm" trên thanh trạng thái, bộ lọc theo nhóm, menu chuột phải | Chọn nhóm thì chỉ hiện máy của nhóm, nên mọi nút trên thanh công cụ áp dụng cho nhóm đó |
+| `plugins/filetransfer/*` (+ `RemoteDirectoryDialog.*` mới) | Thu bài: xem trước và tick chọn file, duyệt thư mục máy HS khi thu 1 máy; thêm lệnh `SelectFiles`, `ListDirectory` (thêm vào **cuối** enum, không đổi lệnh cũ); lọc loại file khớp trọn tên | GV không phải gõ đường dẫn, chỉ thu đúng file cần |
+| `core/src/LockWidget.{h,cpp}`, `plugins/screenlock/ScreenLockFeaturePlugin.cpp` | Ảnh `%GLOBALAPPDATA%\lock-screen.png` (logo trường) và dòng chữ `ITLab/LockScreenText` trên màn hình khoá; ảnh lớn tự thu nhỏ | Màn hình khoá mang nhận diện của trường |
+| `master/src/SlideshowPanel.ui` | Thời gian xoay vòng 2–60 giây (gốc 1–10) | Theo thiết kế GĐ1 |
 | `plugins/textmessage/TextMessage{Dialog,FeaturePlugin}.cpp` | Tự chuyển địa chỉ web thành link; máy HS bấm link mở trình duyệt | Gửi link cho HS mở nhanh |
 | `master/src/MainWindow.cpp`, `configurator/src/MainWindow.cpp` | Tiêu đề cửa sổ | Hiển thị tên ITLabControl |
 | `cmake/modules/WindowsBuildHelpers.cmake` | Thông tin phiên bản của file .exe/.dll | ProductName/CompanyName = ITLabControl, giữ ghi công Veyon |

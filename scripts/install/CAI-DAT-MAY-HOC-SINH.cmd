@@ -6,7 +6,10 @@ rem  Cach dung:
 rem    - Chuot phai file nay -> "Run as administrator", script se hoi ten phong.
 rem    - Cai hang loat (khong hoi): CAI-DAT-MAY-HOC-SINH.cmd "Phong 201"
 rem
-rem  Thu muc nay can co: itlabcontrol-*-setup.exe va teacher_public_key.pem
+rem  Thu muc nay can co: itlabcontrol-*-setup.exe va it nhat mot file khoa
+rem  *_public_key.pem: khoa cua phong (vd. phong-201_public_key.pem, tao tren
+rem  may giao vien trong Configurator - Phong may), co the them khoa quan tri
+rem  cua bo phan IT. Chi may giao vien co cac khoa nay dieu khien duoc may HS.
 rem ======================================================================
 setlocal
 chcp 65001 >nul
@@ -26,8 +29,11 @@ if "%SETUP%"=="" (
   pause
   exit /b 1
 )
-if not exist "teacher_public_key.pem" (
-  echo [LOI] Khong tim thay file teacher_public_key.pem trong thu muc nay.
+set KEYCOUNT=0
+for %%k in (*_public_key.pem) do set /a KEYCOUNT+=1
+if "%KEYCOUNT%"=="0" (
+  echo [LOI] Khong tim thay file khoa *_public_key.pem trong thu muc nay.
+  echo       Tao khoa tren may giao vien: Configurator - Phong may - "Tao khoa cho phong nay".
   pause
   exit /b 1
 )
@@ -52,8 +58,17 @@ if not exist "C:\Program Files\ITLabControl\veyon-cli.exe" (
 )
 
 cd /d "C:\Program Files\ITLabControl"
-echo [2/5] Nhap khoa xac thuc cua giao vien...
-veyon-cli.exe authkeys import teacher/public "%~dp0teacher_public_key.pem"
+echo [2/5] Nhap khoa xac thuc cua giao vien (chi cac khoa co trong thu muc nay)...
+rem Go cac khoa cong khai cu de chi may giao vien co khoa trong thu muc nay dieu khien duoc may nay
+for /d %%d in ("%ProgramData%\ITLabControl\keys\public\*") do veyon-cli.exe authkeys delete "%%~nxd/public" >nul 2>&1
+setlocal enabledelayedexpansion
+for %%k in ("%~dp0*_public_key.pem") do (
+  set "KEYNAME=%%~nk"
+  set "KEYNAME=!KEYNAME:_public_key=!"
+  echo        - khoa !KEYNAME!
+  veyon-cli.exe authkeys import "!KEYNAME!/public" "%%~fk"
+)
+endlocal
 
 echo [3/5] Bat xac thuc bang khoa...
 veyon-cli.exe config set Authentication/Method 1
@@ -63,6 +78,11 @@ if not "%ROOM%"=="" (
   veyon-cli.exe config set ITLab/Room "%ROOM%"
 ) else (
   echo        Bo qua - chua dat ten phong.
+)
+
+if exist "%~dp0man-hinh-khoa.png" (
+  echo        Anh man hinh khoa: man-hinh-khoa.png
+  copy /y "%~dp0man-hinh-khoa.png" "%ProgramData%\ITLabControl\lock-screen.png" >nul
 )
 
 echo [5/5] Khoi dong lai dich vu...

@@ -107,6 +107,32 @@ public:
 	void start();
 	void stop();
 
+	// ITLabControl: query the file lists first so the teacher can choose which files to collect
+	void preview();
+	void discardPreview();
+	bool hasPreview() const
+	{
+		return m_previewRequested;
+	}
+	void setFileChecked(FileCollection::Id collectionId, int fileIndex, bool checked);
+	void setAllFilesChecked(FileCollection::Id collectionId, bool checked);
+
+	// ITLabControl: files chosen in the remote folder browser (relative to the source directory);
+	// an empty list collects all files
+	void setFileSelection(const QStringList& files)
+	{
+		m_fileSelection = files;
+	}
+	const QStringList& fileSelection() const
+	{
+		return m_fileSelection;
+	}
+
+	// ITLabControl: browse folders of a student computer
+	void requestDirectoryListing(ComputerControlInterface::Pointer computerControlInterface,
+								 const QUuid& browseId, const QString& path);
+	void finishBrowsing(ComputerControlInterface::Pointer computerControlInterface, const QUuid& browseId);
+
 	bool isRunning() const
 	{
 		return m_running;
@@ -115,7 +141,8 @@ public:
 	int overallProgress() const;
 
 	void initCollection(ComputerControlInterface::Pointer computerControlInterface,
-						FileCollection::Id collectionId, const QStringList& files);
+						FileCollection::Id collectionId, const QStringList& files,
+						const QVariantList& fileSizes = {}, const QVariantList& fileModificationTimes = {});
 	void finishFileCollection(ComputerControlInterface::Pointer computerControlInterface,
 							  FileCollection::Id collectionId);
 
@@ -146,10 +173,16 @@ Q_SIGNALS:
 	void overallProgressChanged();
 	void started();
 	void finished();
+	void previewChanged();
+	void directoryListingReceived(ComputerControlInterface::Pointer computerControlInterface,
+								  const QUuid& browseId, const QString& path,
+								  const QVariantList& entries, const QString& errorString);
 
 private:
 	void initiateNextFileTransfer(ComputerControlInterface::Pointer computerControlInterface,
 								  FileCollection& collection);
+	void sendInitMessages();
+	FileCollection* collectionById(FileCollection::Id collectionId);
 
 	FileTransferPlugin* m_plugin = nullptr;
 
@@ -166,5 +199,7 @@ private:
 	SubfolderHandling m_subfolderHandling = SubfolderHandling::Default;
 
 	bool m_running = false;
+	bool m_previewRequested = false;
+	QStringList m_fileSelection;
 
 };

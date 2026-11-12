@@ -54,6 +54,9 @@ public:
 		FinishFileCollection,
 		RetryFileTransfer,
 		SkipFileTransfer,
+		// ITLabControl: collect only the files chosen by the teacher, browse folders of a student computer
+		SelectFiles,
+		ListDirectory,
 	};
 	Q_ENUM(FeatureCommand)
 
@@ -71,6 +74,12 @@ public:
 		FilePattern,
 		CollectRecursively,
 		DestinationDirectory,
+		// ITLabControl
+		FileSizes,
+		FileModificationTimes,
+		DirectoryPath,
+		DirectoryEntries,
+		ErrorString,
 	};
 	Q_ENUM(Argument)
 
@@ -158,6 +167,14 @@ public:
 									  ComputerControlInterface::Pointer computerControlInterface);
 	void sendContinueFileTransferMessage(const FileCollection& collection,
 										 ComputerControlInterface::Pointer computerControlInterface);
+
+	// ITLabControl
+	void sendSelectFilesMessage(const FileCollection& collection,
+								ComputerControlInterface::Pointer computerControlInterface);
+	void sendListDirectoryMessage(const QUuid& browseId, const QString& path,
+								  ComputerControlInterface::Pointer computerControlInterface);
+	void sendFinishBrowsingMessage(const QUuid& browseId,
+								   ComputerControlInterface::Pointer computerControlInterface);
 
 	ConfigurationPage* createConfigurationPage() override;
 

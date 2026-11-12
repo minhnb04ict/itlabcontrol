@@ -26,6 +26,9 @@
 #include <QAbstractItemModelTester>
 #endif
 
+#include <QDateTime>
+#include <QLocale>
+
 #include "FileCollectTreeModel.h"
 #include "FileCollectController.h"
 
@@ -180,6 +183,79 @@ QVariant FileCollectTreeModel::data(const QModelIndex& index, int role) const
 
 
 
+const FileCollection* FileCollectTreeModel::collectionOfIndex(const QModelIndex& index, int* fileRow) const
+{
+	if (index.isValid())
+	{
+		for (const auto& collection : m_controller->collections())
+		{
+			if (constInternalPointer(index) == &collection)
+			{
+				*fileRow = -1;
+				return &collection;
+			}
+
+			if (index.row() < collection.files.count() &&
+				constInternalPointer(index) == &collection.files[index.row()])
+			{
+				*fileRow = index.row();
+				return &collection;
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+
+
+Qt::ItemFlags FileCollectTreeModel::flags(const QModelIndex& index) const
+{
+	auto itemFlags = QAbstractItemModel::flags(index);
+
+	int fileRow = -1;
+	const auto collection = collectionOfIndex(index, &fileRow);
+	if (collection && collection->state == FileCollection::State::Previewed &&
+		Column(index.column()) == Column::Name &&
+		(fileRow >= 0 || collection->files.isEmpty() == false))
+	{
+		itemFlags |= Qt::ItemIsUserCheckable;
+	}
+
+	return itemFlags;
+}
+
+
+
+bool FileCollectTreeModel::setData(const QModelIndex& index, const QVariant& value, int role)
+{
+	if (role != Qt::CheckStateRole || Column(index.column()) != Column::Name)
+	{
+		return false;
+	}
+
+	int fileRow = -1;
+	const auto collection = collectionOfIndex(index, &fileRow);
+	if (collection == nullptr || collection->state != FileCollection::State::Previewed)
+	{
+		return false;
+	}
+
+	const auto checked = Qt::CheckState(value.toInt()) != Qt::Unchecked;
+	if (fileRow >= 0)
+	{
+		m_controller->setFileChecked(collection->id, fileRow, checked);
+	}
+	else
+	{
+		m_controller->setAllFilesChecked(collection->id, checked);
+	}
+
+	return true;
+}
+
+
+
 QVariant FileCollectTreeModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
 	if (orientation == Qt::Horizontal &&
@@ -189,6 +265,8 @@ QVariant FileCollectTreeModel::headerData(int section, Qt::Orientation orientati
 		{
 		case Column::Name: return tr("Name");
 		case Column::FileCount: return tr("Number of files");
+		case Column::Size: return tr("Size");
+		case Column::Modified: return tr("Modified");
 		case Column::Progress: return tr("Progress");
 		default: break;
 		}
@@ -234,9 +312,19 @@ QVariant FileCollectTreeModel::collectionData(const FileCollection& collection, 
 		case Qt::DisplayRole:
 			return collection.name;
 
+		case Qt::CheckStateRole:
+			if (collection.state == FileCollection::State::Previewed && collection.files.isEmpty() == false)
+			{
+				const auto checkedCount = collection.checkedFilesCount();
+				return checkedCount == 0 ? Qt::Unchecked :
+										   (checkedCount == collection.files.size() ? Qt::Checked : Qt::PartiallyChecked);
+			}
+			break;
+
 		case Qt::DecorationRole:
 			switch (collection.state)
 			{
+			case FileCollection::State::Previewed: return m_finishedPixmap;
 			case FileCollection::State::Initializing: return m_scheduledPixmap;
 			case FileCollection::State::ReadyForNextFileTransfer: return m_transferringPixmap;
 			case FileCollection::State::FileTransferRunning: return m_transferringPixmap;
@@ -248,15 +336,30 @@ QVariant FileCollectTreeModel::collectionData(const FileCollection& collection, 
 		break;
 
 	case Column::FileCount:
-		return role == Qt::DisplayRole && collection.state != FileCollection::State::Initializing ?
-																  collection.files.size()
-																:
-																  QVariant{};
+		if (role == Qt::DisplayRole && collection.state != FileCollection::State::Initializing)
+		{
+			if (collection.state == FileCollection::State::Previewed)
+			{
+				return tr("%1 of %2").arg(collection.checkedFilesCount()).arg(collection.files.size());
+			}
+			return collection.files.size();
+		}
+		return {};
+
+	case Column::Size:
+		if (role == Qt::DisplayRole && collection.state != FileCollection::State::Initializing &&
+			collection.fileSizes.isEmpty() == false)
+		{
+			return QLocale().formattedDataSize(collection.checkedFilesSize());
+		}
+		return {};
 
 	case Column::Progress:
-		return role == Qt::DisplayRole ? collection.progress() : QVariant{};
+		// the progress bar would be misleading while the teacher is still choosing files
+		return role == Qt::DisplayRole && collection.state != FileCollection::State::Previewed ?
+					collection.progress() : QVariant{};
 
-	case Column::ColumnCount:
+	default:
 		break;
 	}
 
@@ -267,12 +370,44 @@ QVariant FileCollectTreeModel::collectionData(const FileCollection& collection, 
 
 QVariant FileCollectTreeModel::fileData(const FileCollection& collection, const QModelIndex& index, int role) const
 {
+	const auto previewed = collection.state == FileCollection::State::Previewed;
+
 	switch (Column(index.column()))
 	{
+	case Column::Size:
+		if (role == Qt::DisplayRole && index.row() < collection.fileSizes.size())
+		{
+			return QLocale().formattedDataSize(collection.fileSizes[index.row()]);
+		}
+		if (role == Qt::TextAlignmentRole)
+		{
+			return int(Qt::AlignRight | Qt::AlignVCenter);
+		}
+		break;
+
+	case Column::Modified:
+		if (role == Qt::DisplayRole && index.row() < collection.fileModificationTimes.size() &&
+			collection.fileModificationTimes[index.row()] > 0)
+		{
+			return QLocale().toString(QDateTime::fromMSecsSinceEpoch(collection.fileModificationTimes[index.row()]),
+									  QLocale::ShortFormat);
+		}
+		break;
+
 	case Column::Name:
 		switch (role)
 		{
+		case Qt::CheckStateRole:
+			if (previewed)
+			{
+				return collection.isFileChecked(index.row()) ? Qt::Checked : Qt::Unchecked;
+			}
+			break;
 		case Qt::DecorationRole:
+			if (previewed)
+			{
+				return {};
+			}
 			if (index.row() < collection.processedFilesCount )
 			{
 				return m_finishedPixmap;
@@ -294,7 +429,7 @@ QVariant FileCollectTreeModel::fileData(const FileCollection& collection, const 
 		break;
 
 	case Column::Progress:
-		if (role == Qt::DisplayRole)
+		if (role == Qt::DisplayRole && previewed == false)
 		{
 			if (index.row() < collection.processedFilesCount )
 			{

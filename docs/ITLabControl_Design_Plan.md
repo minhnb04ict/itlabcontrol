@@ -270,7 +270,8 @@ Hiện trạng Veyon: Collect lấy mọi file trong **một thư mục cố đ�
    - **C. Tự dò máy:** Console quét subnet tìm máy đang chạy ITLabControl (cổng 14100), hiện tên máy, IP, MAC, người đăng nhập; **gom nhóm chỉ là gợi ý** (theo phòng đã gán, hoặc theo tiền tố tên); GV tick chọn và gán vào phòng bất kỳ. Dùng được với tên máy không theo quy luật.
    - **Gán phòng khi cài đặt máy HS** (duyệt 2026-11-11): script cài máy HS hỏi tên phòng (hoặc nhận tham số `/Room="Phòng 201"` khi cài hàng loạt) và lưu vào cấu hình máy HS. Khi tự dò (C), máy HS báo phòng của mình và Console **tự xếp đúng phòng**, GV chỉ cần bấm "Thêm tất cả". Không phụ thuộc cách đặt tên máy.
    - Nhập CSV giữ làm phương án phụ cho IT. Bố cục lưới mặc định 8×4 khớp sơ đồ phòng.
-3. **Phân quyền theo phòng:** mẫu ACL "máy GV phòng X chỉ điều khiển máy HS phòng X"; tài khoản quản trị điều khiển được mọi phòng.
+3. **Phân quyền theo phòng:** "máy GV phòng X chỉ điều khiển máy HS phòng X"; máy quản trị điều khiển được mọi phòng.
+   Cách làm (2026-11-12): **mỗi phòng một cặp khoá xác thực** thay cho quy tắc ACL theo vị trí. Máy HS chỉ giữ khoá công khai của phòng mình (và khoá quản trị), nên máy GV phòng khác **không xác thực được**. Không phụ thuộc mạng/DNS, HS không vượt qua được. Quy tắc ACL `SameLocation` của Veyon không dùng được vì máy HS không có danh sách phòng chứa máy GV.
 4. Scan xoay vòng có cấu hình chu kỳ; ảnh màn hình khoá tuỳ chỉnh (logo trường).
 5. Gửi/thu bài: thư mục mặc định theo `Phòng/Lớp/Ngày/Tên HS`, có hiển thị tiến độ; **Collect dễ dùng hơn** (đặc tả mục 3.1).
 6. **`itlab-cleardesktop`**: dọn màn hình HS (thu nhỏ tất cả / đóng ngay mọi ứng dụng), xem đặc tả mục 3.1. Đây là plugin `itlab-*` đầu tiên sau `itlab-hello`.
@@ -397,12 +398,12 @@ GĐ6                                           ───── liên tục ─�
 |---|---|
 | 1. Ngôn ngữ Tiếng Việt / English | ✅ Xong 2026-11-11: mặc định Tiếng Việt, nút đổi ngôn ngữ trong Console, dịch 100%, bộ cài tiếng Việt; đã kiểm tra trên máy GV |
 | 6. Clear desktop (`itlab-cleardesktop`) | ✅ Đã viết và cài máy GV 2026-11-11; chờ kiểm thử đóng ứng dụng trên máy HS |
-| 5. Collect nâng cao | 🟡 Đã có danh sách chọn nguồn/loại file; còn xem trước file và nút "Duyệt…" cho 1 máy |
+| 5. Collect nâng cao | ✅ 2026-11-12: danh sách chọn nguồn/loại file; **Xem trước** (dung lượng, ngày sửa, tick chọn file); nút **"Duyệt…"** duyệt ổ đĩa/thư mục máy HS khi thu từ 1 máy; sửa lỗi lọc loại file (`*.doc` khớp nhầm `.docx`). Chờ kiểm thử phòng thật |
 | 2. Nhiều phòng (A/B/C + gán phòng khi cài) | ✅ Xong 2026-11-11: plugin Quản lý phòng (theo tên, theo mẫu tên, tự dò), trang "Phòng máy" trong Configurator, đổi tên máy; đã kiểm thử trên máy thật |
 | Bổ sung theo yêu cầu | ✅ 2026-11-11: đổi thương hiệu + logo, thanh công cụ Xem/Điều khiển cố định, "Mở rộng tất cả cửa sổ", cài song song với Veyon (cổng 14xxx), nút "Dọn màn hình" đổi thành **"Quản lý màn hình"**, link trong tin nhắn bấm mở được, **chia nhóm trong lớp** |
-| 3. Phân quyền theo phòng | Chưa bắt đầu |
-| 4/7. Hoàn thiện nhỏ (scan, ảnh khoá, firewall) | Chưa bắt đầu |
-| 8. Kiểm thử phòng thật | Chưa bắt đầu |
+| 3. Phân quyền theo phòng | ✅ 2026-11-12: **mỗi phòng một khoá xác thực** (Configurator → Phòng máy: tạo khoá trên máy GV, "Chỉ cho phép các khoá này" trên máy HS; script cài máy HS nhập mọi `*_public_key.pem`, gỡ khoá cũ); khoá quản trị cho IT. Chờ kiểm thử phòng thật |
+| 4/7. Hoàn thiện nhỏ (scan, ảnh khoá, firewall) | ✅ 2026-11-12: xoay vòng màn hình 2–60 giây; màn hình khoá có **logo trường + dòng chữ** (Configurator hoặc `man-hinh-khoa.png`); tường lửa đã tự cấu hình khi cài (quy tắc riêng ITLabControl), hướng dẫn mở cổng khi khác subnet trong `docs/LAB.md` 2.4 |
+| 8. Kiểm thử phòng thật | 🟡 Đã có quy trình triển khai và **phiếu kiểm thử 20 mục** (`docs/LAB.md` mục 2); chờ thực hiện tại phòng máy |
 | GĐ1b Khảo sát nhanh | ✅ Thiết kế đã duyệt 2026-11-11; làm ngay sau GĐ1 |
 | GĐ2 → GĐ6 | Chưa duyệt |
 
