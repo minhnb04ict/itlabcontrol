@@ -151,6 +151,10 @@ Ghi **Đạt / Không đạt** và ghi chú (máy nào, hiện tượng gì). M�
 | 24 | Bỏ chặn / Gỡ mọi hạn chế ⭐ | Bấm Bỏ chặn web | Vào lại được mọi trang; chính sách trình duyệt có sẵn của trường vẫn còn | |
 | 25 | Tự gỡ khi tắt Console ⭐ | Chặn web rồi **đóng Console** ≥ 16 phút | Máy HS tự bỏ chặn (an toàn khi GV quên gỡ) | |
 | 26 | Gỡ khẩn cấp ⭐ | Trên máy HS (cmd admin): `veyon-cli restrictions clear` | Bỏ chặn ngay | |
+| 27 | Chặn web có hiệu lực ngay ⭐ | Mở sẵn youtube.com trên máy HS rồi bấm Hạn chế → Hạn chế website → Chặn mọi trang web | Trang đang mở không tải tiếp được ngay (kết nối bị ngắt), mở trang mới bị chặn | |
+| 28 | Chặn ứng dụng ⭐ | Hạn chế → Hạn chế ứng dụng → Chặn các ứng dụng…, thêm `notepad.exe`; trên máy HS mở Notepad | Notepad bị đóng trong khoảng 1 giây, HS thấy thông báo "Ứng dụng bị giáo viên chặn" | |
+| 29 | Chỉ cho phép ứng dụng ⭐ | Hạn chế ứng dụng → Chỉ cho phép…, bấm "+ Office"; trên máy HS mở Word, Zalo, Chrome | Word dùng được; Zalo, Chrome bị đóng; UniKey, File Explorer vẫn dùng được | |
+| 30 | Bỏ chặn ứng dụng ⭐ | Hạn chế ứng dụng → Bỏ chặn ứng dụng | Mở lại được mọi ứng dụng | |
 
 > Firefox chỉ nhận thay đổi chặn web khi **mở lại** Firefox. Chrome, Edge, Cốc Cốc nhận ngay (vài giây).
 

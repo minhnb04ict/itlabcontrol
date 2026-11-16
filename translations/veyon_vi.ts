@@ -309,6 +309,65 @@ Nếu bạn quan tâm đến việc dịch ITLabControl thành ngôn ngữ bản
     </message>
 </context>
 <context>
+    <name>AppListDialog</name>
+    <message>
+        <source>Allow only listed applications</source>
+        <translation>Chỉ cho phép các ứng dụng trong danh sách</translation>
+    </message>
+    <message>
+        <source>Block listed applications</source>
+        <translation>Chặn các ứng dụng trong danh sách</translation>
+    </message>
+    <message>
+        <source>Only these applications can be used on the student computers, other applications are closed as soon as they open a window. Programs of Windows (Explorer, Notepad, Paint, Calculator, ...) and Vietnamese input methods (UniKey, EVKey) always stay allowed.&lt;br&gt;&lt;br&gt;Enter one program file name per line, e.g. &lt;b&gt;winword.exe&lt;/b&gt;.</source>
+        <translation>Máy học sinh chỉ dùng được các ứng dụng này, ứng dụng khác bị đóng ngay khi mở cửa sổ. Chương trình của Windows (Explorer, Notepad, Paint, Máy tính…) và bộ gõ tiếng Việt (UniKey, EVKey) luôn được phép.&lt;br&gt;&lt;br&gt;Mỗi dòng một tên file chương trình, ví dụ &lt;b&gt;winword.exe&lt;/b&gt;.</translation>
+    </message>
+    <message>
+        <source>These applications are closed immediately on the student computers whenever they are started. Enter one program file name per line, e.g. &lt;b&gt;zalo.exe&lt;/b&gt;. Tip: the file name is shown in the Task Manager (tab &quot;Details&quot;).</source>
+        <translation>Các ứng dụng này bị đóng ngay mỗi khi học sinh mở. Mỗi dòng một tên file chương trình, ví dụ &lt;b&gt;zalo.exe&lt;/b&gt;. Mẹo: xem tên file trong Task Manager (thẻ &quot;Details&quot;).</translation>
+    </message>
+    <message>
+        <source>Office</source>
+        <translation>Office</translation>
+    </message>
+    <message>
+        <source>Programming</source>
+        <translation>Lập trình</translation>
+    </message>
+    <message>
+        <source>Web browsers</source>
+        <translation>Trình duyệt web</translation>
+    </message>
+    <message>
+        <source>Chat and social media</source>
+        <translation>Chat, mạng xã hội</translation>
+    </message>
+    <message>
+        <source>Games</source>
+        <translation>Game</translation>
+    </message>
+    <message>
+        <source>Add:</source>
+        <translation>Thêm:</translation>
+    </message>
+    <message>
+        <source>%1 applications: %2</source>
+        <translation>%1 ứng dụng: %2</translation>
+    </message>
+    <message>
+        <source>Allow only these applications</source>
+        <translation>Chỉ cho phép các ứng dụng này</translation>
+    </message>
+    <message>
+        <source>Block these applications</source>
+        <translation>Chặn các ứng dụng này</translation>
+    </message>
+    <message>
+        <source>The list is empty, so only programs of Windows can be used. Continue?</source>
+        <translation>Danh sách đang trống nên chỉ dùng được chương trình của Windows. Tiếp tục?</translation>
+    </message>
+</context>
+<context>
     <name>AuthKeysConfigurationPage</name>
     <message>
         <source>Authentication keys</source>
@@ -2603,6 +2662,14 @@ Make sure that the names of the keys belonging to each other are identical on al
         <translation>Hạn chế máy học sinh, ví dụ chặn trang web. Các hạn chế tự được gỡ khi Bảng điều khiển giáo viên đóng quá lâu.</translation>
     </message>
     <message>
+        <source>Restrict websites</source>
+        <translation>Hạn chế website</translation>
+    </message>
+    <message>
+        <source>Block all, some or all but some websites.</source>
+        <translation>Chặn mọi trang web, chỉ cho phép hoặc chặn một số trang web.</translation>
+    </message>
+    <message>
         <source>Block all websites</source>
         <translation>Chặn mọi trang web</translation>
     </message>
@@ -2635,6 +2702,38 @@ Make sure that the names of the keys belonging to each other are identical on al
         <translation>Mở lại được mọi trang web.</translation>
     </message>
     <message>
+        <source>Restrict applications</source>
+        <translation>Hạn chế ứng dụng</translation>
+    </message>
+    <message>
+        <source>Close blocked applications on the student computers as soon as they are started.</source>
+        <translation>Đóng ngay các ứng dụng bị chặn khi học sinh mở.</translation>
+    </message>
+    <message>
+        <source>Block listed applications...</source>
+        <translation>Chặn các ứng dụng trong danh sách...</translation>
+    </message>
+    <message>
+        <source>The applications in your list are closed as soon as they are started.</source>
+        <translation>Các ứng dụng trong danh sách bị đóng ngay khi được mở.</translation>
+    </message>
+    <message>
+        <source>Allow only listed applications...</source>
+        <translation>Chỉ cho phép các ứng dụng trong danh sách...</translation>
+    </message>
+    <message>
+        <source>Only the applications in your list (and Windows itself) can be used.</source>
+        <translation>Chỉ dùng được các ứng dụng trong danh sách (và chương trình của Windows).</translation>
+    </message>
+    <message>
+        <source>Unblock applications</source>
+        <translation>Bỏ chặn ứng dụng</translation>
+    </message>
+    <message>
+        <source>All applications can be used again.</source>
+        <translation>Dùng lại được mọi ứng dụng.</translation>
+    </message>
+    <message>
         <source>Remove all restrictions</source>
         <translation>Gỡ mọi hạn chế</translation>
     </message>
@@ -2655,8 +2754,20 @@ Make sure that the names of the keys belonging to each other are identical on al
         <translation>Áp dụng chặn web trên máy này: web blockall | web allow &lt;trang web&gt; | web block &lt;trang web&gt;</translation>
     </message>
     <message>
+        <source>Restrict applications on this computer: apps block &lt;programs&gt; | apps allow &lt;programs&gt;</source>
+        <translation>Hạn chế ứng dụng trên máy này: apps block &lt;chương trình&gt; | apps allow &lt;chương trình&gt;</translation>
+    </message>
+    <message>
         <source>Restrictions are never applied to this computer (the teacher computer).</source>
         <translation>Không bao giờ áp dụng hạn chế cho chính máy này (máy giáo viên).</translation>
+    </message>
+    <message>
+        <source>Application blocked</source>
+        <translation>Ứng dụng bị chặn</translation>
+    </message>
+    <message>
+        <source>The application %1 has been blocked by the teacher.</source>
+        <translation>Ứng dụng %1 đã bị giáo viên chặn.</translation>
     </message>
     <message>
         <source>No restrictions are active on this computer.</source>
@@ -2665,6 +2776,10 @@ Make sure that the names of the keys belonging to each other are identical on al
     <message>
         <source>Web filter: %1</source>
         <translation>Chặn web: %1</translation>
+    </message>
+    <message>
+        <source>Application control: %1</source>
+        <translation>Hạn chế ứng dụng: %1</translation>
     </message>
     <message>
         <source>Last heartbeat: %1</source>
@@ -2681,6 +2796,14 @@ Make sure that the names of the keys belonging to each other are identical on al
     <message>
         <source>Web filter applied. It is removed automatically when no Teacher Console keeps it alive.</source>
         <translation>Đã chặn web. Việc chặn tự được gỡ khi không có Bảng điều khiển giáo viên duy trì.</translation>
+    </message>
+    <message>
+        <source>The restriction could not be saved. Please run this command as administrator.</source>
+        <translation>Không lưu được hạn chế. Hãy chạy lệnh này với quyền quản trị (administrator).</translation>
+    </message>
+    <message>
+        <source>Application control saved. The ITLabControl Server enforces it within 30 seconds.</source>
+        <translation>Đã lưu hạn chế ứng dụng. Dịch vụ ITLabControl sẽ áp dụng trong vòng 30 giây.</translation>
     </message>
     <message>
         <source>Not all restrictions could be removed. Please run this command as administrator.</source>

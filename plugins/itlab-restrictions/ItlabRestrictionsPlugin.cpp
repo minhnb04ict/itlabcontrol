@@ -25,6 +25,10 @@
 #include "VeyonMasterInterface.h"
 #include "VeyonServerInterface.h"
 #include "WebsiteListDialog.h"
+#include "AppListDialog.h"
+#include "BuiltinFeatures.h"
+#include "FeatureWorkerManager.h"
+#include "SystemTrayIcon.h"
 
 
 namespace {
@@ -54,44 +58,84 @@ ItlabRestrictionsPlugin::ItlabRestrictionsPlugin( QObject* parent ) :
 						   tr( "Restrict the student computers, e.g. block websites. "
 							   "Restrictions are removed automatically when the Teacher Console is closed for a long time." ),
 						   QStringLiteral(":/itlab-restrictions/itlab-restrictions.png") ),
+	// "Restrict websites" and "Restrict applications" are sub menus of the "Restrictions" button
+	m_webRestrictionsFeature( QStringLiteral("ItlabWebRestrictions"),
+							  Feature::Flag::Action | Feature::Flag::AllComponents,
+							  Feature::Uid( "4b8d2f60-7e1a-4c93-a5d7-8f9e0a1b2c34" ),
+							  m_restrictionsFeature.uid(),
+							  tr( "Restrict websites" ), {},
+							  tr( "Block all, some or all but some websites." ),
+							  QStringLiteral(":/itlab-restrictions/itlab-restrictions.png") ),
 	m_blockAllWebsitesFeature( QStringLiteral("ItlabBlockAllWebsites"),
 							   Feature::Flag::Action | Feature::Flag::AllComponents,
 							   Feature::Uid( "8a4c2e19-6b7d-4f3a-9e85-1c2b3d4e5f60" ),
-							   m_restrictionsFeature.uid(),
+							   m_webRestrictionsFeature.uid(),
 							   tr( "Block all websites" ), {},
 							   tr( "No website can be opened on the student computers." ) ),
 	m_allowListedWebsitesFeature( QStringLiteral("ItlabAllowListedWebsites"),
 								  Feature::Flag::Action | Feature::Flag::AllComponents,
 								  Feature::Uid( "3d9f1b27-4a6c-4e8d-8b12-5f6a7c8d9e01" ),
-								  m_restrictionsFeature.uid(),
+								  m_webRestrictionsFeature.uid(),
 								  tr( "Allow only listed websites..." ), {},
 								  tr( "Only the websites in your list can be opened." ) ),
 	m_blockListedWebsitesFeature( QStringLiteral("ItlabBlockListedWebsites"),
 								  Feature::Flag::Action | Feature::Flag::AllComponents,
 								  Feature::Uid( "6b2e8c40-1d3f-4a7b-9c56-2e3f4a5b6c72" ),
-								  m_restrictionsFeature.uid(),
+								  m_webRestrictionsFeature.uid(),
 								  tr( "Block listed websites..." ), {},
 								  tr( "The websites in your list can not be opened, all others can." ) ),
 	m_unblockWebsitesFeature( QStringLiteral("ItlabUnblockWebsites"),
 							  Feature::Flag::Action | Feature::Flag::AllComponents,
 							  Feature::Uid( "9f3a5d61-2b4c-4d8e-a7f9-3b4c5d6e7f83" ),
-							  m_restrictionsFeature.uid(),
+							  m_webRestrictionsFeature.uid(),
 							  tr( "Unblock websites" ), {},
 							  tr( "All websites can be opened again." ) ),
+	m_appRestrictionsFeature( QStringLiteral("ItlabAppRestrictions"),
+							  Feature::Flag::Action | Feature::Flag::AllComponents,
+							  Feature::Uid( "d2c4e6a8-0b1d-4f35-8c79-6e5f4d3c2b10" ),
+							  m_restrictionsFeature.uid(),
+							  tr( "Restrict applications" ), {},
+							  tr( "Close blocked applications on the student computers as soon as they are started." ),
+							  QStringLiteral(":/itlab-restrictions/itlab-restrictions.png") ),
+	m_blockListedAppsFeature( QStringLiteral("ItlabBlockListedApps"),
+							  Feature::Flag::Action | Feature::Flag::AllComponents,
+							  Feature::Uid( "7a9c1e35-2d4f-4b68-9a0c-1e2f3a4b5c69" ),
+							  m_appRestrictionsFeature.uid(),
+							  tr( "Block listed applications..." ), {},
+							  tr( "The applications in your list are closed as soon as they are started." ) ),
+	m_allowListedAppsFeature( QStringLiteral("ItlabAllowListedApps"),
+							  Feature::Flag::Action | Feature::Flag::AllComponents,
+							  Feature::Uid( "e5b7d9f1-3a2c-4e86-b4d0-2f3e4a5b6c78" ),
+							  m_appRestrictionsFeature.uid(),
+							  tr( "Allow only listed applications..." ), {},
+							  tr( "Only the applications in your list (and Windows itself) can be used." ) ),
+	m_unblockAppsFeature( QStringLiteral("ItlabUnblockApps"),
+						  Feature::Flag::Action | Feature::Flag::AllComponents,
+						  Feature::Uid( "0f2e4d6c-8b1a-4c37-9e5d-3a4b5c6d7e87" ),
+						  m_appRestrictionsFeature.uid(),
+						  tr( "Unblock applications" ), {},
+						  tr( "All applications can be used again." ) ),
 	m_removeAllRestrictionsFeature( QStringLiteral("ItlabRemoveAllRestrictions"),
 									Feature::Flag::Action | Feature::Flag::AllComponents,
 									Feature::Uid( "1c7e9a83-5d2f-4b6c-8a1e-4c5d6e7f8a94" ),
 									m_restrictionsFeature.uid(),
 									tr( "Remove all restrictions" ), {},
 									tr( "Remove every restriction from the student computers." ) ),
-	m_features( { m_restrictionsFeature, m_blockAllWebsitesFeature, m_allowListedWebsitesFeature,
-				  m_blockListedWebsitesFeature, m_unblockWebsitesFeature, m_removeAllRestrictionsFeature } ),
+	m_features( { m_restrictionsFeature,
+				  m_webRestrictionsFeature, m_blockAllWebsitesFeature, m_allowListedWebsitesFeature,
+				  m_blockListedWebsitesFeature, m_unblockWebsitesFeature,
+				  m_appRestrictionsFeature, m_blockListedAppsFeature, m_allowListedAppsFeature, m_unblockAppsFeature,
+				  m_removeAllRestrictionsFeature } ),
 	m_commands( {
 		{ QStringLiteral("status"), tr( "Show the restrictions which are active on this computer" ) },
 		{ QStringLiteral("clear"), tr( "Remove all restrictions from this computer (emergency)" ) },
 		{ QStringLiteral("web"), tr( "Apply a web filter on this computer: web blockall | web allow <websites> | web block <websites>" ) },
+		{ QStringLiteral("apps"), tr( "Restrict applications on this computer: apps block <programs> | apps allow <programs>" ) },
 	} )
 {
+	m_appWatchTimer.setInterval( AppWatchInterval );
+	connect( &m_appWatchTimer, &QTimer::timeout, this, &ItlabRestrictionsPlugin::enforceAppControl );
+
 	m_heartbeatTimer.setInterval( HeartbeatInterval );
 	connect( &m_heartbeatTimer, &QTimer::timeout, this, &ItlabRestrictionsPlugin::sendHeartbeats );
 
@@ -116,7 +160,9 @@ ItlabRestrictionsPlugin::ItlabRestrictionsPlugin( QObject* parent ) :
 bool ItlabRestrictionsPlugin::startFeature( VeyonMasterInterface& master, const Feature& feature,
 											const ComputerControlInterfaceList& computerControlInterfaces )
 {
-	if( hasFeature( feature.uid() ) == false || feature == m_restrictionsFeature )
+	// the menu entries themselves do nothing
+	if( hasFeature( feature.uid() ) == false || feature == m_restrictionsFeature ||
+		feature == m_webRestrictionsFeature || feature == m_appRestrictionsFeature )
 	{
 		return false;
 	}
@@ -153,6 +199,28 @@ bool ItlabRestrictionsPlugin::startFeature( VeyonMasterInterface& master, const 
 
 		controlFeature( feature.uid(), Operation::Start,
 						{ { argToString( Argument::Websites ), websites } }, targets );
+	}
+	else if( feature == m_allowListedAppsFeature || feature == m_blockListedAppsFeature )
+	{
+		const auto allow = feature == m_allowListedAppsFeature;
+		auto config = master.userConfigurationObject();
+		const auto configKey = allow ? QStringLiteral("AllowedApplications") : QStringLiteral("BlockedApplications");
+		auto apps = config->value( configKey, QStringLiteral("ITLabRestrictions"), QStringList{} ).toStringList();
+
+		if( AppListDialog::edit( master.mainWindow(), allow, apps ) == false )
+		{
+			return true;
+		}
+
+		config->setValue( configKey, apps, QStringLiteral("ITLabRestrictions") );
+		config->flushStore();
+
+		if( apps.isEmpty() && allow == false )
+		{
+			return true; // nothing to block
+		}
+
+		controlFeature( feature.uid(), Operation::Start, { { argToString( Argument::Apps ), apps } }, targets );
 	}
 	else
 	{
@@ -193,6 +261,18 @@ bool ItlabRestrictionsPlugin::controlFeature( Feature::Uid featureUid, Operation
 	else if( featureUid == m_unblockWebsitesFeature.uid() )
 	{
 		message.setCommand( FeatureCommand::RemoveWebFilter );
+	}
+	else if( featureUid == m_blockListedAppsFeature.uid() || featureUid == m_allowListedAppsFeature.uid() )
+	{
+		const auto mode = featureUid == m_allowListedAppsFeature.uid() ? RestrictionsBackend::AppMode::AllowListed
+																	   : RestrictionsBackend::AppMode::BlockListed;
+		message.setCommand( FeatureCommand::ApplyAppControl );
+		message.addArgument( Argument::AppMode, RestrictionsBackend::appModeName( mode ) )
+				.addArgument( Argument::Apps, arguments.value( argToString( Argument::Apps ) ).toStringList() );
+	}
+	else if( featureUid == m_unblockAppsFeature.uid() )
+	{
+		message.setCommand( FeatureCommand::RemoveAppControl );
 	}
 	else if( featureUid == m_removeAllRestrictionsFeature.uid() )
 	{
@@ -285,13 +365,14 @@ void ItlabRestrictionsPlugin::sendHeartbeats()
 bool ItlabRestrictionsPlugin::handleFeatureMessage( VeyonServerInterface& server, const MessageContext& messageContext,
 													const FeatureMessage& message )
 {
-	Q_UNUSED(server)
 	Q_UNUSED(messageContext)
 
 	if( message.featureUid() != m_restrictionsFeature.uid() )
 	{
 		return false;
 	}
+
+	m_server = &server;
 
 	QMutexLocker locker( &m_stateMutex );
 
@@ -311,6 +392,9 @@ bool ItlabRestrictionsPlugin::handleFeatureMessage( VeyonServerInterface& server
 		state[QStringLiteral("expires")] = timestamp + qint64( configuredMinutes( QStringLiteral("RestrictionMaxDuration"), 240 ) ) * 60000;
 		state[QStringLiteral("lastHeartbeat")] = timestamp;
 		vInfo() << "web filter applied:" << RestrictionsBackend::webModeName( mode );
+		// browsers also listen to user policy refreshes, which are processed faster
+		server.featureWorkerManager().sendMessageToUnmanagedSessionWorker(
+			FeatureMessage{ m_restrictionsFeature.uid(), FeatureCommand::RefreshUserPolicy } );
 		break;
 	}
 
@@ -321,11 +405,38 @@ bool ItlabRestrictionsPlugin::handleFeatureMessage( VeyonServerInterface& server
 			RestrictionsBackend::removeAllRestrictions( state );
 		}
 		vInfo() << "web filter removed";
+		server.featureWorkerManager().sendMessageToUnmanagedSessionWorker(
+			FeatureMessage{ m_restrictionsFeature.uid(), FeatureCommand::RefreshUserPolicy } );
+		break;
+
+	case FeatureCommand::ApplyAppControl:
+	{
+		const auto mode = RestrictionsBackend::appModeFromName( message.argument( Argument::AppMode ).toString() );
+		RestrictionsBackend::applyAppControl( mode, message.argument( Argument::Apps ).toStringList(), state );
+		if( state.contains( QStringLiteral("since") ) == false )
+		{
+			state[QStringLiteral("since")] = timestamp;
+		}
+		state[QStringLiteral("expires")] = timestamp + qint64( configuredMinutes( QStringLiteral("RestrictionMaxDuration"), 240 ) ) * 60000;
+		state[QStringLiteral("lastHeartbeat")] = timestamp;
+		vInfo() << "application control applied:" << RestrictionsBackend::appModeName( mode );
+		break;
+	}
+
+	case FeatureCommand::RemoveAppControl:
+		RestrictionsBackend::removeAppControl( state );
+		if( RestrictionsBackend::isAnyRestrictionActive( state ) == false )
+		{
+			RestrictionsBackend::removeAllRestrictions( state );
+		}
+		vInfo() << "application control removed";
 		break;
 
 	case FeatureCommand::RemoveAllRestrictions:
 		RestrictionsBackend::removeAllRestrictions( state );
 		vInfo() << "all restrictions removed";
+		server.featureWorkerManager().sendMessageToUnmanagedSessionWorker(
+			FeatureMessage{ m_restrictionsFeature.uid(), FeatureCommand::RefreshUserPolicy } );
 		break;
 
 	case FeatureCommand::Heartbeat:
@@ -387,6 +498,22 @@ bool ItlabRestrictionsPlugin::isFeatureActive( VeyonServerInterface& server, Fea
 	if( featureUid == m_restrictionsFeature.uid() )
 	{
 		return m_active;
+	}
+	if( featureUid == m_webRestrictionsFeature.uid() )
+	{
+		return m_webMode != RestrictionsBackend::WebMode::None;
+	}
+	if( featureUid == m_appRestrictionsFeature.uid() )
+	{
+		return m_appMode != RestrictionsBackend::AppMode::None;
+	}
+	if( featureUid == m_blockListedAppsFeature.uid() )
+	{
+		return m_appMode == RestrictionsBackend::AppMode::BlockListed;
+	}
+	if( featureUid == m_allowListedAppsFeature.uid() )
+	{
+		return m_appMode == RestrictionsBackend::AppMode::AllowListed;
 	}
 	if( featureUid == m_blockAllWebsitesFeature.uid() )
 	{
@@ -461,6 +588,76 @@ void ItlabRestrictionsPlugin::updateActiveState( const QJsonObject& state )
 {
 	m_active = RestrictionsBackend::isAnyRestrictionActive( state );
 	m_webMode = RestrictionsBackend::activeWebMode( state );
+	m_appMode = RestrictionsBackend::activeAppMode( state );
+	m_apps = RestrictionsBackend::activeApps( state );
+
+	// the watcher timer belongs to the main thread
+	const auto watchApps = m_appMode != RestrictionsBackend::AppMode::None;
+	QMetaObject::invokeMethod( this, [this, watchApps]() {
+		if( watchApps && m_appWatchTimer.isActive() == false )
+		{
+			m_appWatchTimer.start();
+			enforceAppControl(); // also programs which are already running
+		}
+		else if( watchApps == false )
+		{
+			m_appWatchTimer.stop();
+		}
+	}, Qt::QueuedConnection );
+}
+
+
+
+void ItlabRestrictionsPlugin::enforceAppControl()
+{
+	RestrictionsBackend::AppMode mode;
+	QStringList apps;
+	{
+		QMutexLocker locker( &m_stateMutex );
+		mode = m_appMode;
+		apps = m_apps;
+	}
+
+	const auto closed = RestrictionsBackend::enforceAppControl( mode, apps );
+	if( closed.isEmpty() )
+	{
+		return;
+	}
+
+	vDebug() << "closed blocked applications" << closed;
+
+	// tell the student why the program disappeared (at most every 10 seconds per program)
+	if( m_server )
+	{
+		const auto timestamp = now();
+		for( const auto& name : closed )
+		{
+			if( timestamp - m_lastAppNotification.value( name ) > 10000 )
+			{
+				m_lastAppNotification[name] = timestamp;
+				VeyonCore::builtinFeatures().systemTrayIcon().showMessage(
+					tr( "Application blocked" ),
+					tr( "The application %1 has been blocked by the teacher." ).arg( name ),
+					m_server->featureWorkerManager() );
+			}
+		}
+	}
+}
+
+
+
+bool ItlabRestrictionsPlugin::handleFeatureMessage( VeyonWorkerInterface& worker, const FeatureMessage& message )
+{
+	Q_UNUSED(worker)
+
+	if( message.featureUid() == m_restrictionsFeature.uid() &&
+		message.command<FeatureCommand>() == FeatureCommand::RefreshUserPolicy )
+	{
+		RestrictionsBackend::refreshUserPolicies();
+		return true;
+	}
+
+	return false;
 }
 
 
@@ -494,12 +691,23 @@ CommandLinePluginInterface::RunResult ItlabRestrictionsPlugin::handle_status( co
 		return Successful;
 	}
 
-	const auto web = state.value( QStringLiteral("web") ).toObject();
-	print( tr( "Web filter: %1" ).arg( web.value( QStringLiteral("mode") ).toString() ) );
-	const auto websites = web.value( QStringLiteral("websites") ).toArray();
-	for( const auto& website : websites )
+	if( state.contains( QStringLiteral("web") ) )
 	{
-		print( QStringLiteral("    ") + website.toString() );
+		const auto web = state.value( QStringLiteral("web") ).toObject();
+		print( tr( "Web filter: %1" ).arg( web.value( QStringLiteral("mode") ).toString() ) );
+		const auto websites = web.value( QStringLiteral("websites") ).toArray();
+		for( const auto& website : websites )
+		{
+			print( QStringLiteral("    ") + website.toString() );
+		}
+	}
+	if( state.contains( QStringLiteral("apps") ) )
+	{
+		print( tr( "Application control: %1" ).arg( RestrictionsBackend::appModeName( RestrictionsBackend::activeAppMode( state ) ) ) );
+		for( const auto& app : RestrictionsBackend::activeApps( state ) )
+		{
+			print( QStringLiteral("    ") + app );
+		}
 	}
 	print( tr( "Last heartbeat: %1" ).arg( QDateTime::fromMSecsSinceEpoch(
 		state.value( QStringLiteral("lastHeartbeat") ).toVariant().toLongLong() ).toString( Qt::ISODate ) ) );
@@ -541,6 +749,41 @@ CommandLinePluginInterface::RunResult ItlabRestrictionsPlugin::handle_web( const
 	}
 
 	info( tr( "Web filter applied. It is removed automatically when no Teacher Console keeps it alive." ) );
+	return Successful;
+}
+
+
+
+CommandLinePluginInterface::RunResult ItlabRestrictionsPlugin::handle_apps( const QStringList& arguments )
+{
+	static const QMap<QString, RestrictionsBackend::AppMode> modes{
+		{ QStringLiteral("block"), RestrictionsBackend::AppMode::BlockListed },
+		{ QStringLiteral("allow"), RestrictionsBackend::AppMode::AllowListed },
+	};
+
+	const auto mode = modes.value( arguments.value( 0 ).toLower(), RestrictionsBackend::AppMode::None );
+	if( mode == RestrictionsBackend::AppMode::None )
+	{
+		return NotEnoughArguments;
+	}
+
+	auto state = RestrictionsBackend::loadState();
+	RestrictionsBackend::applyAppControl( mode, arguments.mid( 1 ), state );
+	const auto timestamp = QDateTime::currentMSecsSinceEpoch();
+	if( state.contains( QStringLiteral("since") ) == false )
+	{
+		state[QStringLiteral("since")] = timestamp;
+	}
+	state[QStringLiteral("expires")] = timestamp + qint64( configuredMinutes( QStringLiteral("RestrictionMaxDuration"), 240 ) ) * 60000;
+	state[QStringLiteral("lastHeartbeat")] = timestamp;
+
+	if( RestrictionsBackend::saveState( state ) == false )
+	{
+		error( tr( "The restriction could not be saved. Please run this command as administrator." ) );
+		return Failed;
+	}
+
+	info( tr( "Application control saved. The ITLabControl Server enforces it within 30 seconds." ) );
 	return Successful;
 }
 

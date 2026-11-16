@@ -53,6 +53,9 @@ public:
 		RemoveAllRestrictions,
 		Heartbeat,
 		Status,
+		ApplyAppControl,
+		RemoveAppControl,
+		RefreshUserPolicy,
 	};
 	Q_ENUM(FeatureCommand)
 
@@ -60,6 +63,8 @@ public:
 		WebMode,
 		Websites,
 		Active,
+		AppMode,
+		Apps,
 	};
 	Q_ENUM(Argument)
 
@@ -115,6 +120,9 @@ public:
 	void sendAsyncFeatureMessages( VeyonServerInterface& server, const MessageContext& messageContext ) override;
 	bool isFeatureActive( VeyonServerInterface& server, Feature::Uid featureUid ) const override;
 
+	// WORKER (session of the student): refresh the user policies so browsers reload them sooner
+	bool handleFeatureMessage( VeyonWorkerInterface& worker, const FeatureMessage& message ) override;
+
 	// COMMAND LINE: veyon-cli restrictions status|clear
 	QString commandLineModuleName() const override
 	{
@@ -131,10 +139,12 @@ public Q_SLOTS:
 	CommandLinePluginInterface::RunResult handle_status( const QStringList& arguments );
 	CommandLinePluginInterface::RunResult handle_clear( const QStringList& arguments );
 	CommandLinePluginInterface::RunResult handle_web( const QStringList& arguments );
+	CommandLinePluginInterface::RunResult handle_apps( const QStringList& arguments );
 
 private:
 	static constexpr int HeartbeatInterval = 60 * 1000;
 	static constexpr int ExpiryCheckInterval = 30 * 1000;
+	static constexpr int AppWatchInterval = 700;
 
 	// MASTER
 	void addHeartbeatTargets( const ComputerControlInterfaceList& computerControlInterfaces );
@@ -144,12 +154,18 @@ private:
 	void initServer();
 	void checkExpiry();
 	void updateActiveState( const QJsonObject& state );
+	void enforceAppControl();
 
 	const Feature m_restrictionsFeature;
+	const Feature m_webRestrictionsFeature;
 	const Feature m_blockAllWebsitesFeature;
 	const Feature m_allowListedWebsitesFeature;
 	const Feature m_blockListedWebsitesFeature;
 	const Feature m_unblockWebsitesFeature;
+	const Feature m_appRestrictionsFeature;
+	const Feature m_blockListedAppsFeature;
+	const Feature m_allowListedAppsFeature;
+	const Feature m_unblockAppsFeature;
 	const Feature m_removeAllRestrictionsFeature;
 	const FeatureList m_features;
 
@@ -164,6 +180,11 @@ private:
 	mutable QMutex m_stateMutex;
 	bool m_active{false};
 	RestrictionsBackend::WebMode m_webMode{RestrictionsBackend::WebMode::None};
+	RestrictionsBackend::AppMode m_appMode{RestrictionsBackend::AppMode::None};
+	QStringList m_apps;
 	qint64 m_lastHeartbeatWrite{0};
+	QTimer m_appWatchTimer;
+	VeyonServerInterface* m_server{nullptr};
+	QMap<QString, qint64> m_lastAppNotification;
 
 };

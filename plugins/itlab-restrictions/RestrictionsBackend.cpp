@@ -14,6 +14,7 @@
  * General Public License for more details.
  */
 
+#include <winsock2.h>
 #include <windows.h>
 #include <userenv.h>
 
@@ -145,7 +146,7 @@ bool RestrictionsBackend::saveState( const QJsonObject& state )
 
 bool RestrictionsBackend::isAnyRestrictionActive( const QJsonObject& state )
 {
-	return state.contains( QStringLiteral("web") );
+	return state.contains( QStringLiteral("web") ) || state.contains( QStringLiteral("apps") );
 }
 
 
@@ -215,6 +216,10 @@ bool RestrictionsBackend::applyWebFilter( WebMode mode, const QStringList& websi
 
 	refreshPolicies();
 
+	// pages which are already open keep their connections - close them so that the browser has
+	// to connect again (which the firewall blocks immediately for "block all")
+	resetBrowserConnections();
+
 	return success;
 }
 
@@ -236,6 +241,7 @@ bool RestrictionsBackend::removeWebFilter( QJsonObject& state )
 bool RestrictionsBackend::removeAllRestrictions( QJsonObject& state )
 {
 	const auto success = removeWebFilter( state );
+	removeAppControl( state );
 
 	state.remove( QStringLiteral("since") );
 	state.remove( QStringLiteral("expires") );
@@ -412,6 +418,13 @@ void RestrictionsBackend::refreshPolicies()
 	// Chrome and Edge reload their policies when Windows announces a policy refresh;
 	// Firefox reads its policies when it is started
 	RefreshPolicyEx( TRUE, RP_FORCE );
+}
+
+
+
+void RestrictionsBackend::refreshUserPolicies()
+{
+	RefreshPolicyEx( FALSE, RP_FORCE );
 }
 
 

@@ -302,6 +302,19 @@ void ComputerMonitoringWidget::addSubFeaturesToMenu( const Feature& parentFeatur
 
 	for( const auto& subFeature : subFeatures )
 	{
+		// ITLabControl: second menu level (e.g. Restrictions > Restrict websites > ...)
+		const auto childFeatures = master()->subFeatures( subFeature.uid() );
+		if( childFeatures.isEmpty() == false )
+		{
+			auto subMenu = menu->addMenu( QIcon( subFeature.iconUrl() ), subFeature.displayName() );
+			for( const auto& childFeature : childFeatures )
+			{
+				subMenu->addAction( QIcon( childFeature.iconUrl() ), childFeature.displayName(), this,
+									[=, this]() { runFeature( childFeature ); } );
+			}
+			continue;
+		}
+
 		menu->addAction(QIcon(subFeature.iconUrl()), subFeature.displayName(),
 				#if QT_VERSION >= QT_VERSION_CHECK(6, 3, 0)
 						subFeature.shortcut(),

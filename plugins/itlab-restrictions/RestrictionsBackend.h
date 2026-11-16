@@ -58,6 +58,38 @@ public:
 	// "vnexpress.net", "https://www.Example.com/abc" -> host names in lower case
 	static QStringList normalizedWebsites( const QStringList& websites );
 
+	// closes the open web connections of browsers so that new restrictions take effect
+	// immediately for pages which are already open (IPv4 connections on port 80/443)
+	static void resetBrowserConnections();
+
+	// called in the session of the student: browsers also reload their policies on user policy refreshes
+	static void refreshUserPolicies();
+
+	// ── applications ──────────────────────────────────────────────────────────
+	enum class AppMode
+	{
+		None,
+		BlockListed,    // the listed programs are closed as soon as they are started
+		AllowListed,    // only the listed programs (and Windows itself) may show windows
+	};
+
+	static QString appModeName( AppMode mode );
+	static AppMode appModeFromName( const QString& name );
+	static AppMode activeAppMode( const QJsonObject& state );
+	static QStringList activeApps( const QJsonObject& state );
+
+	static void applyAppControl( AppMode mode, const QStringList& apps, QJsonObject& state );
+	static void removeAppControl( QJsonObject& state );
+
+	// "C:\Games\Game.EXE", "zalo" -> "game.exe", "zalo.exe"
+	static QStringList normalizedApps( const QStringList& apps );
+
+	// closes programs of the current Windows session which are not allowed;
+	// returns the names of the closed programs
+	static QStringList enforceAppControl( AppMode mode, const QStringList& apps );
+
+	static const QStringList& browserProcessNames();
+
 private:
 	static bool writePolicyList( const QString& keyPath, const QStringList& entries, QJsonObject& backups );
 	static bool restorePolicyLists( QJsonObject& state );

@@ -406,8 +406,9 @@ GĐ6                                           ───── liên tục ─�
 | 8. Kiểm thử phòng thật | 🟡 Đã có quy trình triển khai và **phiếu kiểm thử 20 mục** (`docs/LAB.md` mục 2); chờ thực hiện tại phòng máy |
 | GĐ1b Khảo sát nhanh | ✅ Thiết kế đã duyệt 2026-11-11; **làm sau GĐ2** (GV đổi thứ tự 2026-11-16) |
 | GĐ2.0 Lõi hạn chế | ✅ 2026-11-16 (`plugins/itlab-restrictions`): trạng thái lưu ở `%ProgramData%\ITLabControl\restrictions.json`, Console gửi tín hiệu sống mỗi 60 giây, máy HS **tự gỡ** khi mất tín hiệu 15 phút (`ITLab/RestrictionHeartbeatTimeout`) hoặc quá 240 phút (`ITLab/RestrictionMaxDuration`); `veyon-cli restrictions status / clear / web …`. Đã thử tự gỡ trên máy GV |
-| GĐ2.1 Chặn web | ✅ 2026-11-16: nút **Hạn chế** → Chặn mọi trang web / Chỉ cho phép danh sách / Chặn danh sách / Bỏ chặn web / Gỡ mọi hạn chế. Chính sách Chrome, Edge, Cốc Cốc, Brave, Firefox (**giữ và trả lại chính sách sẵn có**); "chặn mọi trang" thêm tường lửa chặn cổng 80/443. Chờ thử trên máy HS |
-| GĐ2 còn lại | Chặn ứng dụng, USB, in, âm thanh, theo dõi gõ phím, danh sách dùng chung |
+| GĐ2.1 Chặn web | ✅ 2026-11-16: nút **Hạn chế** → Chặn mọi trang web / Chỉ cho phép danh sách / Chặn danh sách / Bỏ chặn web / Gỡ mọi hạn chế. Chính sách Chrome, Edge, Cốc Cốc, Brave, Firefox (**giữ và trả lại chính sách sẵn có**); "chặn mọi trang" thêm tường lửa chặn cổng 80/443. ✅ GV thử thành công trên máy HS 2026-11-16, nhưng đôi khi áp dụng chậm. Cải tiến 2026-11-16: ngắt ngay kết nối web đang mở của trình duyệt (SetTcpEntry), làm mới chính sách cả trong phiên HS. NetSupport tức thì nhờ driver lọc mạng nhân hệ điều hành (`NSWebFilterDriver.sys`) + LSP + plugin trình duyệt; ITLab chưa làm driver (cần ký driver với Microsoft) |
+| GĐ2.2 Chặn ứng dụng | ✅ 2026-11-16: Hạn chế → **Hạn chế ứng dụng** → Chặn các ứng dụng trong danh sách / Chỉ cho phép các ứng dụng trong danh sách / Bỏ chặn ứng dụng. Server (SYSTEM) kiểm tra tiến trình mỗi 0,7 giây và đóng ngay; HS thấy thông báo. Chế độ "chỉ cho phép" chỉ đóng ứng dụng có cửa sổ, không đóng chương trình của Windows, ITLabControl, bộ gõ tiếng Việt và ứng dụng được bảo vệ. Menu **Hạn chế** thành 2 cấp: Hạn chế website ▸ / Hạn chế ứng dụng ▸ / Gỡ mọi hạn chế |
+| GĐ2 còn lại | Chặn USB, in, âm thanh, theo dõi gõ phím, danh sách dùng chung |
 | GĐ2 → GĐ6 | Chưa duyệt |
 
 ### Việc bạn cần chuẩn bị cho GĐ0

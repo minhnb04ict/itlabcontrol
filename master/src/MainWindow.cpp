@@ -669,6 +669,23 @@ void MainWindow::addSubFeaturesToToolButton( QToolButton* button, const Feature&
 
 	for( const auto& subFeature : subFeatures )
 	{
+		// ITLabControl: a sub feature with own sub features is shown as a sub menu
+		// (e.g. Restrictions > Restrict websites > Block all websites)
+		const auto childFeatures = m_master.subFeatures( subFeature.uid() );
+		if( childFeatures.isEmpty() == false )
+		{
+			auto subMenu = menu->addMenu( QIcon( subFeature.iconUrl() ), subFeature.displayName() );
+			subMenu->setToolTipsVisible( true );
+			subMenu->setToolTip( subFeature.description() );
+			for( const auto& childFeature : childFeatures )
+			{
+				auto childAction = subMenu->addAction( QIcon( childFeature.iconUrl() ), childFeature.displayName(), this,
+													   [this, childFeature]() { m_master.runFeature( childFeature ); } );
+				childAction->setToolTip( childFeature.description() );
+			}
+			continue;
+		}
+
 		auto action = menu->addAction(QIcon(subFeature.iconUrl()), subFeature.displayName(),
 							   #if QT_VERSION >= QT_VERSION_CHECK(6, 3, 0)
 									  subFeature.shortcut(),

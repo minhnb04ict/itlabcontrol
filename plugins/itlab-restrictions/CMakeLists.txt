@@ -11,10 +11,13 @@ if(VEYON_BUILD_WINDOWS)
 		ItlabRestrictionsPlugin.cpp
 		ItlabRestrictionsPlugin.h
 		RestrictionsBackend.cpp
+		RestrictionsBackendApps.cpp
 		RestrictionsBackend.h
 		WebsiteListDialog.cpp
 		WebsiteListDialog.h
+		AppListDialog.cpp
+		AppListDialog.h
 		itlab-restrictions.qrc
 		)
-	target_link_libraries(itlabrestrictions PRIVATE -luserenv)
+	target_link_libraries(itlabrestrictions PRIVATE -luserenv -liphlpapi -lws2_32)
 endif()
