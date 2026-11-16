@@ -2593,6 +2593,113 @@ Make sure that the names of the keys belonging to each other are identical on al
     </message>
 </context>
 <context>
+    <name>ItlabRestrictionsPlugin</name>
+    <message>
+        <source>Restrictions</source>
+        <translation>Hạn chế</translation>
+    </message>
+    <message>
+        <source>Restrict the student computers, e.g. block websites. Restrictions are removed automatically when the Teacher Console is closed for a long time.</source>
+        <translation>Hạn chế máy học sinh, ví dụ chặn trang web. Các hạn chế tự được gỡ khi Bảng điều khiển giáo viên đóng quá lâu.</translation>
+    </message>
+    <message>
+        <source>Block all websites</source>
+        <translation>Chặn mọi trang web</translation>
+    </message>
+    <message>
+        <source>No website can be opened on the student computers.</source>
+        <translation>Máy học sinh không mở được trang web nào.</translation>
+    </message>
+    <message>
+        <source>Allow only listed websites...</source>
+        <translation>Chỉ cho phép các trang web trong danh sách...</translation>
+    </message>
+    <message>
+        <source>Only the websites in your list can be opened.</source>
+        <translation>Chỉ mở được các trang web trong danh sách của bạn.</translation>
+    </message>
+    <message>
+        <source>Block listed websites...</source>
+        <translation>Chặn các trang web trong danh sách...</translation>
+    </message>
+    <message>
+        <source>The websites in your list can not be opened, all others can.</source>
+        <translation>Không mở được các trang web trong danh sách, các trang khác vẫn mở được.</translation>
+    </message>
+    <message>
+        <source>Unblock websites</source>
+        <translation>Bỏ chặn web</translation>
+    </message>
+    <message>
+        <source>All websites can be opened again.</source>
+        <translation>Mở lại được mọi trang web.</translation>
+    </message>
+    <message>
+        <source>Remove all restrictions</source>
+        <translation>Gỡ mọi hạn chế</translation>
+    </message>
+    <message>
+        <source>Remove every restriction from the student computers.</source>
+        <translation>Gỡ tất cả các hạn chế trên máy học sinh.</translation>
+    </message>
+    <message>
+        <source>Show the restrictions which are active on this computer</source>
+        <translation>Hiện các hạn chế đang áp dụng trên máy này</translation>
+    </message>
+    <message>
+        <source>Remove all restrictions from this computer (emergency)</source>
+        <translation>Gỡ mọi hạn chế trên máy này (khẩn cấp)</translation>
+    </message>
+    <message>
+        <source>Apply a web filter on this computer: web blockall | web allow &lt;websites&gt; | web block &lt;websites&gt;</source>
+        <translation>Áp dụng chặn web trên máy này: web blockall | web allow &lt;trang web&gt; | web block &lt;trang web&gt;</translation>
+    </message>
+    <message>
+        <source>Restrictions are never applied to this computer (the teacher computer).</source>
+        <translation>Không bao giờ áp dụng hạn chế cho chính máy này (máy giáo viên).</translation>
+    </message>
+    <message>
+        <source>No restrictions are active on this computer.</source>
+        <translation>Máy này không có hạn chế nào.</translation>
+    </message>
+    <message>
+        <source>Web filter: %1</source>
+        <translation>Chặn web: %1</translation>
+    </message>
+    <message>
+        <source>Last heartbeat: %1</source>
+        <translation>Tín hiệu sống gần nhất: %1</translation>
+    </message>
+    <message>
+        <source>Expires: %1</source>
+        <translation>Hết hạn: %1</translation>
+    </message>
+    <message>
+        <source>The web filter could not be applied completely. Please run this command as administrator.</source>
+        <translation>Không áp dụng đầy đủ được việc chặn web. Hãy chạy lệnh này với quyền quản trị (administrator).</translation>
+    </message>
+    <message>
+        <source>Web filter applied. It is removed automatically when no Teacher Console keeps it alive.</source>
+        <translation>Đã chặn web. Việc chặn tự được gỡ khi không có Bảng điều khiển giáo viên duy trì.</translation>
+    </message>
+    <message>
+        <source>Not all restrictions could be removed. Please run this command as administrator.</source>
+        <translation>Không gỡ được hết các hạn chế. Hãy chạy lệnh này với quyền quản trị (administrator).</translation>
+    </message>
+    <message>
+        <source>All restrictions have been removed.</source>
+        <translation>Đã gỡ mọi hạn chế.</translation>
+    </message>
+    <message>
+        <source>Restrict student computers, e.g. block websites</source>
+        <translation>Hạn chế máy học sinh, ví dụ chặn trang web</translation>
+    </message>
+    <message>
+        <source>Show or remove the restrictions of this computer</source>
+        <translation>Xem hoặc gỡ các hạn chế của máy này</translation>
+    </message>
+</context>
+<context>
     <name>ItlabRoomsPlugin</name>
     <message>
         <source>Rooms</source>
@@ -5777,6 +5884,41 @@ Ví dụ: [^-]*-(PC[0-9]*)</translation>
     <message>
         <source>Commands for running the WebAPI server</source>
         <translation>Lệnh chạy máy chủ WebAPI</translation>
+    </message>
+</context>
+<context>
+    <name>WebsiteListDialog</name>
+    <message>
+        <source>Allow only listed websites</source>
+        <translation>Chỉ cho phép các trang web trong danh sách</translation>
+    </message>
+    <message>
+        <source>Block listed websites</source>
+        <translation>Chặn các trang web trong danh sách</translation>
+    </message>
+    <message>
+        <source>Only these websites can be opened on the student computers. Enter one website per line, e.g. &lt;b&gt;vnexpress.net&lt;/b&gt; or &lt;b&gt;https://www.google.com&lt;/b&gt;. Subdomains are included automatically (google.com also allows mail.google.com).&lt;br&gt;&lt;br&gt;Note: many websites load content from other websites (images, videos, sign-in). If a page is not displayed correctly, add these websites as well.</source>
+        <translation>Máy học sinh chỉ mở được các trang web này. Mỗi dòng một trang, ví dụ &lt;b&gt;vnexpress.net&lt;/b&gt; hoặc &lt;b&gt;https://www.google.com&lt;/b&gt;. Tên miền con được tính luôn (google.com cho phép cả mail.google.com).&lt;br&gt;&lt;br&gt;Lưu ý: nhiều trang web tải nội dung từ trang khác (ảnh, video, đăng nhập). Nếu trang hiển thị không đúng, hãy thêm cả các trang đó.</translation>
+    </message>
+    <message>
+        <source>These websites can not be opened on the student computers, all others can. Enter one website per line, e.g. &lt;b&gt;facebook.com&lt;/b&gt; or &lt;b&gt;https://www.youtube.com&lt;/b&gt;. Subdomains are included automatically.</source>
+        <translation>Máy học sinh không mở được các trang web này, các trang khác vẫn mở được. Mỗi dòng một trang, ví dụ &lt;b&gt;facebook.com&lt;/b&gt; hoặc &lt;b&gt;https://www.youtube.com&lt;/b&gt;. Tên miền con được tính luôn.</translation>
+    </message>
+    <message>
+        <source>Allow only these websites</source>
+        <translation>Chỉ cho phép các trang này</translation>
+    </message>
+    <message>
+        <source>Block these websites</source>
+        <translation>Chặn các trang này</translation>
+    </message>
+    <message>
+        <source>%1 websites: %2</source>
+        <translation>%1 trang web: %2</translation>
+    </message>
+    <message>
+        <source>The list is empty, so no website can be opened at all. Continue?</source>
+        <translation>Danh sách đang trống nên sẽ không mở được trang web nào. Tiếp tục?</translation>
     </message>
 </context>
 <context>

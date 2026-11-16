@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/itlab-restrictions">
+        <file>itlab-restrictions.png</file>
+    </qresource>
+</RCC>

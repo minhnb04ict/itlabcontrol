@@ -145,6 +145,14 @@ Ghi **Đạt / Không đạt** và ghi chú (máy nào, hiện tượng gì). M�
 | 18 | Bật máy (WOL) | Tắt 1 máy (Shut down), chờ 1 phút, bấm Bật máy | Máy bật lên trong ~30 giây (xem mục 2.6 nếu không bật) | |
 | 19 | Song song với Veyon | Máy có cài Veyon gốc | Veyon và ITLab cùng chạy, không ảnh hưởng nhau | |
 | 20 | Hiệu năng | Console mở 30 phút với 31 máy | Không đứng, CPU máy GV ổn định | |
+| 21 | Chặn mọi trang web ⭐ | Hạn chế → Chặn mọi trang web; trên máy HS mở Chrome, Edge, Cốc Cốc | Không vào được trang nào (kể cả trình duyệt khác, do tường lửa chặn cổng 80/443) | |
+| 22 | Chỉ cho phép danh sách ⭐ | Hạn chế → Chỉ cho phép…, nhập `vnexpress.net` | Chỉ vào được vnexpress.net | |
+| 23 | Chặn danh sách ⭐ | Hạn chế → Chặn…, nhập `youtube.com` | youtube.com (cả m.youtube.com) bị chặn, trang khác vào được | |
+| 24 | Bỏ chặn / Gỡ mọi hạn chế ⭐ | Bấm Bỏ chặn web | Vào lại được mọi trang; chính sách trình duyệt có sẵn của trường vẫn còn | |
+| 25 | Tự gỡ khi tắt Console ⭐ | Chặn web rồi **đóng Console** ≥ 16 phút | Máy HS tự bỏ chặn (an toàn khi GV quên gỡ) | |
+| 26 | Gỡ khẩn cấp ⭐ | Trên máy HS (cmd admin): `veyon-cli restrictions clear` | Bỏ chặn ngay | |
+
+> Firefox chỉ nhận thay đổi chặn web khi **mở lại** Firefox. Chrome, Edge, Cốc Cốc nhận ngay (vài giây).
 
 ### 2.6 "Bật máy" không hoạt động
 

@@ -281,7 +281,7 @@ Hiện trạng Veyon: Collect lấy mọi file trong **một thư mục cố đ�
 **Tiêu chí duyệt:** dạy được một tiết hoàn chỉnh (dọn màn hình, chiếu màn hình, khoá máy, gửi và thu bài) bằng tiếng Việt; GV phòng A không thấy được phòng B.
 
 ### Giai đoạn 1b: Khảo sát nhanh `itlab-survey` (4–5 tuần) ⬆ đưa lên từ GĐ3 (duyệt 2026-11-11)
-Làm ngay sau GĐ1, trước GĐ2. Thiết kế chi tiết: **`docs/ITLabControl_Survey_Design.md`** (đã duyệt: đủ 11 dạng câu hỏi, ẩn danh hoàn toàn).
+Ban đầu xếp ngay sau GĐ1; **ngày 2026-11-16 GV quyết định làm GĐ2 (chặn) trước**, GĐ1b làm sau GĐ2. Thiết kế chi tiết: **`docs/ITLabControl_Survey_Design.md`** (đã duyệt: đủ 11 dạng câu hỏi, ẩn danh hoàn toàn).
 1. **S1. Cơ bản (2–3 tuần):** dạng Đúng/Sai, Có/Không, Chọn 1, Chọn nhiều, Thang 1…n, Mức hiểu bài, Trả lời ngắn; thời gian trả lời, đổi đáp án, ẩn danh, đáp án đúng; cửa sổ kết quả thời gian thực; xuất CSV; gửi theo nhóm.
 2. **S2. Mở rộng (2 tuần):** dạng Mức độ đồng ý, Đánh giá sao, Nhập số, Xếp thứ tự; mẫu câu hỏi một chạm; chiếu kết quả cho HS; nhãn đáp án trên ô máy; nhắc máy chưa trả lời; ảnh kèm câu hỏi.
 
@@ -404,7 +404,10 @@ GĐ6                                           ───── liên tục ─�
 | 3. Phân quyền theo phòng | ✅ 2026-11-12: **mỗi phòng một khoá xác thực** (Configurator → Phòng máy: tạo khoá trên máy GV, "Chỉ cho phép các khoá này" trên máy HS; script cài máy HS nhập mọi `*_public_key.pem`, gỡ khoá cũ); khoá quản trị cho IT. Chờ kiểm thử phòng thật |
 | 4/7. Hoàn thiện nhỏ (scan, ảnh khoá, firewall) | ✅ 2026-11-12: xoay vòng màn hình 2–60 giây; màn hình khoá có **logo trường + dòng chữ** (Configurator hoặc `man-hinh-khoa.png`); tường lửa đã tự cấu hình khi cài (quy tắc riêng ITLabControl), hướng dẫn mở cổng khi khác subnet trong `docs/LAB.md` 2.4 |
 | 8. Kiểm thử phòng thật | 🟡 Đã có quy trình triển khai và **phiếu kiểm thử 20 mục** (`docs/LAB.md` mục 2); chờ thực hiện tại phòng máy |
-| GĐ1b Khảo sát nhanh | ✅ Thiết kế đã duyệt 2026-11-11; làm ngay sau GĐ1 |
+| GĐ1b Khảo sát nhanh | ✅ Thiết kế đã duyệt 2026-11-11; **làm sau GĐ2** (GV đổi thứ tự 2026-11-16) |
+| GĐ2.0 Lõi hạn chế | ✅ 2026-11-16 (`plugins/itlab-restrictions`): trạng thái lưu ở `%ProgramData%\ITLabControl\restrictions.json`, Console gửi tín hiệu sống mỗi 60 giây, máy HS **tự gỡ** khi mất tín hiệu 15 phút (`ITLab/RestrictionHeartbeatTimeout`) hoặc quá 240 phút (`ITLab/RestrictionMaxDuration`); `veyon-cli restrictions status / clear / web …`. Đã thử tự gỡ trên máy GV |
+| GĐ2.1 Chặn web | ✅ 2026-11-16: nút **Hạn chế** → Chặn mọi trang web / Chỉ cho phép danh sách / Chặn danh sách / Bỏ chặn web / Gỡ mọi hạn chế. Chính sách Chrome, Edge, Cốc Cốc, Brave, Firefox (**giữ và trả lại chính sách sẵn có**); "chặn mọi trang" thêm tường lửa chặn cổng 80/443. Chờ thử trên máy HS |
+| GĐ2 còn lại | Chặn ứng dụng, USB, in, âm thanh, theo dõi gõ phím, danh sách dùng chung |
 | GĐ2 → GĐ6 | Chưa duyệt |
 
 ### Việc bạn cần chuẩn bị cho GĐ0
