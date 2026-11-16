@@ -153,7 +153,10 @@ Bật máy dùng gói Wake-on-LAN (WOL) gửi tới địa chỉ MAC của máy 
 1. **Máy GV và máy HS phải cùng mạng con**, hoặc trong phòng phải còn **ít nhất một máy HS đang bật**. Từ bản 2026-11-12, Console
    nhờ tối đa 2 máy đang bật của cùng phòng phát gói bật máy ngay trong mạng của phòng.
    Kiểm tra mạng con: `ipconfig` trên máy GV và máy HS, ba số đầu của IPv4 (với mặt nạ 255.255.255.0) phải giống nhau.
-2. **Máy HS có địa chỉ MAC** trong Quản lý phòng (tự có khi thêm máy bằng "Tự dò máy").
+2. **Console phải biết MAC của máy HS.** Máy thêm bằng "Tự dò máy" có MAC ngay. Máy thêm bằng **mẫu tên** hoặc **gõ tên**:
+   từ bản 2026-11-16, Console **tự ghi nhớ** MAC, IP và mạng con khi máy HS kết nối (giống NetSupport). Vì vậy chỉ cần mở Console
+   **một lần khi các máy HS đang bật** (chạy bản mới), sau đó Bật máy mới dùng được. Gói bật máy được gửi tới broadcast của mạng
+   máy GV, broadcast của mạng máy HS (ví dụ 172.18.217.255), IP gần nhất của máy HS, qua cổng UDP 9 và 7, lặp 3 lần.
 3. **Windows trên máy HS:** script cài máy HS đã tự bật *Wake on Magic Packet*, *Shutdown Wake-On-Lan* cho card mạng và
    **tắt Fast startup** (Fast startup làm card mạng không nhận gói bật máy sau khi Shut down). Máy cài bằng bản cũ hơn: chạy lại script.
 4. **BIOS/UEFI máy HS** (phần mềm không chỉnh được, IT làm 1 lần mỗi máy): bật *Wake on LAN* / *Power On by PCI-E* /

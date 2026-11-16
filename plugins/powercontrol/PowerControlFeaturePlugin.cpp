@@ -29,6 +29,9 @@
 #include <QProgressBar>
 #include <QProgressDialog>
 #include <QSet>
+#include <QSettings>
+#include <QTcpSocket>
+#include <QThread>
 #include <QUdpSocket>
 
 #include "Computer.h"
@@ -139,26 +142,31 @@ bool PowerControlFeaturePlugin::controlFeature( Feature::Uid featureUid,
 			hosts.append(controlInterface->computer());
 		}
 
-		(void) QtConcurrent::run([hosts]() {
-			const auto directory = VeyonCore::networkObjectDirectoryManager().configuredDirectory();
-
-			for (const auto& host : hosts)
+		// ITLabControl: resolve targets in this thread (directory/settings access), send in the background
+		QList<WakeOnLanTarget> targets;
+		for (const auto& host : std::as_const(hosts))
+		{
+			const auto target = wakeOnLanTarget(host);
+			if (target.macAddress.isEmpty())
 			{
-				auto macAddress = host.macAddress();
-				if (macAddress.isEmpty())
-				{
-					macAddress = directory->queryObjectAttribute(host.networkObjectUid(),
-																 NetworkObject::Attribute::MacAddress).toString();
-				}
+				vWarning() << "no MAC address available for host" << host.hostName() << "with ID" << host.networkObjectUid();
+			}
+			else
+			{
+				targets.append(target);
+			}
+		}
 
-				if (macAddress.isEmpty() == false)
+		(void) QtConcurrent::run([targets]() {
+			// magic packets are UDP without acknowledgement - send them a few times
+			static constexpr int Repetitions = 3;
+			for (int i = 0; i < Repetitions; ++i)
+			{
+				for (const auto& target : targets)
 				{
-					broadcastWOLPacket(macAddress);
+					broadcastWOLPacket(target.macAddress, target.targetAddresses);
 				}
-				else
-				{
-					vWarning() << "no MAC address available for host" << host.hostName() << "with ID" << host.networkObjectUid();
-				}
+				QThread::msleep(300);
 			}
 		});
 	}
@@ -255,10 +263,17 @@ bool PowerControlFeaturePlugin::handleFeatureMessage( VeyonServerInterface& serv
 	{
 		// ITLabControl: wake other computers of this network on behalf of the teacher computer
 		const auto macAddresses = message.argument( Argument::MacAddresses ).toStringList();
-		for( const auto& macAddress : macAddresses )
-		{
-			broadcastWOLPacket( macAddress );
-		}
+		const auto targetAddresses = message.argument( Argument::TargetAddresses ).toStringList();
+		(void) QtConcurrent::run( [macAddresses, targetAddresses]() {
+			for( int i = 0; i < 3; ++i )
+			{
+				for( const auto& macAddress : macAddresses )
+				{
+					broadcastWOLPacket( macAddress, targetAddresses );
+				}
+				QThread::msleep( 300 );
+			}
+		} );
 	}
 	else
 	{
@@ -277,9 +292,8 @@ void PowerControlFeaturePlugin::relayWakeOnLan( VeyonMasterInterface& master,
 	// another network, powered-on computers of the same rooms broadcast the packets in their network.
 	static constexpr int RelaysPerRoom = 2;
 
-	const auto directory = VeyonCore::networkObjectDirectoryManager().configuredDirectory();
-
 	QStringList macAddresses;
+	QStringList targetAddresses;
 	QSet<QString> rooms;
 	for( const auto& controlInterface : computerControlInterfaces )
 	{
@@ -289,15 +303,17 @@ void PowerControlFeaturePlugin::relayWakeOnLan( VeyonMasterInterface& master,
 			continue;
 		}
 
-		auto macAddress = controlInterface->computer().macAddress();
-		if( macAddress.isEmpty() && directory )
+		const auto target = wakeOnLanTarget( controlInterface->computer() );
+		if( target.macAddress.isEmpty() == false )
 		{
-			macAddress = directory->queryObjectAttribute( controlInterface->computer().networkObjectUid(),
-														  NetworkObject::Attribute::MacAddress ).toString();
-		}
-		if( macAddress.isEmpty() == false )
-		{
-			macAddresses.append( macAddress );
+			macAddresses.append( target.macAddress );
+			for( const auto& address : target.targetAddresses )
+			{
+				if( targetAddresses.contains( address ) == false )
+				{
+					targetAddresses.append( address );
+				}
+			}
 			rooms.insert( controlInterface->computer().location() );
 		}
 	}
@@ -324,8 +340,9 @@ void PowerControlFeaturePlugin::relayWakeOnLan( VeyonMasterInterface& master,
 	if( relays.isEmpty() == false )
 	{
 		vDebug() << "relaying WOL packets for" << macAddresses << "via" << relays.size() << "computers";
-		sendFeatureMessage( FeatureMessage{ m_powerOnFeature.uid(), FeatureMessage::Command::Default }
-								.addArgument( Argument::MacAddresses, macAddresses ),
+		sendFeatureMessage( FeatureMessage{ m_powerOnFeature.uid(), PowerOnCommand::RelayWakeOnLan }
+								.addArgument( Argument::MacAddresses, macAddresses )
+								.addArgument( Argument::TargetAddresses, targetAddresses ),
 							relays );
 	}
 }
@@ -432,7 +449,142 @@ bool PowerControlFeaturePlugin::confirmFeatureExecution( const Feature& feature,
 
 
 
-bool PowerControlFeaturePlugin::broadcastWOLPacket( QString macAddress )
+bool PowerControlFeaturePlugin::handleFeatureMessage( ComputerControlInterface::Pointer computerControlInterface,
+													  const FeatureMessage& message )
+{
+	if( message.featureUid() == m_powerOnFeature.uid() &&
+		message.command<PowerOnCommand>() == PowerOnCommand::NetworkInfo )
+	{
+		storeNetworkInfo( computerControlInterface->computer(),
+						  message.argument( Argument::MacAddresses ).toStringList().value( 0 ),
+						  message.argument( Argument::IpAddress ).toString(),
+						  message.argument( Argument::PrefixLength ).toInt() );
+		return true;
+	}
+
+	return false;
+}
+
+
+
+void PowerControlFeaturePlugin::sendAsyncFeatureMessages( VeyonServerInterface& server, const MessageContext& messageContext )
+{
+	// ITLabControl: tell the teacher computer once per connection which MAC/IP this computer uses,
+	// so it can be powered on later even if it was added by name only
+	static const char* networkInfoSentProperty = "itlabNetworkInfoSent";
+
+	auto socket = qobject_cast<QTcpSocket *>( messageContext.ioDevice() );
+	if( socket == nullptr || socket->property( networkInfoSentProperty ).toBool() )
+	{
+		return;
+	}
+	socket->setProperty( networkInfoSentProperty, true );
+
+	bool isIPv4 = false;
+	const auto localIPv4 = socket->localAddress().toIPv4Address( &isIPv4 );
+	if( isIPv4 == false || QHostAddress( localIPv4 ).isLoopback() )
+	{
+		return;
+	}
+
+	const auto networkInterfaces = QNetworkInterface::allInterfaces();
+	for( const auto& networkInterface : networkInterfaces )
+	{
+		const auto addressEntries = networkInterface.addressEntries();
+		for( const auto& addressEntry : addressEntries )
+		{
+			if( addressEntry.ip().toIPv4Address() == localIPv4 && networkInterface.hardwareAddress().isEmpty() == false )
+			{
+				server.sendFeatureMessageReply( messageContext,
+					FeatureMessage{ m_powerOnFeature.uid(), PowerOnCommand::NetworkInfo }
+						.addArgument( Argument::MacAddresses, QStringList{ networkInterface.hardwareAddress() } )
+						.addArgument( Argument::IpAddress, QHostAddress( localIPv4 ).toString() )
+						.addArgument( Argument::PrefixLength, addressEntry.prefixLength() ) );
+				return;
+			}
+		}
+	}
+}
+
+
+
+static QString networkInfoKey( const Computer& computer )
+{
+	return QStringLiteral("WakeOnLan/") + computer.networkObjectUid().toString( QUuid::WithoutBraces );
+}
+
+
+
+void PowerControlFeaturePlugin::storeNetworkInfo( const Computer& computer, const QString& macAddress,
+												  const QString& ipAddress, int prefixLength )
+{
+	if( macAddress.isEmpty() || computer.networkObjectUid().isNull() )
+	{
+		return;
+	}
+
+	// stored per teacher (HKCU), so no administrator rights are needed
+	const auto value = QStringLiteral("%1|%2|%3").arg( macAddress, ipAddress ).arg( prefixLength );
+	QSettings settings;
+	if( settings.value( networkInfoKey( computer ) ).toString() != value )
+	{
+		settings.setValue( networkInfoKey( computer ), value );
+	}
+}
+
+
+
+PowerControlFeaturePlugin::WakeOnLanTarget PowerControlFeaturePlugin::wakeOnLanTarget( const Computer& computer )
+{
+	WakeOnLanTarget target;
+
+	const auto learned = QSettings().value( networkInfoKey( computer ) ).toString().split( QLatin1Char('|') );
+	const auto learnedMac = learned.value( 0 );
+	const auto learnedIp = QHostAddress( learned.value( 1 ) );
+	const auto learnedPrefix = learned.value( 2 ).toInt();
+
+	target.macAddress = computer.macAddress();
+	if( target.macAddress.isEmpty() )
+	{
+		const auto directory = VeyonCore::networkObjectDirectoryManager().configuredDirectory();
+		if( directory )
+		{
+			target.macAddress = directory->queryObjectAttribute( computer.networkObjectUid(),
+																 NetworkObject::Attribute::MacAddress ).toString();
+		}
+	}
+	if( target.macAddress.isEmpty() )
+	{
+		target.macAddress = learnedMac;
+	}
+
+	// last known address: learned one, otherwise the configured host address if it is an IP address
+	auto ip = learnedIp;
+	auto prefix = learnedPrefix;
+	if( ip.protocol() != QAbstractSocket::IPv4Protocol )
+	{
+		ip = computer.hostAddress().isNull() ? QHostAddress( computer.hostName() ) : computer.hostAddress();
+		prefix = 24; // usual size of a computer lab network
+	}
+
+	if( ip.protocol() == QAbstractSocket::IPv4Protocol && ip.isLoopback() == false )
+	{
+		if( prefix > 0 && prefix < 31 )
+		{
+			// directed broadcast of the computer's network (routers may forward it)
+			const quint32 hostMask = ( quint32(1) << ( 32 - prefix ) ) - 1;
+			target.targetAddresses.append( QHostAddress( ip.toIPv4Address() | hostMask ).toString() );
+		}
+		// unicast to the last known address (works while switches still know the computer)
+		target.targetAddresses.append( ip.toString() );
+	}
+
+	return target;
+}
+
+
+
+bool PowerControlFeaturePlugin::broadcastWOLPacket( QString macAddress, const QStringList& extraTargetAddresses )
 {
 	if (macAddress.isEmpty())
 	{
@@ -467,8 +619,11 @@ bool PowerControlFeaturePlugin::broadcastWOLPacket( QString macAddress )
 
 	QUdpSocket udpSocket;
 
-	vDebug() << "broadcasting WOL packet for" << originalMacAddress;
-	bool success = ( udpSocket.writeDatagram( datagram, QHostAddress::Broadcast, 9 ) == datagram.size() );
+	// ITLabControl: like other classroom tools, also send to the "echo" port 7 and to
+	// the directed broadcast / last known address of the computer's own network
+	static const QList<quint16> ports{ 9, 7 };
+
+	QList<QHostAddress> addresses{ QHostAddress( QHostAddress::Broadcast ) };
 
 	const auto networkInterfaces = QNetworkInterface::allInterfaces();
 	for( const auto& networkInterface : networkInterfaces )
@@ -476,11 +631,29 @@ bool PowerControlFeaturePlugin::broadcastWOLPacket( QString macAddress )
 		const auto addressEntries = networkInterface.addressEntries();
 		for( const auto& addressEntry : addressEntries )
 		{
-			if( addressEntry.broadcast().isNull() == false )
+			if( addressEntry.broadcast().isNull() == false && addresses.contains( addressEntry.broadcast() ) == false )
 			{
-				vDebug() << "broadcasting WOL packet for" << originalMacAddress << "via" << addressEntry.broadcast().toString();
-				success &= ( udpSocket.writeDatagram( datagram, addressEntry.broadcast(), 9 ) == datagram.size() );
+				addresses.append( addressEntry.broadcast() );
 			}
+		}
+	}
+
+	for( const auto& extraTargetAddress : extraTargetAddresses )
+	{
+		const QHostAddress address( extraTargetAddress );
+		if( address.isNull() == false && addresses.contains( address ) == false )
+		{
+			addresses.append( address );
+		}
+	}
+
+	bool success = true;
+	for( const auto& address : std::as_const(addresses) )
+	{
+		vDebug() << "sending WOL packet for" << originalMacAddress << "to" << address.toString();
+		for( const auto port : ports )
+		{
+			success &= ( udpSocket.writeDatagram( datagram, address, port ) == datagram.size() );
 		}
 	}
 

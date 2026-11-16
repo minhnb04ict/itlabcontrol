@@ -43,9 +43,22 @@ public:
 	{
 		ShutdownTimeout,
 		// ITLabControl: MAC addresses a powered-on computer broadcasts WOL packets for in its own network
-		MacAddresses
+		MacAddresses,
+		// ITLabControl: network data of a student computer for Wake-on-LAN (sent once per connection)
+		IpAddress,
+		PrefixLength,
+		// ITLabControl: target addresses (directed broadcasts / last known IPs) for relayed WOL packets
+		TargetAddresses
 	};
 	Q_ENUM(Argument)
+
+	// ITLabControl: commands of the "Power on" feature
+	enum class PowerOnCommand
+	{
+		RelayWakeOnLan = 0, // = FeatureMessage::Command::Default, as sent by earlier versions
+		NetworkInfo = 1
+	};
+	Q_ENUM(PowerOnCommand)
 
 	explicit PowerControlFeaturePlugin( QObject* parent = nullptr );
 	~PowerControlFeaturePlugin() override = default;
@@ -107,6 +120,11 @@ public:
 
 	bool handleFeatureMessage( VeyonWorkerInterface& worker, const FeatureMessage& message ) override;
 
+	// ITLabControl: learn MAC/IP of student computers for Wake-on-LAN
+	bool handleFeatureMessage( ComputerControlInterface::Pointer computerControlInterface,
+							   const FeatureMessage& message ) override;
+	void sendAsyncFeatureMessages( VeyonServerInterface& server, const MessageContext& messageContext ) override;
+
 public Q_SLOTS:
 	CommandLinePluginInterface::RunResult handle_help( const QStringList& arguments );
 	CommandLinePluginInterface::RunResult handle_on( const QStringList& arguments );
@@ -116,7 +134,18 @@ protected:
 
 private:
 	bool confirmFeatureExecution( const Feature& feature, bool all, QWidget* parent );
-	static bool broadcastWOLPacket( QString macAddress );
+	static bool broadcastWOLPacket( QString macAddress, const QStringList& extraTargetAddresses = {} );
+
+	// ITLabControl: MAC address and extra target addresses (directed broadcast of the computer's
+	// network, last known IP) for a computer, using what was learned while it was connected
+	struct WakeOnLanTarget
+	{
+		QString macAddress;
+		QStringList targetAddresses;
+	};
+	static WakeOnLanTarget wakeOnLanTarget( const Computer& computer );
+	static void storeNetworkInfo( const Computer& computer, const QString& macAddress,
+								  const QString& ipAddress, int prefixLength );
 	void relayWakeOnLan( VeyonMasterInterface& master, const ComputerControlInterfaceList& computerControlInterfaces );
 
 	void confirmShutdown();
