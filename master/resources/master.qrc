@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/master">
+        <file>itlab-manage.png</file>
         <file>zoom-fit-best.png</file>
         <file>zoom-fit-best-dark.png</file>
         <file>camera-photo.png</file>

@@ -524,12 +524,98 @@ void MainWindow::showAboutDialog()
 
 
 
+// ITLabControl: features shown together in the menu of the "Manage" button, in this order
+static const QList<Feature::Uid>& managedFeatureUids()
+{
+	static const QList<Feature::Uid> uids{
+		Feature::Uid( "f483c659-b5e7-4dbc-bd91-2c9403e70ebd" ), // Power on
+		Feature::Uid( "6f5a27a0-0e2f-496e-afcc-7aae62eede10" ), // Power down (with its options)
+		Feature::Uid( "4f7d98f0-395a-4fff-b968-e49b8d0f748c" ), // Reboot
+		Feature::Uid( "7310707d-3918-460d-a949-65bd152cb958" ), // Log in
+		Feature::Uid( "7311d43d-ab53-439e-a03a-8cb25f7ed526" ), // Log off
+	};
+	return uids;
+}
+
+
+
+void MainWindow::addManageButtonToToolBar()
+{
+	auto menu = new QMenu( this );
+	menu->setToolTipsVisible( true );
+
+	for( const auto& uid : managedFeatureUids() )
+	{
+		const auto featureIt = std::find_if( m_master.features().cbegin(), m_master.features().cend(),
+											 [&uid]( const Feature& f ) { return f.uid() == uid; } );
+		if( featureIt == m_master.features().cend() )
+		{
+			continue; // plugin missing or feature disabled in the configuration
+		}
+
+		const auto feature = *featureIt;
+		const auto subFeatures = m_master.subFeatures( feature.uid() );
+		if( subFeatures.isEmpty() )
+		{
+			auto action = menu->addAction( QIcon( feature.iconUrl() ), feature.displayName(), this,
+										   [this, feature]() { m_master.runFeature( feature ); } );
+			action->setToolTip( feature.description() );
+		}
+		else
+		{
+			// e.g. "Power down": the feature itself followed by its options
+			auto subMenu = menu->addMenu( QIcon( feature.iconUrl() ), feature.displayName() );
+			subMenu->setToolTipsVisible( true );
+			auto action = subMenu->addAction( QIcon( feature.iconUrl() ), feature.displayName(), this,
+											  [this, feature]() { m_master.runFeature( feature ); } );
+			action->setToolTip( feature.description() );
+			subMenu->addSeparator();
+			for( const auto& subFeature : subFeatures )
+			{
+				auto subAction = subMenu->addAction( QIcon( subFeature.iconUrl() ), subFeature.displayName(), this,
+													 [this, subFeature]() { m_master.runFeature( subFeature ); } );
+				subAction->setToolTip( subFeature.description() );
+			}
+		}
+	}
+
+	if( menu->isEmpty() )
+	{
+		delete menu;
+		return;
+	}
+
+	auto button = new ToolButton( QIcon( QStringLiteral(":/master/itlab-manage.png") ),
+								  tr( "Manage" ), {},
+								  tr( "Power on, power down or restart the computers and log users in or out." ) );
+	button->setObjectName( QStringLiteral("ItlabManage") );
+	button->setMenu( menu );
+	button->setPopupMode( ToolButton::InstantPopup );
+	button->addTo( ui->toolBar );
+}
+
+
+
 void MainWindow::addFeaturesToToolBar()
 {
+	bool manageButtonAdded = false;
+
 	for( const auto& feature : m_master.features() )
 	{
 		if( feature.testFlag( Feature::Flag::Meta ) )
 		{
+			continue;
+		}
+
+		// ITLabControl: power and session features are grouped in the "Manage" button,
+		// which takes the place of the first of them
+		if( managedFeatureUids().contains( feature.uid() ) )
+		{
+			if( manageButtonAdded == false )
+			{
+				addManageButtonToToolBar();
+				manageButtonAdded = true;
+			}
 			continue;
 		}
 

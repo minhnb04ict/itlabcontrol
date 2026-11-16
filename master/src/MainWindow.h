@@ -78,6 +78,7 @@ private:
 	}
 
 	void addFeaturesToToolBar();
+	void addManageButtonToToolBar();
 	void addSubFeaturesToToolButton( QToolButton* button, const Feature& parentFeature );
 
 	void updateModeButtonGroup();

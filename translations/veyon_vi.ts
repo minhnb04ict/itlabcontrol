@@ -3628,6 +3628,14 @@ Make sure that the names of the keys belonging to each other are identical on al
         <translation>Tính năng &quot;%1&quot; vẫn đang bật. Vui lòng tắt trước khi đóng ITLabControl.</translation>
     </message>
     <message>
+        <source>Manage</source>
+        <translation>Quản lý</translation>
+    </message>
+    <message>
+        <source>Power on, power down or restart the computers and log users in or out.</source>
+        <translation>Bật máy, tắt máy, khởi động lại máy và đăng nhập, đăng xuất người dùng.</translation>
+    </message>
+    <message>
         <source>Use custom computer arrangement.
 
 Press and hold to load arrangement from a file or save current arrangement to a file.</source>
