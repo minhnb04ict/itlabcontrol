@@ -31,6 +31,7 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QSplitter>
+#include <QVBoxLayout>
 #include <QStyle>
 #include <QToolButton>
 
@@ -127,10 +128,18 @@ MainWindow::MainWindow( VeyonMaster &masterCore, QWidget* parent ) :
 	slideshowSpotlightSplitter->setStretchFactor( slideshowSpotlightSplitter->indexOf(slideshowPanel), 1 );
 	slideshowSpotlightSplitter->setStretchFactor( slideshowSpotlightSplitter->indexOf(spotlightPanel), 1 );
 
+	// ITLabControl: tabs of the computer groups directly above the computer screens
+	auto monitoringArea = new QWidget( monitoringSplitter );
+	auto monitoringLayout = new QVBoxLayout( monitoringArea );
+	monitoringLayout->setContentsMargins( 0, 0, 0, 0 );
+	monitoringLayout->setSpacing( 0 );
+	monitoringLayout->addWidget( ComputerGroupMenu::createGroupTabBar( m_master, this ) );
+	monitoringLayout->addWidget( ui->computerMonitoringWidget, 1 );
+
 	monitoringSplitter->addWidget( slideshowSpotlightSplitter );
-	monitoringSplitter->addWidget( ui->computerMonitoringWidget );
+	monitoringSplitter->addWidget( monitoringArea );
 	monitoringSplitter->setStretchFactor( monitoringSplitter->indexOf(slideshowSpotlightSplitter), 1 );
-	monitoringSplitter->setStretchFactor( monitoringSplitter->indexOf(ui->computerMonitoringWidget), 1 );
+	monitoringSplitter->setStretchFactor( monitoringSplitter->indexOf(monitoringArea), 1 );
 
 	mainSplitter->addWidget( computerSelectPanel );
 	mainSplitter->addWidget( screenshotManagementPanel );

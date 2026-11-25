@@ -38,6 +38,9 @@ public:
 	// status bar button: "Group: All computers" with a menu for choosing the active group
 	static QToolButton* createStatusBarButton( VeyonMaster& master, QWidget* parent );
 
+	// tab bar above the computer screens: "All computers" and one tab per group
+	static QWidget* createGroupTabBar( VeyonMaster& master, QWidget* parent );
+
 	// "Groups" sub menu for the context menu of the selected computers
 	static void addContextMenu( QMenu* menu, VeyonMaster& master, QWidget* parent,
 								const ComputerControlInterfaceList& selectedComputers );

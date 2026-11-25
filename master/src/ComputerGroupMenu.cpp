@@ -23,6 +23,8 @@
 #include <QActionGroup>
 #include <QInputDialog>
 #include <QMenu>
+#include <QSharedPointer>
+#include <QTabBar>
 #include <QToolButton>
 
 #include "ComputerControlListModel.h"
@@ -59,6 +61,64 @@ QToolButton* ComputerGroupMenu::createStatusBarButton( VeyonMaster& master, QWid
 	updateButton( button, master );
 
 	return button;
+}
+
+
+
+QWidget* ComputerGroupMenu::createGroupTabBar( VeyonMaster& master, QWidget* parent )
+{
+	auto tabBar = new QTabBar( parent );
+	tabBar->setObjectName( QStringLiteral("computerGroupTabBar") );
+	tabBar->setDocumentMode( true );
+	tabBar->setExpanding( false );
+	tabBar->setDrawBase( true );
+	tabBar->setUsesScrollButtons( true );
+	tabBar->setContextMenuPolicy( Qt::CustomContextMenu );
+	tabBar->setToolTip( tr( "Click a group to show and control only its computers. Right-click to manage the groups." ) );
+
+	auto& groups = master.computerGroups();
+
+	// tab index 0 = all computers, tab index i = group i - 1
+	auto updating = QSharedPointer<bool>::create( false );
+	const auto rebuild = [tabBar, &master, updating]() {
+		const auto& groupManager = master.computerGroups();
+		*updating = true;
+		while( tabBar->count() > 0 )
+		{
+			tabBar->removeTab( 0 );
+		}
+		tabBar->addTab( tr( "All computers (%1)" ).arg( master.allComputerControlInterfaces().size() ) );
+		for( int i = 0; i < groupManager.groups().size(); ++i )
+		{
+			tabBar->addTab( tr( "%1 (%2)" ).arg( groupManager.groups()[i].name ).arg( presentMemberCount( master, i ) ) );
+		}
+		tabBar->setCurrentIndex( groupManager.activeGroup() + 1 );
+		// only useful once there are groups
+		tabBar->setVisible( groupManager.groups().isEmpty() == false );
+		*updating = false;
+	};
+
+	QObject::connect( tabBar, &QTabBar::currentChanged, tabBar, [&groups, updating]( int index ) {
+		if( *updating == false && index >= 0 )
+		{
+			groups.setActiveGroup( index - 1 );
+		}
+	} );
+	QObject::connect( tabBar, &QTabBar::customContextMenuRequested, tabBar, [tabBar, &master, parent]( QPoint pos ) {
+		QMenu menu( tabBar );
+		menu.addAction( tr( "Manage groups..." ), tabBar, [&master, parent]() { showManageDialog( master, parent ); } );
+		menu.exec( tabBar->mapToGlobal( pos ) );
+	} );
+
+	QObject::connect( &groups, &ComputerGroupManager::groupsChanged, tabBar, rebuild );
+	QObject::connect( &groups, &ComputerGroupManager::activeGroupChanged, tabBar, rebuild );
+	QObject::connect( &master.computerControlListModel(), &QAbstractItemModel::modelReset, tabBar, rebuild );
+	QObject::connect( &master.computerControlListModel(), &QAbstractItemModel::rowsInserted, tabBar, rebuild );
+	QObject::connect( &master.computerControlListModel(), &QAbstractItemModel::rowsRemoved, tabBar, rebuild );
+
+	rebuild();
+
+	return tabBar;
 }
 
 

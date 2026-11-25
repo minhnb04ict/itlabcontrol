@@ -1221,8 +1221,16 @@ Make sure that the names of the keys belonging to each other are identical on al
         <translation>Quản lý nhóm...</translation>
     </message>
     <message>
+        <source>Click a group to show and control only its computers. Right-click to manage the groups.</source>
+        <translation>Bấm vào một nhóm để chỉ hiện và điều khiển các máy của nhóm đó. Chuột phải để quản lý nhóm.</translation>
+    </message>
+    <message>
         <source>All computers (%1)</source>
         <translation>Tất cả máy (%1)</translation>
+    </message>
+    <message>
+        <source>%1 (%2)</source>
+        <translation>%1 (%2)</translation>
     </message>
     <message>
         <source>%1 (%2 computers)</source>
