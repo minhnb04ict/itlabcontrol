@@ -2969,6 +2969,37 @@ Make sure that the names of the keys belonging to each other are identical on al
     </message>
 </context>
 <context>
+    <name>ItlabSurveyPlugin</name>
+    <message>
+        <source>Survey</source>
+        <translation>Khảo sát</translation>
+    </message>
+    <message>
+        <source>Ask the class a quick question and see the answers immediately.</source>
+        <translation>Hỏi nhanh cả lớp và xem câu trả lời ngay lập tức.</translation>
+    </message>
+    <message>
+        <source>New question...</source>
+        <translation>Câu hỏi mới...</translation>
+    </message>
+    <message>
+        <source>Write a question, choose the type of answers and send it to the students.</source>
+        <translation>Soạn câu hỏi, chọn dạng trả lời và gửi tới học sinh.</translation>
+    </message>
+    <message>
+        <source>There are no student computers to send the question to.</source>
+        <translation>Không có máy học sinh nào để gửi câu hỏi.</translation>
+    </message>
+    <message>
+        <source>Another survey is still open. Close it and send the new question?</source>
+        <translation>Một khảo sát khác vẫn đang mở. Đóng khảo sát đó và gửi câu hỏi mới?</translation>
+    </message>
+    <message>
+        <source>Quick surveys with live results</source>
+        <translation>Khảo sát nhanh với kết quả theo thời gian thực</translation>
+    </message>
+</context>
+<context>
     <name>JoinTeacherDialog</name>
     <message>
         <source>Cancel</source>
@@ -6088,6 +6119,521 @@ Ví dụ: [^-]*-(PC[0-9]*)</translation>
     <message>
         <source>The key of the teacher computer could not be installed: %1</source>
         <translation>Không cài được khoá của máy giáo viên: %1</translation>
+    </message>
+</context>
+<context>
+    <name>SurveyAnswerWindow</name>
+    <message>
+        <source>Question from the teacher</source>
+        <translation>Câu hỏi của giáo viên</translation>
+    </message>
+    <message>
+        <source>Anonymous survey - the teacher can not see who answered what.</source>
+        <translation>Khảo sát ẩn danh - giáo viên không biết ai đã trả lời gì.</translation>
+    </message>
+    <message>
+        <source>Choose your answer:</source>
+        <translation>Chọn câu trả lời của em:</translation>
+    </message>
+    <message>
+        <source>Change answer</source>
+        <translation>Sửa câu trả lời</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Đóng</translation>
+    </message>
+    <message>
+        <source>Send answer</source>
+        <translation>Gửi câu trả lời</translation>
+    </message>
+    <message>
+        <source>Select up to %1 answers.</source>
+        <translation>Chọn tối đa %1 đáp án.</translation>
+    </message>
+    <message>
+        <source>Select all correct answers.</source>
+        <translation>Chọn tất cả các đáp án đúng.</translation>
+    </message>
+    <message>
+        <source>Number from %1 to %2</source>
+        <translation>Số từ %1 đến %2</translation>
+    </message>
+    <message>
+        <source>Enter a number</source>
+        <translation>Nhập một số</translation>
+    </message>
+    <message>
+        <source>Type your answer</source>
+        <translation>Nhập câu trả lời của em</translation>
+    </message>
+    <message>
+        <source>Select at least one answer</source>
+        <translation>Hãy chọn ít nhất một đáp án</translation>
+    </message>
+    <message>
+        <source>Your answer was sent: %1</source>
+        <translation>Đã gửi câu trả lời: %1</translation>
+    </message>
+    <message>
+        <source>Time is up</source>
+        <translation>Hết giờ</translation>
+    </message>
+</context>
+<context>
+    <name>SurveyChartWidget</name>
+    <message>
+        <source>No answers yet</source>
+        <translation>Chưa có câu trả lời</translation>
+    </message>
+</context>
+<context>
+    <name>SurveyComposeDialog</name>
+    <message>
+        <source>Students can change their answer</source>
+        <translation>Học sinh được sửa câu trả lời</translation>
+    </message>
+    <message>
+        <source>Anonymous (nobody can see who answered what)</source>
+        <translation>Ẩn danh (không ai biết ai đã trả lời gì)</translation>
+    </message>
+    <message>
+        <source>Quick survey</source>
+        <translation>Khảo sát nhanh</translation>
+    </message>
+    <message>
+        <source>Question (may stay empty if the question is shown on the board or projector)</source>
+        <translation>Câu hỏi (có thể để trống nếu câu hỏi đã có trên bảng hoặc máy chiếu)</translation>
+    </message>
+    <message>
+        <source>(not set)</source>
+        <translation>(không đặt)</translation>
+    </message>
+    <message>
+        <source>True</source>
+        <translation>Đúng</translation>
+    </message>
+    <message>
+        <source>False</source>
+        <translation>Sai</translation>
+    </message>
+    <message>
+        <source>Correct answer:</source>
+        <translation>Đáp án đúng:</translation>
+    </message>
+    <message>
+        <source>Add the answer &quot;Not sure&quot;</source>
+        <translation>Thêm lựa chọn &quot;Không chắc&quot;</translation>
+    </message>
+    <message>
+        <source>Max. selections:</source>
+        <translation>Số lựa chọn tối đa:</translation>
+    </message>
+    <message>
+        <source>no limit</source>
+        <translation>không giới hạn</translation>
+    </message>
+    <message>
+        <source>Number of answers:</source>
+        <translation>Số đáp án:</translation>
+    </message>
+    <message>
+        <source>The content of the answers may stay empty, the students then only choose the letter. Tick the correct answer to see the percentage of correct answers (optional).</source>
+        <translation>Nội dung đáp án có thể để trống, khi đó học sinh chỉ chọn chữ cái. Đánh dấu đáp án đúng để xem tỷ lệ trả lời đúng (không bắt buộc).</translation>
+    </message>
+    <message>
+        <source>(optional)</source>
+        <translation>(không bắt buộc)</translation>
+    </message>
+    <message>
+        <source>correct</source>
+        <translation>đúng</translation>
+    </message>
+    <message>
+        <source>e.g. very difficult</source>
+        <translation>ví dụ: rất khó</translation>
+    </message>
+    <message>
+        <source>e.g. very easy</source>
+        <translation>ví dụ: rất dễ</translation>
+    </message>
+    <message>
+        <source>Highest value n:</source>
+        <translation>Giá trị lớn nhất n:</translation>
+    </message>
+    <message>
+        <source>Label of 1:</source>
+        <translation>Nhãn của 1:</translation>
+    </message>
+    <message>
+        <source>Label of n:</source>
+        <translation>Nhãn của n:</translation>
+    </message>
+    <message>
+        <source>The answer buttons are fixed for this type.</source>
+        <translation>Dạng câu hỏi này có sẵn các nút trả lời cố định.</translation>
+    </message>
+    <message>
+        <source>Allowed range from</source>
+        <translation>Khoảng cho phép từ</translation>
+    </message>
+    <message>
+        <source>Correct answer</source>
+        <translation>Đáp án đúng</translation>
+    </message>
+    <message>
+        <source>to</source>
+        <translation>đến</translation>
+    </message>
+    <message>
+        <source>±</source>
+        <translation>±</translation>
+    </message>
+    <message>
+        <source>optional, several answers separated by ;</source>
+        <translation>không bắt buộc, nhiều đáp án cách nhau bởi dấu ;</translation>
+    </message>
+    <message>
+        <source>Upper/lower case and spaces are ignored. The students can type up to %1 characters.</source>
+        <translation>Không phân biệt chữ hoa/thường và dấu cách. Học sinh nhập tối đa %1 ký tự.</translation>
+    </message>
+    <message>
+        <source>No time limit</source>
+        <translation>Không giới hạn thời gian</translation>
+    </message>
+    <message>
+        <source>%1 seconds</source>
+        <translation>%1 giây</translation>
+    </message>
+    <message>
+        <source>%1 minutes</source>
+        <translation>%1 phút</translation>
+    </message>
+    <message>
+        <source>Options</source>
+        <translation>Tuỳ chọn</translation>
+    </message>
+    <message>
+        <source>Time to answer:</source>
+        <translation>Thời gian trả lời:</translation>
+    </message>
+    <message>
+        <source>Send to %1 computers</source>
+        <translation>Gửi tới %1 máy</translation>
+    </message>
+    <message>
+        <source>Question:</source>
+        <translation>Câu hỏi:</translation>
+    </message>
+    <message>
+        <source>Type:</source>
+        <translation>Dạng:</translation>
+    </message>
+    <message>
+        <source>The question is empty. Send it anyway?</source>
+        <translation>Câu hỏi đang để trống. Vẫn gửi?</translation>
+    </message>
+    <message>
+        <source>Yes</source>
+        <translation>Có</translation>
+    </message>
+    <message>
+        <source>No</source>
+        <translation>Không</translation>
+    </message>
+    <message>
+        <source>Not sure</source>
+        <translation>Không chắc</translation>
+    </message>
+    <message>
+        <source>Strongly disagree</source>
+        <translation>Rất không đồng ý</translation>
+    </message>
+    <message>
+        <source>Disagree</source>
+        <translation>Không đồng ý</translation>
+    </message>
+    <message>
+        <source>Neutral</source>
+        <translation>Phân vân</translation>
+    </message>
+    <message>
+        <source>Agree</source>
+        <translation>Đồng ý</translation>
+    </message>
+    <message>
+        <source>Strongly agree</source>
+        <translation>Rất đồng ý</translation>
+    </message>
+    <message>
+        <source>I understand</source>
+        <translation>Em hiểu rồi</translation>
+    </message>
+    <message>
+        <source>Not sure yet</source>
+        <translation>Em chưa chắc</translation>
+    </message>
+    <message>
+        <source>I do not understand</source>
+        <translation>Em chưa hiểu</translation>
+    </message>
+    <message>
+        <source>Have you understood the lesson?</source>
+        <translation>Các em đã hiểu bài chưa?</translation>
+    </message>
+    <message>
+        <source>Have you finished?</source>
+        <translation>Các em đã làm xong chưa?</translation>
+    </message>
+    <message>
+        <source>Choose the correct answer (A - D)</source>
+        <translation>Chọn đáp án đúng (A - D)</translation>
+    </message>
+    <message>
+        <source>True or false?</source>
+        <translation>Đúng hay sai?</translation>
+    </message>
+    <message>
+        <source>Rate today&apos;s lesson</source>
+        <translation>Đánh giá bài học hôm nay</translation>
+    </message>
+    <message>
+        <source>Yes, finished</source>
+        <translation>Em làm xong rồi</translation>
+    </message>
+    <message>
+        <source>Not yet</source>
+        <translation>Em chưa xong</translation>
+    </message>
+    <message>
+        <source>Choose the correct answer</source>
+        <translation>Chọn đáp án đúng</translation>
+    </message>
+</context>
+<context>
+    <name>SurveyQuestion</name>
+    <message>
+        <source>True / false</source>
+        <translation>Đúng / Sai</translation>
+    </message>
+    <message>
+        <source>Yes / no</source>
+        <translation>Có / Không</translation>
+    </message>
+    <message>
+        <source>Single choice (A, B, C, ...)</source>
+        <translation>Chọn 1 đáp án (A, B, C, ...)</translation>
+    </message>
+    <message>
+        <source>Multiple choice</source>
+        <translation>Chọn nhiều đáp án</translation>
+    </message>
+    <message>
+        <source>Scale 1 ... n</source>
+        <translation>Thang số 1 ... n</translation>
+    </message>
+    <message>
+        <source>Agreement (5 levels)</source>
+        <translation>Mức độ đồng ý (5 mức)</translation>
+    </message>
+    <message>
+        <source>Star rating (1 - 5)</source>
+        <translation>Đánh giá sao (1 - 5)</translation>
+    </message>
+    <message>
+        <source>Understanding (traffic light)</source>
+        <translation>Mức hiểu bài (đèn giao thông)</translation>
+    </message>
+    <message>
+        <source>Number</source>
+        <translation>Nhập số</translation>
+    </message>
+    <message>
+        <source>Short text answer</source>
+        <translation>Trả lời ngắn</translation>
+    </message>
+    <message>
+        <source>(nothing selected)</source>
+        <translation>(không chọn gì)</translation>
+    </message>
+</context>
+<context>
+    <name>SurveyResultsDialog</name>
+    <message>
+        <source>Send the question again</source>
+        <translation>Gửi lại câu hỏi</translation>
+    </message>
+    <message>
+        <source>Close survey</source>
+        <translation>Đóng khảo sát</translation>
+    </message>
+    <message>
+        <source>Open results folder</source>
+        <translation>Mở thư mục kết quả</translation>
+    </message>
+    <message>
+        <source>Survey results</source>
+        <translation>Kết quả khảo sát</translation>
+    </message>
+    <message>
+        <source>anonymous</source>
+        <translation>ẩn danh</translation>
+    </message>
+    <message>
+        <source>time limit %1</source>
+        <translation>thời gian %1</translation>
+    </message>
+    <message>
+        <source>Chart</source>
+        <translation>Biểu đồ</translation>
+    </message>
+    <message>
+        <source>Computer</source>
+        <translation>Máy</translation>
+    </message>
+    <message>
+        <source>User</source>
+        <translation>Người dùng</translation>
+    </message>
+    <message>
+        <source>Answer</source>
+        <translation>Đáp án</translation>
+    </message>
+    <message>
+        <source>Result</source>
+        <translation>Kết quả</translation>
+    </message>
+    <message>
+        <source>Time</source>
+        <translation>Thời gian</translation>
+    </message>
+    <message>
+        <source>Per computer</source>
+        <translation>Từng máy</translation>
+    </message>
+    <message>
+        <source>Not answered</source>
+        <translation>Chưa trả lời</translation>
+    </message>
+    <message>
+        <source>Export (CSV for Excel)...</source>
+        <translation>Xuất (CSV cho Excel)...</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Đóng</translation>
+    </message>
+    <message>
+        <source>Survey closed</source>
+        <translation>Đã đóng khảo sát</translation>
+    </message>
+    <message>
+        <source>Close the survey? The students can not answer anymore and the results are saved.</source>
+        <translation>Đóng khảo sát? Học sinh sẽ không trả lời được nữa và kết quả được lưu lại.</translation>
+    </message>
+    <message>
+        <source>(other answers)</source>
+        <translation>(các câu trả lời khác)</translation>
+    </message>
+    <message>
+        <source>Answered: &lt;b&gt;%1 / %2&lt;/b&gt;</source>
+        <translation>Đã trả lời: &lt;b&gt;%1 / %2&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>Correct: &lt;b&gt;%1 (%2)&lt;/b&gt;</source>
+        <translation>Đúng: &lt;b&gt;%1 (%2)&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>Average: &lt;b&gt;%1&lt;/b&gt;</source>
+        <translation>Trung bình: &lt;b&gt;%1&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>Median: &lt;b&gt;%1&lt;/b&gt;</source>
+        <translation>Trung vị: &lt;b&gt;%1&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>Smallest: &lt;b&gt;%1&lt;/b&gt;</source>
+        <translation>Nhỏ nhất: &lt;b&gt;%1&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>Largest: &lt;b&gt;%1&lt;/b&gt;</source>
+        <translation>Lớn nhất: &lt;b&gt;%1&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>Results saved: %1</source>
+        <translation>Đã lưu kết quả: %1</translation>
+    </message>
+    <message>
+        <source>Correct</source>
+        <translation>Đúng</translation>
+    </message>
+    <message>
+        <source>Wrong</source>
+        <translation>Sai</translation>
+    </message>
+    <message>
+        <source>Not answered (%1)</source>
+        <translation>Chưa trả lời (%1)</translation>
+    </message>
+    <message>
+        <source>%1 computers have not answered yet.</source>
+        <translation>%1 máy chưa trả lời.</translation>
+    </message>
+    <message>
+        <source>All computers have answered.</source>
+        <translation>Tất cả các máy đã trả lời.</translation>
+    </message>
+    <message>
+        <source>Question</source>
+        <translation>Câu hỏi</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation>Dạng</translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation>Ngày</translation>
+    </message>
+    <message>
+        <source>Answered</source>
+        <translation>Đã trả lời</translation>
+    </message>
+    <message>
+        <source>Count</source>
+        <translation>Số lượng</translation>
+    </message>
+    <message>
+        <source>Percent</source>
+        <translation>Tỷ lệ</translation>
+    </message>
+    <message>
+        <source>yes</source>
+        <translation>có</translation>
+    </message>
+    <message>
+        <source>Answers (anonymous, random order)</source>
+        <translation>Các câu trả lời (ẩn danh, thứ tự ngẫu nhiên)</translation>
+    </message>
+    <message>
+        <source>(not answered)</source>
+        <translation>(chưa trả lời)</translation>
+    </message>
+    <message>
+        <source>Surveys</source>
+        <translation>Khảo sát</translation>
+    </message>
+    <message>
+        <source>Export survey results</source>
+        <translation>Xuất kết quả khảo sát</translation>
+    </message>
+    <message>
+        <source>CSV files (*.csv)</source>
+        <translation>Tệp CSV (*.csv)</translation>
+    </message>
+    <message>
+        <source>The file could not be written.</source>
+        <translation>Không ghi được tệp.</translation>
     </message>
 </context>
 <context>
