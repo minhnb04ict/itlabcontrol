@@ -273,7 +273,9 @@ void VeyonMaster::shutdown()
 	const auto allMessageQueuesEmpty = [&]() {
 		for( const auto& computerControlInterface : m_computerControlListModel->computerControlInterfaces() )
 		{
-			if( computerControlInterface->isMessageQueueEmpty() == false )
+			// ITLabControl: messages to computers which are not connected can never be sent
+			if( computerControlInterface->state() == ComputerControlInterface::State::Connected &&
+				computerControlInterface->isMessageQueueEmpty() == false )
 			{
 				return false;
 			}
@@ -282,7 +284,8 @@ void VeyonMaster::shutdown()
 		return true;
 	};
 
-	static constexpr auto MessageQueueWaitTimeout = 60 * 1000;
+	// ITLabControl: the Teacher Console must not keep running in the background after it was closed
+	static constexpr auto MessageQueueWaitTimeout = 5 * 1000;
 	static constexpr auto MessageQueuePollInterval = 10;
 
 	QElapsedTimer messageQueueWaitTimer;

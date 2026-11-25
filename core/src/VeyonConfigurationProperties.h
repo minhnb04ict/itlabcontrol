@@ -138,7 +138,7 @@
 	OP( VeyonConfiguration, VeyonCore::config(), bool, hideOwnSession, setHideOwnSession, "HideOwnSession", "Master", false, Configuration::Property::Flag::Standard )	\
 	OP( VeyonConfiguration, VeyonCore::config(), bool, hideEmptyLocations, setHideEmptyLocations, "HideEmptyLocations", "Master", false, Configuration::Property::Flag::Standard )	\
 	OP( VeyonConfiguration, VeyonCore::config(), bool, hideComputerFilter, setHideComputerFilter, "HideComputerFilter", "Master", false, Configuration::Property::Flag::Standard )	\
-	OP( VeyonConfiguration, VeyonCore::config(), QUuid, computerDoubleClickFeature, setComputerDoubleClickFeature, "ComputerDoubleClickFeature", "Master", QUuid(QStringLiteral("a18e545b-1321-4d4e-ac34-adc421c6e9c8")), Configuration::Property::Flag::Standard )	\
+	OP( VeyonConfiguration, VeyonCore::config(), QUuid, computerDoubleClickFeature, setComputerDoubleClickFeature, "ComputerDoubleClickFeature", "Master", QUuid(QStringLiteral("ca00ad68-1709-4abe-85e2-48dff6ccf8a2")), Configuration::Property::Flag::Standard )	\
 	OP( VeyonConfiguration, VeyonCore::config(), bool, enforceSelectedModeForClients, setEnforceSelectedModeForClients, "EnforceSelectedModeForClients", "Master", false, Configuration::Property::Flag::Standard )	\
 	OP( VeyonConfiguration, VeyonCore::config(), bool, autoOpenComputerSelectPanel, setAutoOpenComputerSelectPanel, "AutoOpenComputerSelectPanel", "Master", false, Configuration::Property::Flag::Standard )	\
 	OP( VeyonConfiguration, VeyonCore::config(), bool, confirmUnsafeActions, setConfirmUnsafeActions, "ConfirmUnsafeActions", "Master", false, Configuration::Property::Flag::Standard )	\
@@ -150,7 +150,7 @@
 	OP( VeyonConfiguration, VeyonCore::config(), QString, guestUserIdentityExtensionValue, setGuestUserIdentityExtensionValue, "GuestUserIdentityExtensionValue", "Master", QString{}, Configuration::Property::Flag::Advanced ) \
 
 #define FOREACH_VEYON_AUTHENTICATION_CONFIG_PROPERTY(OP) \
-	OP( VeyonConfiguration, VeyonCore::config(), VeyonCore::AuthenticationMethod, authenticationMethod, setAuthenticationMethod, "Method", "Authentication", QVariant::fromValue(VeyonCore::AuthenticationMethod::LogonAuthentication), Configuration::Property::Flag::Standard )	\
+	OP( VeyonConfiguration, VeyonCore::config(), VeyonCore::AuthenticationMethod, authenticationMethod, setAuthenticationMethod, "Method", "Authentication", QVariant::fromValue(VeyonCore::AuthenticationMethod::KeyFileAuthentication), Configuration::Property::Flag::Standard )	\
 
 #define FOREACH_VEYON_KEY_AUTHENTICATION_CONFIG_PROPERTY(OP) \
 	OP( VeyonConfiguration, VeyonCore::config(), QString, privateKeyBaseDir, setPrivateKeyBaseDir, "PrivateKeyBaseDir", "Authentication", QDir::toNativeSeparators( QStringLiteral( "%GLOBALAPPDATA%/keys/private" ) ), Configuration::Property::Flag::Advanced )	\

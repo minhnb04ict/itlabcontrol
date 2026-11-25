@@ -202,6 +202,28 @@ void ComputerControlListModel::reload()
 
 
 
+void ComputerControlListModel::reconnectDisconnected()
+{
+	for( int row = 0; row < m_computerControlInterfaces.count(); ++row )
+	{
+		const auto oldInterface = m_computerControlInterfaces[row];
+		if( oldInterface->state() == ComputerControlInterface::State::Connected )
+		{
+			continue;
+		}
+
+		stopComputerControlInterface( oldInterface );
+
+		const auto newInterface = ComputerControlInterface::Pointer::create( oldInterface->computer() );
+		m_computerControlInterfaces[row] = newInterface;
+		startComputerControlInterface( newInterface.data() );
+
+		Q_EMIT dataChanged( index( row, 0 ), index( row, 0 ) );
+	}
+}
+
+
+
 void ComputerControlListModel::update()
 {
 	const auto newComputerList = m_master->computerManager().selectedComputers( QModelIndex() );

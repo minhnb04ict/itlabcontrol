@@ -54,13 +54,19 @@ ItlabClearDesktopFeaturePlugin::ItlabClearDesktopFeaturePlugin( QObject* parent 
 						 Feature::Uid( "e1fad23a-cd6b-4517-a5e2-872901674876" ),
 						 m_clearDesktopFeature.uid(),
 						 tr( "Restore all windows" ), {}, {} ),
+	m_maximizeAllFeature( QStringLiteral("ItlabClearDesktopMaximizeAll"),
+						  Feature::Flag::Action | Feature::Flag::AllComponents,
+						  Feature::Uid( "c4e2a816-9d3b-4f57-a1c8-6b0e2f4d7a95" ),
+						  m_clearDesktopFeature.uid(),
+						  tr( "Maximize all windows (full screen)" ), {}, {} ),
 	m_closeAllFeature( QStringLiteral("ItlabClearDesktopCloseAll"),
 					   Feature::Flag::Action | Feature::Flag::AllComponents,
 					   Feature::Uid( "5b870b3f-0b5c-46e9-92e4-80cecf7afe9e" ),
 					   m_clearDesktopFeature.uid(),
 					   tr( "Close all applications" ), {}, {} ),
-	// thứ tự trong menu: Thu nhỏ, Mở rộng, Đóng
-	m_features( { m_clearDesktopFeature, m_minimizeAllFeature, m_restoreAllFeature, m_closeAllFeature } )
+	// thứ tự trong menu: Thu nhỏ, Mở rộng, Phóng to toàn màn hình, Đóng
+	m_features( { m_clearDesktopFeature, m_minimizeAllFeature, m_restoreAllFeature, m_maximizeAllFeature,
+				  m_closeAllFeature } )
 {
 }
 
@@ -85,9 +91,9 @@ bool ItlabClearDesktopFeaturePlugin::startFeature( VeyonMasterInterface& master,
 		return controlFeature( m_minimizeAllFeature.uid(), Operation::Start, {}, computerControlInterfaces );
 	}
 
-	if( feature == m_restoreAllFeature )
+	if( feature == m_restoreAllFeature || feature == m_maximizeAllFeature )
 	{
-		return controlFeature( m_restoreAllFeature.uid(), Operation::Start, {}, computerControlInterfaces );
+		return controlFeature( feature.uid(), Operation::Start, {}, computerControlInterfaces );
 	}
 
 	if( feature == m_closeAllFeature )
@@ -139,6 +145,13 @@ bool ItlabClearDesktopFeaturePlugin::controlFeature( Feature::Uid featureUid, Op
 	if( featureUid == m_restoreAllFeature.uid() )
 	{
 		sendFeatureMessage( FeatureMessage{ m_clearDesktopFeature.uid(), FeatureCommand::RestoreAllWindows },
+							computerControlInterfaces );
+		return true;
+	}
+
+	if( featureUid == m_maximizeAllFeature.uid() )
+	{
+		sendFeatureMessage( FeatureMessage{ m_clearDesktopFeature.uid(), FeatureCommand::MaximizeAllWindows },
 							computerControlInterfaces );
 		return true;
 	}
@@ -203,6 +216,9 @@ bool ItlabClearDesktopFeaturePlugin::handleFeatureMessage( VeyonWorkerInterface&
 		return true;
 	case FeatureCommand::RestoreAllWindows:
 		restoreAllWindows();
+		return true;
+	case FeatureCommand::MaximizeAllWindows:
+		maximizeAllWindows();
 		return true;
 	}
 
@@ -343,6 +359,21 @@ void ItlabClearDesktopFeaturePlugin::minimizeAllWindows()
 	}
 
 	vDebug() << "minimized" << windows.size() << "windows";
+}
+
+
+
+void ItlabClearDesktopFeaturePlugin::maximizeAllWindows()
+{
+	// phóng to mọi cửa sổ ứng dụng ra toàn màn hình, kể cả cửa sổ đang thu nhỏ
+	const auto windows = applicationWindows( protectedProcessNames() );
+	for( const auto& window : windows )
+	{
+		ShowWindowAsync( window.handle, SW_MAXIMIZE );
+	}
+	s_lastMinimizedWindows.clear();
+
+	vDebug() << "maximized" << windows.size() << "windows";
 }
 
 

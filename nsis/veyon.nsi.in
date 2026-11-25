@@ -47,6 +47,13 @@ RequestExecutionLevel admin
 !include "LogicLib.nsh"
 !include "MUI2.nsh"
 !include "FileFunc.nsh"
+!include "nsDialogs.nsh"
+!include "Sections.nsh"
+
+; ITLabControl: role of this computer ("Teacher" or "Student"), decides what is installed
+Var Role
+Var RoleTeacherRadio
+Var RoleStudentRadio
 
 !define MUI_ABORTWARNING
 !define MUI_UNABORTWARNING
@@ -66,11 +73,12 @@ RequestExecutionLevel admin
 
 !insertmacro MUI_PAGE_WELCOME
 
+; ITLabControl: choose the role instead of single components
+Page custom RolePageCreate RolePageLeave
+
 !insertmacro MUI_PAGE_LICENSE "${LICENSE_TXT}"
 
 !insertmacro MUI_PAGE_DIRECTORY
-
-!insertmacro MUI_PAGE_COMPONENTS
 
 !insertmacro MUI_PAGE_INSTFILES
 
@@ -174,7 +182,25 @@ SetRegView 64
 !insertmacro ITLAB_DROP_OLD_PORT "Network" "DemoServerPort" "11400"
 !insertmacro ITLAB_DROP_OLD_PORT "WebAPI" "HttpServerPort" "11080"
 SetRegView lastused
-ExecWait '"$INSTDIR\veyon-wcli.exe" service start'
+
+; ITLabControl: role specific setup
+ExecWait '"$INSTDIR\veyon-wcli.exe" config set ITLab/Role $Role'
+${If} $Role == "Teacher"
+  ; the service only runs while the Teacher Console is open: not started with Windows, and
+  ; interactive users may start/stop it (the Console does this, see TeacherServiceControl)
+  ExecWait '"$INSTDIR\veyon-wcli.exe" config set Service/Autostart 0'
+  nsExec::Exec '"$SYSDIR\sc.exe" config "@ITLAB_SERVICE_NAME@" start= demand'
+  nsExec::Exec '"$SYSDIR\sc.exe" sdset "@ITLAB_SERVICE_NAME@" "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWRPWPLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)"'
+  ; the Teacher Console receives connection requests of student computers (pairing)
+  nsExec::Exec '"$SYSDIR\netsh.exe" advfirewall firewall delete rule "name=@ITLAB_PRODUCT_NAME@ Teacher Console"'
+  nsExec::Exec '"$SYSDIR\netsh.exe" advfirewall firewall add rule "name=@ITLAB_PRODUCT_NAME@ Teacher Console" dir=in action=allow "program=$INSTDIR\${MAIN_APP_EXE}" enable=yes'
+${Else}
+  ExecWait '"$INSTDIR\veyon-wcli.exe" config set Service/Autostart 1'
+  nsExec::Exec '"$SYSDIR\sc.exe" config "@ITLAB_SERVICE_NAME@" start= auto'
+  nsExec::Exec '"$SYSDIR\sc.exe" sdset "@ITLAB_SERVICE_NAME@" "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)"'
+  nsExec::Exec '"$SYSDIR\netsh.exe" advfirewall firewall delete rule "name=@ITLAB_PRODUCT_NAME@ Teacher Console"'
+  ExecWait '"$INSTDIR\veyon-wcli.exe" service start'
+${EndIf}
 SectionEnd
 
 Section "$(SEC_MASTER_NAME)" SEC_MASTER
@@ -205,12 +231,46 @@ FunctionEnd
 ######################################################################
 
 Function .onInit
+; ITLabControl: Vietnamese is preselected (unless a language was chosen during an earlier installation)
+StrCpy $LANGUAGE ${LANG_VIETNAMESE}
 !insertmacro MUI_LANGDLL_DISPLAY
+
+; ITLabControl: role from /Role=Teacher|Student, /NoMaster (student, earlier versions),
+; the role of an earlier installation, or "Student" (most computers of a lab)
+StrCpy $Role ""
 ${GetParameters} $R0
+ClearErrors
+${GetOptions} $R0 "/Role=" $R1
+${IfNot} ${Errors}
+  ${If} $R1 == "Teacher"
+  ${OrIf} $R1 == "teacher"
+    StrCpy $Role "Teacher"
+  ${Else}
+    StrCpy $Role "Student"
+  ${EndIf}
+${EndIf}
+ClearErrors
 ${GetOptions} $R0 "/NoMaster" $R1
 ${IfNot} ${Errors}
-  !insertmacro UnselectSection ${SEC_MASTER}
+  StrCpy $Role "Student"
 ${EndIf}
+${If} $Role == ""
+  SetRegView 64
+  ReadRegStr $R2 HKLM "SOFTWARE\ITLabControl\ITLabControl\ITLab" "Role"
+  SetRegView lastused
+  ${If} $R2 == "Teacher"
+    StrCpy $Role "Teacher"
+  ${ElseIf} $R2 == "Student"
+    StrCpy $Role "Student"
+  ${ElseIf} ${FileExists} "$INSTDIR\${MAIN_APP_EXE}"
+    StrCpy $Role "Teacher"
+  ${Else}
+    StrCpy $Role "Student"
+  ${EndIf}
+${EndIf}
+Call ApplyRoleSections
+
+ClearErrors
 ${GetOptions} $R0 "/NoInterception" $R1
 ${IfNot} ${Errors}
   !insertmacro UnselectSection ${SEC_INTERCEPTION}
@@ -222,6 +282,56 @@ ${If} $0 != "admin"
 	SetErrorLevel 740 ;ERROR_ELEVATION_REQUIRED
 	Quit
 ${EndIf}
+FunctionEnd
+
+######################################################################
+
+; ITLabControl: teacher computer = Teacher Console (no keyboard lock driver needed),
+; student computer = service + keyboard/mouse lock driver (no Teacher Console)
+Function ApplyRoleSections
+${If} $Role == "Teacher"
+  !insertmacro SelectSection ${SEC_MASTER}
+  !insertmacro UnselectSection ${SEC_INTERCEPTION}
+${Else}
+  !insertmacro UnselectSection ${SEC_MASTER}
+  !insertmacro SelectSection ${SEC_INTERCEPTION}
+${EndIf}
+FunctionEnd
+
+Function RolePageCreate
+!insertmacro MUI_HEADER_TEXT "$(TXT_ROLE_TITLE)" "$(TXT_ROLE_SUBTITLE)"
+nsDialogs::Create 1018
+Pop $0
+${If} $0 == error
+  Abort
+${EndIf}
+
+${NSD_CreateRadioButton} 0 8u 100% 12u "$(TXT_ROLE_TEACHER)"
+Pop $RoleTeacherRadio
+${NSD_CreateLabel} 14u 22u 95% 26u "$(TXT_ROLE_TEACHER_DESC)"
+Pop $0
+${NSD_CreateRadioButton} 0 56u 100% 12u "$(TXT_ROLE_STUDENT)"
+Pop $RoleStudentRadio
+${NSD_CreateLabel} 14u 70u 95% 26u "$(TXT_ROLE_STUDENT_DESC)"
+Pop $0
+
+${If} $Role == "Teacher"
+  ${NSD_Check} $RoleTeacherRadio
+${Else}
+  ${NSD_Check} $RoleStudentRadio
+${EndIf}
+
+nsDialogs::Show
+FunctionEnd
+
+Function RolePageLeave
+${NSD_GetState} $RoleTeacherRadio $0
+${If} $0 == ${BST_CHECKED}
+  StrCpy $Role "Teacher"
+${Else}
+  StrCpy $Role "Student"
+${EndIf}
+Call ApplyRoleSections
 FunctionEnd
 
 ######################################################################
@@ -264,6 +374,7 @@ ${INSTALL_TYPE}
 
 ExecWait '"$INSTDIR\veyon-wcli.exe" config set Service/SoftwareSASEnabled 0'
 ExecWait '"$INSTDIR\veyon-wcli.exe" config set Network/FirewallExceptionEnabled 0'
+nsExec::Exec '"$SYSDIR\netsh.exe" advfirewall firewall delete rule "name=@ITLAB_PRODUCT_NAME@ Teacher Console"'
 ExecWait '"$INSTDIR\veyon-wcli.exe" service unregister'
 # ITLabControl: the Interception driver is shared with Veyon - keep it if Veyon is still installed
 ReadRegStr $R2 ${REG_ROOT} "Software\Microsoft\Windows\CurrentVersion\Uninstall\Veyon" "UninstallString"
@@ -326,6 +437,18 @@ LangString DESC_SEC_MASTER ${LANG_ENGLISH} "Teacher console for monitoring and c
 LangString DESC_SEC_MASTER ${LANG_VIETNAMESE} "Bảng điều khiển giáo viên để giám sát và điều khiển máy học sinh (chỉ cài trên máy giáo viên)"
 LangString DESC_SEC_INTERCEPTION ${LANG_ENGLISH} "Special input device driver required for intercepting keyboard shortcuts such as Ctrl+Alt+Del in screen lock mode"
 LangString DESC_SEC_INTERCEPTION ${LANG_VIETNAMESE} "Driver đặc biệt để chặn các tổ hợp phím như Ctrl+Alt+Del khi khoá máy học sinh"
+LangString TXT_ROLE_TITLE ${LANG_ENGLISH} "Role of this computer"
+LangString TXT_ROLE_TITLE ${LANG_VIETNAMESE} "Vai trò của máy này"
+LangString TXT_ROLE_SUBTITLE ${LANG_ENGLISH} "The installer installs exactly what this computer needs."
+LangString TXT_ROLE_SUBTITLE ${LANG_VIETNAMESE} "Bộ cài sẽ cài đúng những gì máy này cần."
+LangString TXT_ROLE_TEACHER ${LANG_ENGLISH} "Teacher computer"
+LangString TXT_ROLE_TEACHER ${LANG_VIETNAMESE} "Máy giáo viên"
+LangString TXT_ROLE_TEACHER_DESC ${LANG_ENGLISH} "Installs the Teacher Console to view and control the student computers. ITLabControl only runs while the Teacher Console is open."
+LangString TXT_ROLE_TEACHER_DESC ${LANG_VIETNAMESE} "Cài Bảng điều khiển giáo viên để xem và điều khiển máy học sinh. ITLabControl chỉ chạy khi Bảng điều khiển đang mở."
+LangString TXT_ROLE_STUDENT ${LANG_ENGLISH} "Student computer"
+LangString TXT_ROLE_STUDENT_DESC ${LANG_ENGLISH} "Installs the service which lets the teacher view and control this computer, including the keyboard/mouse lock driver. Runs automatically with Windows."
+LangString TXT_ROLE_STUDENT ${LANG_VIETNAMESE} "Máy học sinh"
+LangString TXT_ROLE_STUDENT_DESC ${LANG_VIETNAMESE} "Cài dịch vụ cho phép giáo viên xem và điều khiển máy này, kèm driver khoá bàn phím/chuột. Tự chạy cùng Windows."
 LangString TXT_RUN_CONFIGURATOR ${LANG_ENGLISH} "Run ${CONFIGURATOR_NAME} now"
 LangString TXT_RUN_CONFIGURATOR ${LANG_VIETNAMESE} "Mở ${CONFIGURATOR_NAME} ngay"
 LangString TXT_GITHUB_LINK ${LANG_ENGLISH} "${APP_NAME} on GitHub (based on Veyon)"
@@ -335,9 +458,5 @@ LangString TXT_ADMIN_REQUIRED ${LANG_VIETNAMESE} "Vui lòng chạy bộ cài v�
 LangString TXT_CONFIG_IMPORT_FAILED ${LANG_ENGLISH} "Could not apply specified configuration file!"
 LangString TXT_CONFIG_IMPORT_FAILED ${LANG_VIETNAMESE} "Không áp dụng được file cấu hình đã chỉ định!"
 
-!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-!insertmacro MUI_DESCRIPTION_TEXT ${SEC_SERVICE} $(DESC_SEC_SERVICE)
-!insertmacro MUI_DESCRIPTION_TEXT ${SEC_MASTER} $(DESC_SEC_MASTER)
-!insertmacro MUI_DESCRIPTION_TEXT ${SEC_INTERCEPTION} $(DESC_SEC_INTERCEPTION)
-!insertmacro MUI_FUNCTION_DESCRIPTION_END
+; ITLabControl: no components page - the role page decides which sections are installed
 

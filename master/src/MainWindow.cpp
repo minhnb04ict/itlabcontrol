@@ -31,6 +31,7 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QSplitter>
+#include <QStyle>
 #include <QToolButton>
 
 #include <veyonconfig.h>
@@ -80,6 +81,15 @@ MainWindow::MainWindow( VeyonMaster &masterCore, QWidget* parent ) :
 	ui->statusBar->addWidget( ui->panelButtons );
 	ui->statusBar->addWidget( ui->spacerLabel1 );
 	// ITLabControl: choose a group of computers to work with
+	// ITLabControl: reload the rooms and reconnect computers which are not connected (also F5)
+	auto refreshButton = new QToolButton( this );
+	refreshButton->setAutoRaise( true );
+	refreshButton->setToolButtonStyle( Qt::ToolButtonTextBesideIcon );
+	refreshButton->setIcon( style()->standardIcon( QStyle::SP_BrowserReload ) );
+	refreshButton->setText( tr( "Refresh" ) );
+	refreshButton->setToolTip( tr( "Reload the rooms and computers and reconnect computers which are not connected (F5)" ) );
+	connect( refreshButton, &QToolButton::clicked, this, &MainWindow::refreshComputers );
+	ui->statusBar->addWidget( refreshButton );
 	ui->statusBar->addWidget( ComputerGroupMenu::createStatusBarButton( m_master, this ) );
 	ui->statusBar->addWidget( ui->filterLineEdit, 2 );
 	ui->statusBar->addWidget( ui->filterPoweredOnComputersButton );
@@ -501,8 +511,7 @@ void MainWindow::keyPressEvent( QKeyEvent* event )
 	switch( event->key() )
 	{
 	case Qt::Key_F5:
-		VeyonCore::networkObjectDirectoryManager().configuredDirectory()->update();
-		m_master.computerControlListModel().reload();
+		refreshComputers();
 		event->accept();
 		break;
 	case Qt::Key_F11:
@@ -513,6 +522,20 @@ void MainWindow::keyPressEvent( QKeyEvent* event )
 		QMainWindow::keyPressEvent( event );
 		break;
 	}
+}
+
+
+
+void MainWindow::refreshComputers()
+{
+	// the configuration may have been changed meanwhile (e.g. rooms saved by the service)
+	VeyonCore::config().reloadFromStore();
+	if( auto directory = VeyonCore::networkObjectDirectoryManager().configuredDirectory() )
+	{
+		directory->update();
+	}
+	m_master.computerControlListModel().update();
+	m_master.computerControlListModel().reconnectDisconnected();
 }
 
 

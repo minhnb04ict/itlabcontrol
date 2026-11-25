@@ -2620,6 +2620,10 @@ Make sure that the names of the keys belonging to each other are identical on al
         <translation>Mở rộng tất cả cửa sổ</translation>
     </message>
     <message>
+        <source>Maximize all windows (full screen)</source>
+        <translation>Phóng to toàn màn hình tất cả cửa sổ</translation>
+    </message>
+    <message>
         <source>Close all applications</source>
         <translation>Đóng tất cả ứng dụng</translation>
     </message>
@@ -3844,6 +3848,14 @@ Make sure that the names of the keys belonging to each other are identical on al
     <message>
         <source>ITLabControl Teacher Console</source>
         <translation>ITLabControl - Bảng điều khiển giáo viên</translation>
+    </message>
+    <message>
+        <source>Refresh</source>
+        <translation>Làm mới</translation>
+    </message>
+    <message>
+        <source>Reload the rooms and computers and reconnect computers which are not connected (F5)</source>
+        <translation>Tải lại phòng và danh sách máy, kết nối lại các máy chưa kết nối được (F5)</translation>
     </message>
     <message>
         <source>Language</source>

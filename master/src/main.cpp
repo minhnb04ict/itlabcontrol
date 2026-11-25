@@ -28,6 +28,7 @@
 #include "DocumentationFigureCreator.h"
 #include "VeyonMaster.h"
 #include "MainWindow.h"
+#include "TeacherServiceControl.h"
 
 
 int main( int argc, char** argv )
@@ -56,12 +57,29 @@ int main( int argc, char** argv )
 		return -1;
 	}
 
-	VeyonMaster masterCore( &core );
+	// ITLabControl: on teacher computers the service only runs while the Console is open
+	const auto teacherComputer = TeacherServiceControl::isTeacherComputer();
+	if( teacherComputer )
+	{
+		TeacherServiceControl::startService();
+	}
 
-	// hide splash-screen as soon as main-window is shown
-	splashScreen.finish( masterCore.mainWindow() );
+	int result = 0;
+	{
+		VeyonMaster masterCore( &core );
 
-	masterCore.mainWindow()->show();
+		// hide splash-screen as soon as main-window is shown
+		splashScreen.finish( masterCore.mainWindow() );
 
-	return core.exec();
+		masterCore.mainWindow()->show();
+
+		result = core.exec();
+	}
+
+	if( teacherComputer )
+	{
+		TeacherServiceControl::stopService();
+	}
+
+	return result;
 }

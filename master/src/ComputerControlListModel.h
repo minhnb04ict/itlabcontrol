@@ -58,13 +58,19 @@ public:
 
 	void reload();
 
+	// ITLabControl: public for the "Refresh" button of the Teacher Console
+	void update();
+
+	// ITLabControl: creates new connections for computers which are not connected (e.g. offline
+	// earlier, wrong key); computers which are connected are left untouched
+	void reconnectDisconnected();
+
 Q_SIGNALS:
 	void stateChanged(QModelIndex);
 	void activeFeaturesChanged( QModelIndex );
 	void computerScreenSizeChanged();
 
 private:
-	void update();
 
 	QModelIndex interfaceIndex( ComputerControlInterface* controlInterface ) const;
 	QVariant uidRoleData(const ComputerControlInterface::Pointer& controlInterface) const;

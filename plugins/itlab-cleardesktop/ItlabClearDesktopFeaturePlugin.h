@@ -99,7 +99,8 @@ private:
 	enum class FeatureCommand {
 		MinimizeAllWindows,
 		CloseAllApplications,
-		RestoreAllWindows   // thêm ở cuối để giữ nguyên số của các lệnh cũ
+		RestoreAllWindows,  // thêm ở cuối để giữ nguyên số của các lệnh cũ
+		MaximizeAllWindows
 	};
 
 	// tên file (chữ thường) của các tiến trình không bao giờ bị thu nhỏ/đóng
@@ -107,11 +108,13 @@ private:
 
 	static void minimizeAllWindows();
 	static void restoreAllWindows();
+	static void maximizeAllWindows();
 	static void closeAllApplications();
 
 	const Feature m_clearDesktopFeature;
 	const Feature m_minimizeAllFeature;
 	const Feature m_restoreAllFeature;
+	const Feature m_maximizeAllFeature;
 	const Feature m_closeAllFeature;
 	const FeatureList m_features;
 
