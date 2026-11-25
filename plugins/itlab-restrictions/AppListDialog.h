@@ -22,4 +22,7 @@ class AppListDialog : public QObject
 public:
 	// returns false if the teacher cancelled
 	static bool edit( QWidget* parent, bool allowList, QStringList& apps );
+
+	// groups of common programs for the "+ ..." quick add buttons
+	static QList<QPair<QString, QStringList>> presets( bool allowList );
 };

@@ -17,6 +17,8 @@ if(VEYON_BUILD_WINDOWS)
 		WebsiteListDialog.h
 		AppListDialog.cpp
 		AppListDialog.h
+		RestrictionListsDialog.cpp
+		RestrictionListsDialog.h
 		itlab-restrictions.qrc
 		)
 	target_link_libraries(itlabrestrictions PRIVATE -luserenv -liphlpapi -lws2_32)

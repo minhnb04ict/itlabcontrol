@@ -2734,6 +2734,14 @@ Make sure that the names of the keys belonging to each other are identical on al
         <translation>Dùng lại được mọi ứng dụng.</translation>
     </message>
     <message>
+        <source>Manage website and application lists...</source>
+        <translation>Quản lý danh sách website và ứng dụng...</translation>
+    </message>
+    <message>
+        <source>View, add, edit and remove entries of the lists without restricting anything.</source>
+        <translation>Xem, thêm, sửa, xoá các mục trong danh sách mà chưa chặn gì.</translation>
+    </message>
+    <message>
         <source>Remove all restrictions</source>
         <translation>Gỡ mọi hạn chế</translation>
     </message>
@@ -4670,6 +4678,121 @@ Vui lòng lưu bài và đóng tất cả chương trình.</translation>
     <message>
         <source>%1 folders, %2 files</source>
         <translation>%1 thư mục, %2 file</translation>
+    </message>
+</context>
+<context>
+    <name>RestrictionListsDialog</name>
+    <message>
+        <source>Website and application lists</source>
+        <translation>Danh sách website và ứng dụng</translation>
+    </message>
+    <message>
+        <source>Prepare the lists here without restricting anything. They are used when you choose a restriction in the &quot;Restrictions&quot; menu.</source>
+        <translation>Chuẩn bị danh sách tại đây mà chưa chặn gì. Các danh sách này được dùng khi bạn chọn hạn chế trong menu &quot;Hạn chế&quot;.</translation>
+    </message>
+    <message>
+        <source>Allowed websites</source>
+        <translation>Website được phép</translation>
+    </message>
+    <message>
+        <source>Blocked websites</source>
+        <translation>Website bị chặn</translation>
+    </message>
+    <message>
+        <source>Allowed applications</source>
+        <translation>Ứng dụng được phép</translation>
+    </message>
+    <message>
+        <source>Blocked applications</source>
+        <translation>Ứng dụng bị chặn</translation>
+    </message>
+    <message>
+        <source>The lists have been changed. Save the changes?</source>
+        <translation>Danh sách đã thay đổi. Lưu lại không?</translation>
+    </message>
+    <message>
+        <source>Websites which can be opened with &quot;Allow only listed websites&quot;. Subdomains are included.</source>
+        <translation>Các website mở được khi dùng &quot;Chỉ cho phép các trang web trong danh sách&quot;. Tính cả tên miền con.</translation>
+    </message>
+    <message>
+        <source>Websites which are blocked with &quot;Block listed websites&quot;. Subdomains are included.</source>
+        <translation>Các website bị chặn khi dùng &quot;Chặn các trang web trong danh sách&quot;. Tính cả tên miền con.</translation>
+    </message>
+    <message>
+        <source>Programs which can be used with &quot;Allow only listed applications&quot; (programs of Windows always stay allowed).</source>
+        <translation>Các chương trình dùng được khi bật &quot;Chỉ cho phép các ứng dụng trong danh sách&quot; (chương trình của Windows luôn được phép).</translation>
+    </message>
+    <message>
+        <source>Programs which are closed with &quot;Block listed applications&quot;. Enter the program file name, e.g. zalo.exe (see Task Manager, tab &quot;Details&quot;).</source>
+        <translation>Các chương trình bị đóng khi bật &quot;Chặn các ứng dụng trong danh sách&quot;. Nhập tên file chương trình, ví dụ zalo.exe (xem trong Task Manager, thẻ &quot;Details&quot;).</translation>
+    </message>
+    <message>
+        <source>Add...</source>
+        <translation>Thêm...</translation>
+    </message>
+    <message>
+        <source>Edit...</source>
+        <translation>Sửa...</translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation>Xoá</translation>
+    </message>
+    <message>
+        <source>Add group</source>
+        <translation>Thêm theo nhóm</translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation>Thêm</translation>
+    </message>
+    <message>
+        <source>Websites, one per line (e.g. vnexpress.net):</source>
+        <translation>Website, mỗi dòng một trang (ví dụ vnexpress.net):</translation>
+    </message>
+    <message>
+        <source>Program file names, one per line (e.g. zalo.exe):</source>
+        <translation>Tên file chương trình, mỗi dòng một tên (ví dụ zalo.exe):</translation>
+    </message>
+    <message>
+        <source>No valid entry was entered.</source>
+        <translation>Chưa nhập mục hợp lệ nào.</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation>Sửa</translation>
+    </message>
+    <message>
+        <source>Please select an entry first.</source>
+        <translation>Hãy chọn một mục trước.</translation>
+    </message>
+    <message>
+        <source>Website:</source>
+        <translation>Website:</translation>
+    </message>
+    <message>
+        <source>Program file name:</source>
+        <translation>Tên file chương trình:</translation>
+    </message>
+    <message>
+        <source>The entry is not valid.</source>
+        <translation>Mục này không hợp lệ.</translation>
+    </message>
+    <message>
+        <source>This entry is already in the list.</source>
+        <translation>Mục này đã có trong danh sách.</translation>
+    </message>
+    <message>
+        <source>Please select one or more entries first.</source>
+        <translation>Hãy chọn một hoặc nhiều mục trước.</translation>
+    </message>
+    <message>
+        <source>Remove %1 selected entries?</source>
+        <translation>Xoá %1 mục đã chọn?</translation>
+    </message>
+    <message>
+        <source>%1 entries</source>
+        <translation>%1 mục</translation>
     </message>
 </context>
 <context>

@@ -43,26 +43,11 @@ bool AppListDialog::edit( QWidget* parent, bool allowList, QStringList& apps )
 	edit->setPlainText( apps.join( QLatin1Char('\n') ) );
 
 	// quick add buttons for common groups of programs
-	const QList<QPair<QString, QStringList>> presets = allowList ?
-		QList<QPair<QString, QStringList>>{
-			{ tr( "Office" ), { QStringLiteral("winword.exe"), QStringLiteral("excel.exe"), QStringLiteral("powerpnt.exe"),
-								 QStringLiteral("onenote.exe") } },
-			{ tr( "Programming" ), { QStringLiteral("code.exe"), QStringLiteral("devcpp.exe"), QStringLiteral("codeblocks.exe"),
-									  QStringLiteral("python.exe"), QStringLiteral("pythonw.exe"), QStringLiteral("scratch 3.exe") } },
-			{ tr( "Web browsers" ), RestrictionsBackend::browserProcessNames() },
-		}
-		:
-		QList<QPair<QString, QStringList>>{
-			{ tr( "Web browsers" ), RestrictionsBackend::browserProcessNames() },
-			{ tr( "Chat and social media" ), { QStringLiteral("zalo.exe"), QStringLiteral("telegram.exe"), QStringLiteral("discord.exe"),
-												QStringLiteral("messenger.exe"), QStringLiteral("skype.exe") } },
-			{ tr( "Games" ), { QStringLiteral("steam.exe"), QStringLiteral("epicgameslauncher.exe"), QStringLiteral("riotclientservices.exe"),
-								QStringLiteral("leagueclient.exe"), QStringLiteral("robloxplayerbeta.exe"), QStringLiteral("garena.exe") } },
-		};
+	const auto groups = presets( allowList );
 
 	auto presetLayout = new QHBoxLayout;
 	presetLayout->addWidget( new QLabel( tr( "Add:" ), &dialog ) );
-	for( const auto& preset : presets )
+	for( const auto& preset : groups )
 	{
 		auto button = new QPushButton( QStringLiteral("+ ") + preset.first, &dialog );
 		const auto names = preset.second;
@@ -119,4 +104,26 @@ bool AppListDialog::edit( QWidget* parent, bool allowList, QStringList& apps )
 	}
 
 	return true;
+}
+
+
+
+QList<QPair<QString, QStringList>> AppListDialog::presets( bool allowList )
+{
+	return allowList ?
+		QList<QPair<QString, QStringList>>{
+			{ tr( "Office" ), { QStringLiteral("winword.exe"), QStringLiteral("excel.exe"), QStringLiteral("powerpnt.exe"),
+								 QStringLiteral("onenote.exe") } },
+			{ tr( "Programming" ), { QStringLiteral("code.exe"), QStringLiteral("devcpp.exe"), QStringLiteral("codeblocks.exe"),
+									  QStringLiteral("python.exe"), QStringLiteral("pythonw.exe"), QStringLiteral("scratch 3.exe") } },
+			{ tr( "Web browsers" ), RestrictionsBackend::browserProcessNames() },
+		}
+		:
+		QList<QPair<QString, QStringList>>{
+			{ tr( "Web browsers" ), RestrictionsBackend::browserProcessNames() },
+			{ tr( "Chat and social media" ), { QStringLiteral("zalo.exe"), QStringLiteral("telegram.exe"), QStringLiteral("discord.exe"),
+												QStringLiteral("messenger.exe"), QStringLiteral("skype.exe") } },
+			{ tr( "Games" ), { QStringLiteral("steam.exe"), QStringLiteral("epicgameslauncher.exe"), QStringLiteral("riotclientservices.exe"),
+								QStringLiteral("leagueclient.exe"), QStringLiteral("robloxplayerbeta.exe"), QStringLiteral("garena.exe") } },
+		};
 }

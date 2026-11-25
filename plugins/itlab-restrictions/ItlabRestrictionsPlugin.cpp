@@ -26,6 +26,7 @@
 #include "VeyonServerInterface.h"
 #include "WebsiteListDialog.h"
 #include "AppListDialog.h"
+#include "RestrictionListsDialog.h"
 #include "BuiltinFeatures.h"
 #include "FeatureWorkerManager.h"
 #include "SystemTrayIcon.h"
@@ -115,6 +116,12 @@ ItlabRestrictionsPlugin::ItlabRestrictionsPlugin( QObject* parent ) :
 						  m_appRestrictionsFeature.uid(),
 						  tr( "Unblock applications" ), {},
 						  tr( "All applications can be used again." ) ),
+	m_editListsFeature( QStringLiteral("ItlabEditRestrictionLists"),
+						Feature::Flag::Action | Feature::Flag::Master,
+						Feature::Uid( "a3c5e7f9-1b2d-4e46-8f80-4b5c6d7e8f96" ),
+						m_restrictionsFeature.uid(),
+						tr( "Manage website and application lists..." ), {},
+						tr( "View, add, edit and remove entries of the lists without restricting anything." ) ),
 	m_removeAllRestrictionsFeature( QStringLiteral("ItlabRemoveAllRestrictions"),
 									Feature::Flag::Action | Feature::Flag::AllComponents,
 									Feature::Uid( "1c7e9a83-5d2f-4b6c-8a1e-4c5d6e7f8a94" ),
@@ -125,7 +132,7 @@ ItlabRestrictionsPlugin::ItlabRestrictionsPlugin( QObject* parent ) :
 				  m_webRestrictionsFeature, m_blockAllWebsitesFeature, m_allowListedWebsitesFeature,
 				  m_blockListedWebsitesFeature, m_unblockWebsitesFeature,
 				  m_appRestrictionsFeature, m_blockListedAppsFeature, m_allowListedAppsFeature, m_unblockAppsFeature,
-				  m_removeAllRestrictionsFeature } ),
+				  m_editListsFeature, m_removeAllRestrictionsFeature } ),
 	m_commands( {
 		{ QStringLiteral("status"), tr( "Show the restrictions which are active on this computer" ) },
 		{ QStringLiteral("clear"), tr( "Remove all restrictions from this computer (emergency)" ) },
@@ -165,6 +172,13 @@ bool ItlabRestrictionsPlugin::startFeature( VeyonMasterInterface& master, const 
 		feature == m_webRestrictionsFeature || feature == m_appRestrictionsFeature )
 	{
 		return false;
+	}
+
+	// only edits the lists, nothing is sent to the student computers
+	if( feature == m_editListsFeature )
+	{
+		RestrictionListsDialog( master.userConfigurationObject(), master.mainWindow() ).exec();
+		return true;
 	}
 
 	// never restrict the teacher computer itself

@@ -166,6 +166,7 @@ private:
 	const Feature m_blockListedAppsFeature;
 	const Feature m_allowListedAppsFeature;
 	const Feature m_unblockAppsFeature;
+	const Feature m_editListsFeature;
 	const Feature m_removeAllRestrictionsFeature;
 	const FeatureList m_features;
 
