@@ -20,7 +20,15 @@
 #include <QHostInfo>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QMessageBox>
 #include <QNetworkInterface>
+#include <QTimer>
+
+#include "FeatureMessage.h"
+#include "PlatformCoreFunctions.h"
+#include "StudentPairingServer.h"
+#include "TeacherPairingService.h"
+#include "VeyonWorkerInterface.h"
 
 #include "ItlabRoomsPlugin.h"
 #include "PlatformUserFunctions.h"
@@ -35,7 +43,7 @@ ItlabRoomsPlugin::ItlabRoomsPlugin( QObject* parent ) :
 	QObject( parent ),
 	// Master: nút trên thanh công cụ; Service: máy HS/GV trả lời truy vấn, nhận lệnh đổi phòng
 	m_roomManagerFeature( QStringLiteral("ItlabRoomManager"),
-						  Feature::Flag::Action | Feature::Flag::Master | Feature::Flag::Service,
+						  Feature::Flag::Action | Feature::Flag::Master | Feature::Flag::Service | Feature::Flag::Worker,
 						  Feature::Uid( "66f3ea93-0a5d-4a5f-b8a8-57b725a42c21" ),
 						  Feature::Uid(),
 						  tr( "Rooms" ), {},
@@ -44,6 +52,143 @@ ItlabRoomsPlugin::ItlabRoomsPlugin( QObject* parent ) :
 						  QStringLiteral(":/itlab-rooms/itlab-rooms.png") ),
 	m_features( { m_roomManagerFeature } )
 {
+	// ghép nối GV-HS: máy HS lắng nghe trong server, máy GV trong Console (khi vòng lặp sự kiện chạy,
+	// lúc đó VeyonMaster/ComputerControlServer đã được tạo)
+	QTimer::singleShot( 0, this, [this]() {
+		if( VeyonCore::instance() == nullptr )
+		{
+			return;
+		}
+		// teacher computers do not accept invitations (and the Teacher Console uses the pairing port there)
+		const auto teacherComputer = VeyonCore::config().value( QStringLiteral("Role"), QStringLiteral("ITLab"), QString{} )
+										 .toString().compare( QLatin1String("Teacher"), Qt::CaseInsensitive ) == 0;
+		if( VeyonCore::component() == VeyonCore::Component::Server && teacherComputer == false )
+		{
+			m_studentPairing = new StudentPairingServer( this );
+			m_studentPairing->start();
+		}
+		else if( VeyonCore::component() == VeyonCore::Component::Master )
+		{
+			initTeacherPairing( 0 );
+		}
+	} );
+}
+
+
+
+void ItlabRoomsPlugin::initTeacherPairing( int attempt )
+{
+	// the Teacher Console object may not exist yet (events are processed while the splash screen is shown)
+	m_master = VeyonCore::instance()->findChild<VeyonMasterInterface *>();
+	if( m_master == nullptr )
+	{
+		if( attempt < 60 )
+		{
+			QTimer::singleShot( 500, this, [this, attempt]() { initTeacherPairing( attempt + 1 ); } );
+		}
+		else
+		{
+			vWarning() << "Teacher Console not found - pairing is not available";
+		}
+		return;
+	}
+
+	m_teacherPairing = new TeacherPairingService( this, *m_master );
+	m_teacherPairing->start();
+}
+
+
+
+void ItlabRoomsPlugin::addPairedComputer( const QString& hostName, const QString& address, const QString& mac,
+										  const QString& room )
+{
+	if( m_master == nullptr )
+	{
+		return;
+	}
+
+	// the room manager keeps the list of rooms and saves it through the local service
+	if( m_dialog.isNull() )
+	{
+		m_dialog = new RoomManagerDialog( *m_master, this );
+		m_dialog->setAttribute( Qt::WA_DeleteOnClose );
+	}
+
+	// store the computer by name if the name resolves to its address (stays valid with DHCP),
+	// otherwise by IP address (e.g. other subnet without DNS)
+	QHostInfo::lookupHost( hostName, this, [this, hostName, address, mac, room]( const QHostInfo& info ) {
+		auto hostAddress = address;
+		for( const auto& resolved : info.addresses() )
+		{
+			if( resolved.toString() == address )
+			{
+				hostAddress = hostName;
+			}
+		}
+		if( m_dialog )
+		{
+			m_dialog->addPairedComputer( hostName, hostAddress, mac, room );
+		}
+	} );
+}
+
+
+
+bool ItlabRoomsPlugin::handleFeatureMessageFromWorker( VeyonServerInterface& server, const FeatureMessage& message )
+{
+	Q_UNUSED(server)
+
+	if( message.featureUid() == m_roomManagerFeature.uid() &&
+		message.command<FeatureCommand>() == FeatureCommand::PairingAnswer )
+	{
+		if( m_studentPairing )
+		{
+			m_studentPairing->handleUserAnswer( message.argument( Argument::RequestId ).toString(),
+												message.argument( Argument::Success ).toBool() );
+		}
+		return true;
+	}
+
+	return false;
+}
+
+
+
+bool ItlabRoomsPlugin::handleFeatureMessage( VeyonWorkerInterface& worker, const FeatureMessage& message )
+{
+	if( message.featureUid() != m_roomManagerFeature.uid() ||
+		message.command<FeatureCommand>() != FeatureCommand::ConfirmPairing )
+	{
+		return false;
+	}
+
+	const auto requestId = message.argument( Argument::RequestId ).toString();
+	const auto teacher = message.argument( Argument::Teacher ).toString();
+	const auto room = message.argument( Argument::Room ).toString();
+	const auto address = message.argument( Argument::TeacherAddress ).toString();
+
+	auto messageBox = new QMessageBox( QMessageBox::Question, tr( "Connect to teacher computer" ),
+		tr( "The teacher computer <b>%1</b> (%2) wants to connect to this computer for room <b>%3</b>.<br><br>"
+			"After connecting, the teacher can view and control this computer.<br><br>"
+			"Allow the connection?" ).arg( teacher.toHtmlEscaped(), address.toHtmlEscaped(), room.toHtmlEscaped() ),
+		QMessageBox::Yes | QMessageBox::No );
+	messageBox->setDefaultButton( QMessageBox::No );
+	messageBox->setAttribute( Qt::WA_DeleteOnClose );
+	messageBox->setAttribute( Qt::WA_QuitOnClose, false );
+	messageBox->setWindowFlag( Qt::WindowStaysOnTopHint );
+
+	auto workerPointer = &worker;
+	connect( messageBox, &QMessageBox::finished, this, [this, workerPointer, requestId]( int result ) {
+		workerPointer->sendFeatureMessageReply(
+			FeatureMessage{ m_roomManagerFeature.uid(), FeatureCommand::PairingAnswer }
+				.addArgument( Argument::RequestId, requestId )
+				.addArgument( Argument::Success, result == QMessageBox::Yes ) );
+	} );
+
+	messageBox->show();
+	VeyonCore::platform().coreFunctions().raiseWindow( messageBox, true );
+
+	return true;
 }
 
 

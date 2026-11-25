@@ -67,7 +67,24 @@ Tất cả đều tách biệt với Veyon nếu máy có cài Veyon.
 
 ## Cách 2: Kiểm thử trên máy thật (triển khai một phòng)
 
-Làm theo thứ tự 2.1 → 2.5. **Mọi máy (GV và HS) phải cài cùng một phiên bản** ITLabControl.
+**Mọi máy (GV và HS) phải cài cùng một phiên bản** ITLabControl.
+
+### 2.0 Cách nhanh (từ bản 2026-11-25): cài theo vai trò, ghép nối tự động, không cần chép khoá
+
+1. **Máy GV:** chạy bộ cài → chọn **Máy giáo viên**. Bộ cài tự tạo khoá nếu máy chưa có. Mở **Configurator → Phòng máy**,
+   nhập **Phòng của máy này** (ví dụ `Phòng 201`) → Áp dụng. Mở **Bảng điều khiển giáo viên** (phải đang mở khi ghép nối).
+2. **Máy HS:** chạy bộ cài → chọn **Máy học sinh**. Sau đó chọn **một trong hai** cách:
+   - **Từ máy HS:** Configurator → Phòng máy → nhập **đúng tên phòng** như máy GV → bấm **"Kết nối tới máy giáo viên của phòng này…"**.
+     Trên máy GV hiện cửa sổ **"Máy xin vào phòng"** → bấm **Chấp nhận**. Máy HS tự nhận khoá, tự vào phòng.
+     (Máy GV ở mạng con khác: nhập thêm **Địa chỉ máy giáo viên**.)
+   - **Từ máy GV:** Quản lý phòng → **Tự dò máy** → các máy có trạng thái **"Chưa kết nối"** → đánh dấu → chọn phòng →
+     **Gửi yêu cầu kết nối** → học sinh bấm **Yes** trên máy của mình. Máy tự nhận khoá và được thêm vào phòng.
+3. Bấm **Làm mới** (F5) trên Bảng điều khiển nếu máy chưa hiện hình.
+
+> An toàn: máy HS chỉ nhận lời mời khi **chưa kết nối với GV nào** hoặc lời mời **đúng phòng của máy**, và chỉ sau khi người
+> ngồi máy bấm đồng ý. Cổng ghép nối: **14500** (TCP và UDP); khác mạng con cần mở cổng này trên router.
+
+Cách thủ công (chép file khoá) bên dưới vẫn dùng được.
 
 ### 2.1 Máy giáo viên (làm 1 lần cho mỗi phòng)
 

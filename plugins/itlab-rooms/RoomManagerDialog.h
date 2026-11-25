@@ -45,6 +45,9 @@ public:
 	// câu trả lời từ dịch vụ trên máy HS/GV (gọi từ ItlabRoomsPlugin)
 	void handleReply( ComputerControlInterface::Pointer computerControlInterface, const FeatureMessage& message );
 
+	// ITLabControl: a student computer was connected by pairing - add it to its room and save
+	void addPairedComputer( const QString& hostName, const QString& hostAddress, const QString& mac, const QString& room );
+
 protected:
 	void reject() override;
 
@@ -91,6 +94,8 @@ private:
 	void queryComputer( const QString& ipAddress );
 	void finishDiscovery();
 	void addDiscoveredComputers( bool byDeclaredRoom );
+	void queryPairableComputer( const QString& ipAddress );
+	void inviteCheckedComputers();
 
 	// ghi tên phòng vào cấu hình máy HS từ xa
 	void sendSetRoom( const QString& hostAddress, const QString& displayName, const QString& room );
@@ -106,6 +111,7 @@ private:
 		QString macAddress;
 		bool answered{false};
 		bool nameResolvesToAddress{false};
+		bool pairable{false};   // ITLabControl runs there, but it is not connected to this teacher computer yet
 		QTreeWidgetItem* item{nullptr};
 		ComputerControlInterface::Pointer controlInterface;
 	};

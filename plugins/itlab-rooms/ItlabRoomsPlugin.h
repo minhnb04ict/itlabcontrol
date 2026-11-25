@@ -44,6 +44,8 @@
 #include "FeatureProviderInterface.h"
 
 class RoomManagerDialog;
+class StudentPairingServer;
+class TeacherPairingService;
 
 class ItlabRoomsPlugin : public QObject, FeatureProviderInterface, PluginInterface, ConfigurationPagePluginInterface
 {
@@ -58,7 +60,11 @@ public:
 		UserLogin,
 		Interfaces,   // danh sách "IP=MAC"
 		Success,
-		Directory     // danh sách phòng/máy dạng JSON
+		Directory,    // danh sách phòng/máy dạng JSON
+		// ghép nối GV-HS (thêm ở cuối để giữ số cũ)
+		RequestId,
+		Teacher,
+		TeacherAddress
 	};
 	Q_ENUM(Argument)
 
@@ -68,7 +74,10 @@ public:
 		SetRoom,
 		SetRoomReply,
 		SetDirectory,
-		SetDirectoryReply
+		SetDirectoryReply,
+		// ghép nối: server -> worker (hỏi người dùng máy HS), worker -> server (câu trả lời)
+		ConfirmPairing,
+		PairingAnswer
 	};
 	Q_ENUM(FeatureCommand)
 
@@ -121,6 +130,18 @@ public:
 	bool handleFeatureMessage( VeyonServerInterface& server,
 							   const MessageContext& messageContext,
 							   const FeatureMessage& message ) override;
+	bool handleFeatureMessageFromWorker( VeyonServerInterface& server, const FeatureMessage& message ) override;
+
+	// WORKER (phiên của học sinh): hỏi xác nhận kết nối với máy GV
+	bool handleFeatureMessage( VeyonWorkerInterface& worker, const FeatureMessage& message ) override;
+
+	// MASTER: máy HS vừa ghép nối xong được thêm vào phòng và lưu ngay
+	void addPairedComputer( const QString& hostName, const QString& address, const QString& mac, const QString& room );
+
+	TeacherPairingService* teacherPairing() const
+	{
+		return m_teacherPairing;
+	}
 
 	// CONFIGURATOR
 	ConfigurationPage* createConfigurationPage() override;
@@ -138,9 +159,16 @@ public:
 	static QString normalizedRoomName( const QString& room );
 
 private:
+	void initTeacherPairing( int attempt );
+
 	const Feature m_roomManagerFeature;
 	const FeatureList m_features;
 
 	QPointer<RoomManagerDialog> m_dialog;
+
+	// ghép nối GV-HS: máy HS (server) và máy GV (Console)
+	StudentPairingServer* m_studentPairing{nullptr};
+	TeacherPairingService* m_teacherPairing{nullptr};
+	VeyonMasterInterface* m_master{nullptr};
 
 };

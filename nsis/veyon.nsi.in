@@ -191,6 +191,25 @@ ${If} $Role == "Teacher"
   ExecWait '"$INSTDIR\veyon-wcli.exe" config set Service/Autostart 0'
   nsExec::Exec '"$SYSDIR\sc.exe" config "@ITLAB_SERVICE_NAME@" start= demand'
   nsExec::Exec '"$SYSDIR\sc.exe" sdset "@ITLAB_SERVICE_NAME@" "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWRPWPLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)"'
+  ; a teacher computer needs an authentication key, which is sent to student computers when they
+  ; are connected (pairing); create one if this computer has no private key yet
+  StrCpy $R5 "0"
+  ClearErrors
+  FindFirst $R6 $R7 "$APPDATA\@ITLAB_PRODUCT_NAME@\keys\private\*"
+  ${DoUntil} ${Errors}
+    ${If} $R7 != "."
+    ${AndIf} $R7 != ".."
+    ${AndIf} ${FileExists} "$APPDATA\@ITLAB_PRODUCT_NAME@\keys\private\$R7\key"
+      StrCpy $R5 "1"
+    ${EndIf}
+    FindNext $R6 $R7
+  ${Loop}
+  FindClose $R6
+  ${If} $R5 == "0"
+    ReadEnvStr $R8 COMPUTERNAME
+    ExecWait '"$INSTDIR\veyon-wcli.exe" authkeys create gv-$R8'
+    ExecWait '"$INSTDIR\veyon-wcli.exe" authkeys setaccessgroup gv-$R8/private Users'
+  ${EndIf}
   ; the Teacher Console receives connection requests of student computers (pairing)
   nsExec::Exec '"$SYSDIR\netsh.exe" advfirewall firewall delete rule "name=@ITLAB_PRODUCT_NAME@ Teacher Console"'
   nsExec::Exec '"$SYSDIR\netsh.exe" advfirewall firewall add rule "name=@ITLAB_PRODUCT_NAME@ Teacher Console" dir=in action=allow "program=$INSTDIR\${MAIN_APP_EXE}" enable=yes'

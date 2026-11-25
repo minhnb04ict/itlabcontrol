@@ -32,6 +32,7 @@
 
 #include "Filesystem.h"
 #include "ItlabRoomsPlugin.h"
+#include "JoinTeacherDialog.h"
 #include "RoomConfigurationPage.h"
 #include "VeyonConfiguration.h"
 
@@ -56,6 +57,31 @@ RoomConfigurationPage::RoomConfigurationPage( QWidget* parent ) :
 
 	auto form = new QFormLayout;
 	form->addRow( tr( "Room of this computer:" ), m_roomEdit );
+
+	// ITLabControl: connect this student computer to the teacher computer of the room without key files
+	auto teacherAddressEdit = new QLineEdit( this );
+	teacherAddressEdit->setPlaceholderText( tr( "optional, only needed if the teacher computer is in another network" ) );
+	form->addRow( tr( "Address of the teacher computer:" ), teacherAddressEdit );
+
+	auto joinButton = new QPushButton( tr( "Connect to the teacher computer of this room..." ), this );
+	joinButton->setToolTip( tr( "Sends a request to the Teacher Console of the room. As soon as the teacher accepts it, "
+								"the authentication key is installed automatically." ) );
+	connect( joinButton, &QPushButton::clicked, this, [this, teacherAddressEdit]() {
+		const auto room = m_roomEdit->text().simplified();
+		if( room.isEmpty() )
+		{
+			QMessageBox::information( this, tr( "Connect to teacher computer" ), tr( "Please enter the room of this computer first." ) );
+			m_roomEdit->setFocus();
+			return;
+		}
+		JoinTeacherDialog dialog( room, teacherAddressEdit->text(), this );
+		if( dialog.exec() == QDialog::Accepted && dialog.joinedRoom().isEmpty() == false )
+		{
+			m_roomEdit->setText( dialog.joinedRoom() );
+			updateKeyStatus();
+		}
+	} );
+	form->addRow( QString{}, joinButton );
 
 	// ITLabControl: access control per room by means of one authentication key pair per room
 	auto keyGroup = new QGroupBox( tr( "Control permission per room" ), this );

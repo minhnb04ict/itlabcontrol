@@ -40,6 +40,7 @@
 
 #include "Computer.h"
 #include "ItlabRoomsPlugin.h"
+#include "TeacherPairingService.h"
 #include "NetworkObject.h"
 #include "NetworkObjectDirectory.h"
 #include "NetworkObjectDirectoryManager.h"
@@ -801,6 +802,13 @@ QWidget* RoomManagerDialog::createDiscoveryTab()
 	connect( addToRoomButton, &QPushButton::clicked, this, [this]() { addDiscoveredComputers( false ); } );
 	connect( addByDeclaredRoomButton, &QPushButton::clicked, this, [this]() { addDiscoveredComputers( true ); } );
 
+	// ITLabControl: computers with ITLabControl which are not connected to this teacher computer yet
+	auto inviteButton = new QPushButton( tr( "Send connection request" ), tab );
+	inviteButton->setToolTip( tr( "Sends the authentication key of this teacher computer to the ticked computers with the "
+								  "status \"Not connected yet\". After the user there clicks \"Yes\", the computer is "
+								  "connected and added to the room." ) );
+	connect( inviteButton, &QPushButton::clicked, this, &RoomManagerDialog::inviteCheckedComputers );
+
 	auto rangeLayout = new QHBoxLayout;
 	rangeLayout->addWidget( new QLabel( tr( "Network range:" ), tab ) );
 	rangeLayout->addWidget( m_scanRange, 1 );
@@ -811,6 +819,7 @@ QWidget* RoomManagerDialog::createDiscoveryTab()
 	addLayout->addWidget( m_discoveryRoom, 1 );
 	addLayout->addWidget( addToRoomButton );
 	addLayout->addWidget( addByDeclaredRoomButton );
+	addLayout->addWidget( inviteButton );
 
 	auto hint = new QLabel( tr( "Only computers with ITLabControl and the same authentication key answer. "
 								"Other computers (e.g. with ITLabControl) are shown as not accessible." ), tab );
@@ -1014,7 +1023,12 @@ void RoomManagerDialog::queryComputer( const QString& ipAddress )
 			it->item->setText( 5, tr( "Querying..." ) );
 			break;
 		case ComputerControlInterface::State::AuthenticationFailed:
-			it->item->setText( 5, tr( "Not accessible (other authentication key, e.g. ITLabControl)" ) );
+			// ITLabControl: not connected to this teacher computer yet - check whether it can be invited
+			if( it->pairable == false && it->item->text( 5 ) != tr( "Checking..." ) )
+			{
+				it->item->setText( 5, tr( "Checking..." ) );
+				queryPairableComputer( ipAddress );
+			}
 			break;
 		case ComputerControlInterface::State::AccessControlFailed:
 			it->item->setText( 5, tr( "Access denied" ) );
@@ -1042,6 +1056,11 @@ void RoomManagerDialog::finishDiscovery()
 	{
 		if( it->answered )
 		{
+			++found;
+		}
+		else if( it->pairable || it->item->text( 5 ) == tr( "Checking..." ) )
+		{
+			// handled by queryPairableComputer()
 			++found;
 		}
 		else
@@ -1112,6 +1131,132 @@ void RoomManagerDialog::addDiscoveredComputers( bool byDeclaredRoom )
 		status += QLatin1Char(' ') + tr( "%1 computers were skipped because no room is configured on them." ).arg( withoutRoom );
 	}
 	showStatus( status );
+}
+
+
+
+void RoomManagerDialog::queryPairableComputer( const QString& ipAddress )
+{
+	const auto pairing = m_plugin->teacherPairing();
+	if( pairing == nullptr )
+	{
+		return;
+	}
+
+	QPointer<RoomManagerDialog> self( this );
+	pairing->queryStudent( ipAddress, [self, this, ipAddress]( const TeacherPairingService::StudentInfo& info ) {
+		if( self.isNull() )
+		{
+			return; // the dialog was closed meanwhile
+		}
+		auto it = m_discovered.find( ipAddress );
+		if( it == m_discovered.end() )
+		{
+			return;
+		}
+
+		if( info.valid == false )
+		{
+			it->item->setText( 5, tr( "Not accessible (other authentication key)" ) );
+			return;
+		}
+
+		it->pairable = true;
+		it->hostName = info.hostName;
+		it->macAddress = info.mac;
+		it->room = info.room;
+		it->item->setText( 0, info.hostName );
+		it->item->setText( 2, info.mac );
+		it->item->setText( 3, info.room );
+		it->item->setText( 5, info.paired ? tr( "Connected to another teacher computer" )
+										  : tr( "Not connected yet - send a connection request" ) );
+		it->item->setFlags( it->item->flags() | Qt::ItemIsUserCheckable );
+		it->item->setCheckState( 0, info.paired ? Qt::Unchecked : Qt::Checked );
+	} );
+}
+
+
+
+void RoomManagerDialog::inviteCheckedComputers()
+{
+	const auto pairing = m_plugin->teacherPairing();
+	const auto targetRoom = m_discoveryRoom->currentText().simplified();
+
+	int sent = 0;
+	for( auto it = m_discovered.begin(); it != m_discovered.end(); ++it )
+	{
+		if( it->pairable == false || it->item->checkState( 0 ) != Qt::Checked || pairing == nullptr )
+		{
+			continue;
+		}
+
+		// the room chosen here, otherwise the room configured on the student computer
+		const auto room = targetRoom.isEmpty() ? it->room : targetRoom;
+		if( room.isEmpty() )
+		{
+			it->item->setText( 5, tr( "Please choose a room first" ) );
+			continue;
+		}
+
+		const auto ipAddress = it->ipAddress;
+		it->item->setText( 5, tr( "Waiting for confirmation on the student computer..." ) );
+		it->item->setCheckState( 0, Qt::Unchecked );
+		++sent;
+
+		QPointer<RoomManagerDialog> self( this );
+		const auto plugin = m_plugin;
+		pairing->inviteStudent( ipAddress, room, [self, this, plugin, ipAddress, room]( bool accepted, const QString& hostName,
+																						const QString& mac, const QString& reason ) {
+			if( self.isNull() )
+			{
+				// the dialog was closed meanwhile - the computer is still added to its room
+				if( accepted )
+				{
+					plugin->addPairedComputer( hostName, ipAddress, mac, room );
+				}
+				return;
+			}
+			auto computer = m_discovered.find( ipAddress );
+			if( computer == m_discovered.end() )
+			{
+				return;
+			}
+			if( accepted )
+			{
+				computer->pairable = false;
+				computer->item->setText( 5, tr( "Connected and added to room \"%1\"" ).arg( room ) );
+				m_plugin->addPairedComputer( hostName.isEmpty() ? computer->hostName : hostName, ipAddress,
+											 mac.isEmpty() ? computer->macAddress : mac, room );
+			}
+			else
+			{
+				computer->item->setText( 5, reason.isEmpty() ? tr( "Declined" ) : reason );
+			}
+		} );
+	}
+
+	if( sent == 0 )
+	{
+		QMessageBox::information( this, tr( "Send connection request" ),
+								  tr( "Please tick computers with the status \"Not connected yet\" first." ) );
+	}
+	else
+	{
+		showStatus( tr( "Connection requests sent to %1 computers. Ask the students to click \"Yes\"." ).arg( sent ) );
+	}
+}
+
+
+
+void RoomManagerDialog::addPairedComputer( const QString& hostName, const QString& hostAddress, const QString& mac,
+										   const QString& room )
+{
+	const auto locationUid = ensureLocation( room );
+	addOrMoveComputer( hostName, hostAddress, mac, locationUid );
+	refreshRoomsTree();
+	refreshRoomComboBoxes();
+	showStatus( tr( "Computer %1 was connected and added to room \"%2\"." ).arg( hostName, room ) );
+	save();
 }
 
 

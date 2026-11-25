@@ -160,6 +160,10 @@ Ghi lại mọi chỗ sửa lõi Veyon để dễ merge về sau:
 | `plugins/filetransfer/*` (+ `RemoteDirectoryDialog.*` mới) | Thu bài: xem trước và tick chọn file, duyệt thư mục máy HS khi thu 1 máy; thêm lệnh `SelectFiles`, `ListDirectory` (thêm vào **cuối** enum, không đổi lệnh cũ); lọc loại file khớp trọn tên | GV không phải gõ đường dẫn, chỉ thu đúng file cần |
 | `core/src/LockWidget.{h,cpp}`, `plugins/screenlock/ScreenLockFeaturePlugin.cpp` | Ảnh `%GLOBALAPPDATA%\lock-screen.png` (logo trường) và dòng chữ `ITLab/LockScreenText` trên màn hình khoá; ảnh lớn tự thu nhỏ | Màn hình khoá mang nhận diện của trường |
 | `plugins/powercontrol/PowerControlFeaturePlugin.*` | Bật máy: máy HS báo MAC/IP/mạng con của card đang kết nối (`sendAsyncFeatureMessages`, 1 lần mỗi kết nối), Console ghi nhớ trong HKCU; gửi WOL tới broadcast của mạng máy HS, IP gần nhất, cổng 9 và 7, lặp 3 lần; nhờ máy đang bật cùng phòng phát hộ | Bật được máy thêm bằng tên (không có MAC) và máy ở mạng con khác, như NetSupport |
+| `core/src/VeyonConfigurationProperties.h` | Mặc định: xác thực bằng khoá; nháy đúp màn hình HS = Điều khiển | Theo yêu cầu GV 2026-11-25 |
+| `master/src/main.cpp`, `TeacherServiceControl.*` (mới), `VeyonMaster.cpp` | Máy vai trò Giáo viên: Console bật dịch vụ khi mở, tắt khi đóng; chờ gửi lệnh khi đóng tối đa 5 giây, chỉ với máy đang kết nối | Máy GV không chạy ngầm khi Console đã đóng |
+| `master/src/ComputerControlListModel.*`, `MainWindow.*` | Nút **Làm mới** (F5): tải lại phòng, kết nối lại máy chưa kết nối; `update()` thành public | Không phải tắt/mở lại Console |
+| `nsis/veyon.nsi.in` | Trang chọn vai trò (Giáo viên/Học sinh), mặc định Tiếng Việt, tự tạo khoá cho máy GV, dịch vụ chạy theo yêu cầu trên máy GV, tường lửa cho Console | Cài đúng thành phần cho từng máy |
 | `master/src/SlideshowPanel.ui` | Thời gian xoay vòng 2–60 giây (gốc 1–10) | Theo thiết kế GĐ1 |
 | `plugins/textmessage/TextMessage{Dialog,FeaturePlugin}.cpp` | Tự chuyển địa chỉ web thành link; máy HS bấm link mở trình duyệt | Gửi link cho HS mở nhanh |
 | `master/src/MainWindow.cpp`, `configurator/src/MainWindow.cpp` | Tiêu đề cửa sổ | Hiển thị tên ITLabControl |

@@ -12,5 +12,14 @@ build_veyon_plugin(itlabrooms
 	RoomManagerDialog.h
 	RoomConfigurationPage.cpp
 	RoomConfigurationPage.h
+	KeyTools.cpp
+	KeyTools.h
+	PairingProtocol.h
+	StudentPairingServer.cpp
+	StudentPairingServer.h
+	TeacherPairingService.cpp
+	TeacherPairingService.h
+	JoinTeacherDialog.cpp
+	JoinTeacherDialog.h
 	itlab-rooms.qrc
 	)

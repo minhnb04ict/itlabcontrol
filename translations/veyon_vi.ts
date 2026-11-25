@@ -2853,8 +2853,67 @@ Make sure that the names of the keys belonging to each other are identical on al
         <translation>Quản lý phòng</translation>
     </message>
     <message>
+        <source>Connect to teacher computer</source>
+        <translation>Kết nối tới máy giáo viên</translation>
+    </message>
+    <message>
+        <source>The teacher computer &lt;b&gt;%1&lt;/b&gt; (%2) wants to connect to this computer for room &lt;b&gt;%3&lt;/b&gt;.&lt;br&gt;&lt;br&gt;After connecting, the teacher can view and control this computer.&lt;br&gt;&lt;br&gt;Allow the connection?</source>
+        <translation>Máy giáo viên &lt;b&gt;%1&lt;/b&gt; (%2) muốn kết nối với máy này cho phòng &lt;b&gt;%3&lt;/b&gt;.&lt;br&gt;&lt;br&gt;Sau khi kết nối, giáo viên có thể xem và điều khiển máy này.&lt;br&gt;&lt;br&gt;Cho phép kết nối?</translation>
+    </message>
+    <message>
         <source>Manage rooms and computers, discover computers and assign rooms</source>
         <translation>Quản lý phòng và máy, tự dò máy và gán phòng</translation>
+    </message>
+</context>
+<context>
+    <name>JoinTeacherDialog</name>
+    <message>
+        <source>Cancel</source>
+        <translation>Huỷ</translation>
+    </message>
+    <message>
+        <source>Connect to teacher computer</source>
+        <translation>Kết nối tới máy giáo viên</translation>
+    </message>
+    <message>
+        <source>The connection to the teacher computer failed (%1). Please check that the Teacher Console is open on the teacher computer.</source>
+        <translation>Không kết nối được tới máy giáo viên (%1). Hãy kiểm tra Bảng điều khiển giáo viên đang mở trên máy giáo viên.</translation>
+    </message>
+    <message>
+        <source>Waiting until the teacher accepts the request in the Teacher Console...</source>
+        <translation>Đang chờ giáo viên chấp nhận yêu cầu trên Bảng điều khiển...</translation>
+    </message>
+    <message>
+        <source>Searching the teacher computer of room &quot;%1&quot; in the network...</source>
+        <translation>Đang tìm máy giáo viên của phòng &quot;%1&quot; trong mạng...</translation>
+    </message>
+    <message>
+        <source>No teacher computer of room &quot;%1&quot; was found. Please open the Teacher Console on the teacher computer, check that the room names are the same, or enter the address of the teacher computer (needed if it is in another network).</source>
+        <translation>Không tìm thấy máy giáo viên của phòng &quot;%1&quot;. Hãy mở Bảng điều khiển trên máy giáo viên, kiểm tra tên phòng hai bên giống nhau, hoặc nhập địa chỉ máy giáo viên (cần khi máy giáo viên ở mạng khác).</translation>
+    </message>
+    <message>
+        <source>Connecting to the teacher computer %1...</source>
+        <translation>Đang kết nối tới máy giáo viên %1...</translation>
+    </message>
+    <message>
+        <source>The teacher did not accept the request in time.</source>
+        <translation>Giáo viên chưa chấp nhận yêu cầu trong thời gian chờ.</translation>
+    </message>
+    <message>
+        <source>The teacher declined the request.</source>
+        <translation>Giáo viên đã từ chối yêu cầu.</translation>
+    </message>
+    <message>
+        <source>The key of the teacher computer could not be installed: %1</source>
+        <translation>Không cài được khoá của máy giáo viên: %1</translation>
+    </message>
+    <message>
+        <source>Done. This computer is connected to the teacher computer %1 and belongs to room &quot;%2&quot;.</source>
+        <translation>Xong. Máy này đã kết nối với máy giáo viên %1 và thuộc phòng &quot;%2&quot;.</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Đóng</translation>
     </message>
 </context>
 <context>
@@ -4838,6 +4897,26 @@ Vui lòng lưu bài và đóng tất cả chương trình.</translation>
         <translation>Phòng của máy này:</translation>
     </message>
     <message>
+        <source>optional, only needed if the teacher computer is in another network</source>
+        <translation>không bắt buộc, chỉ cần khi máy giáo viên ở mạng khác</translation>
+    </message>
+    <message>
+        <source>Address of the teacher computer:</source>
+        <translation>Địa chỉ máy giáo viên:</translation>
+    </message>
+    <message>
+        <source>Connect to the teacher computer of this room...</source>
+        <translation>Kết nối tới máy giáo viên của phòng này...</translation>
+    </message>
+    <message>
+        <source>Sends a request to the Teacher Console of the room. As soon as the teacher accepts it, the authentication key is installed automatically.</source>
+        <translation>Gửi yêu cầu tới Bảng điều khiển của phòng. Ngay khi giáo viên chấp nhận, khoá xác thực được cài tự động.</translation>
+    </message>
+    <message>
+        <source>Connect to teacher computer</source>
+        <translation>Kết nối tới máy giáo viên</translation>
+    </message>
+    <message>
         <source>Control permission per room</source>
         <translation>Phân quyền điều khiển theo phòng</translation>
     </message>
@@ -5215,6 +5294,14 @@ Các khoá %1 sẽ bị gỡ khỏi máy này.</translation>
         <translation>Dùng tên phòng đã khai báo trên từng máy; phòng nào chưa có sẽ được tạo mới.</translation>
     </message>
     <message>
+        <source>Send connection request</source>
+        <translation>Gửi yêu cầu kết nối</translation>
+    </message>
+    <message>
+        <source>Sends the authentication key of this teacher computer to the ticked computers with the status &quot;Not connected yet&quot;. After the user there clicks &quot;Yes&quot;, the computer is connected and added to the room.</source>
+        <translation>Gửi khoá xác thực của máy giáo viên này tới các máy đã đánh dấu có trạng thái &quot;Chưa kết nối&quot;. Sau khi người dùng ở máy đó bấm &quot;Yes&quot;, máy được kết nối và thêm vào phòng.</translation>
+    </message>
+    <message>
         <source>Network range:</source>
         <translation>Dải mạng:</translation>
     </message>
@@ -5243,8 +5330,8 @@ Các khoá %1 sẽ bị gỡ khỏi máy này.</translation>
         <translation>Đang hỏi thông tin...</translation>
     </message>
     <message>
-        <source>Not accessible (other authentication key, e.g. ITLabControl)</source>
-        <translation>Không truy cập được (khác khoá xác thực, ví dụ ITLabControl)</translation>
+        <source>Checking...</source>
+        <translation>Đang kiểm tra...</translation>
     </message>
     <message>
         <source>Access denied</source>
@@ -5265,6 +5352,46 @@ Các khoá %1 sẽ bị gỡ khỏi máy này.</translation>
     <message>
         <source>%1 computers were skipped because no room is configured on them.</source>
         <translation>Bỏ qua %1 máy vì chưa khai báo phòng trên máy.</translation>
+    </message>
+    <message>
+        <source>Not accessible (other authentication key)</source>
+        <translation>Không truy cập được (khoá xác thực khác)</translation>
+    </message>
+    <message>
+        <source>Connected to another teacher computer</source>
+        <translation>Đã kết nối với máy giáo viên khác</translation>
+    </message>
+    <message>
+        <source>Not connected yet - send a connection request</source>
+        <translation>Chưa kết nối - hãy gửi yêu cầu kết nối</translation>
+    </message>
+    <message>
+        <source>Please choose a room first</source>
+        <translation>Hãy chọn phòng trước</translation>
+    </message>
+    <message>
+        <source>Waiting for confirmation on the student computer...</source>
+        <translation>Đang chờ xác nhận trên máy học sinh...</translation>
+    </message>
+    <message>
+        <source>Connected and added to room &quot;%1&quot;</source>
+        <translation>Đã kết nối và thêm vào phòng &quot;%1&quot;</translation>
+    </message>
+    <message>
+        <source>Declined</source>
+        <translation>Bị từ chối</translation>
+    </message>
+    <message>
+        <source>Please tick computers with the status &quot;Not connected yet&quot; first.</source>
+        <translation>Hãy đánh dấu các máy có trạng thái &quot;Chưa kết nối&quot; trước.</translation>
+    </message>
+    <message>
+        <source>Connection requests sent to %1 computers. Ask the students to click &quot;Yes&quot;.</source>
+        <translation>Đã gửi yêu cầu kết nối tới %1 máy. Hãy nhờ học sinh bấm &quot;Yes&quot;.</translation>
+    </message>
+    <message>
+        <source>Computer %1 was connected and added to room &quot;%2&quot;.</source>
+        <translation>Máy %1 đã kết nối và được thêm vào phòng &quot;%2&quot;.</translation>
     </message>
     <message>
         <source>Ready</source>
@@ -5810,6 +5937,33 @@ Ví dụ: [^-]*-(PC[0-9]*)</translation>
     </message>
 </context>
 <context>
+    <name>StudentPairingServer</name>
+    <message>
+        <source>This computer is already connected to the teacher computer of room &quot;%1&quot;.</source>
+        <translation>Máy này đã kết nối với máy giáo viên của phòng &quot;%1&quot;.</translation>
+    </message>
+    <message>
+        <source>Another request is waiting for confirmation on this computer.</source>
+        <translation>Đang có một yêu cầu khác chờ xác nhận trên máy này.</translation>
+    </message>
+    <message>
+        <source>Nobody is logged on to this computer, so the request can not be confirmed.</source>
+        <translation>Máy này chưa có ai đăng nhập nên không xác nhận được yêu cầu.</translation>
+    </message>
+    <message>
+        <source>The request was not confirmed in time.</source>
+        <translation>Yêu cầu không được xác nhận trong thời gian chờ.</translation>
+    </message>
+    <message>
+        <source>The request was declined on the student computer.</source>
+        <translation>Yêu cầu đã bị từ chối trên máy học sinh.</translation>
+    </message>
+    <message>
+        <source>The key of the teacher computer could not be installed: %1</source>
+        <translation>Không cài được khoá của máy giáo viên: %1</translation>
+    </message>
+</context>
+<context>
     <name>SystemTrayIcon</name>
     <message>
         <source>System tray icon</source>
@@ -5825,6 +5979,61 @@ Ví dụ: [^-]*-(PC[0-9]*)</translation>
     <message>
         <source>Default (system user groups)</source>
         <translation>Mặc định (nhóm người dùng của hệ thống)</translation>
+    </message>
+</context>
+<context>
+    <name>TeacherPairingService</name>
+    <message>
+        <source>Computers asking to join a room</source>
+        <translation>Máy xin vào phòng</translation>
+    </message>
+    <message>
+        <source>These student computers ask to be connected to this teacher computer. Accept them to send the authentication key and add them to their room.</source>
+        <translation>Các máy học sinh này xin kết nối với máy giáo viên này. Chấp nhận để gửi khoá xác thực và thêm máy vào phòng.</translation>
+    </message>
+    <message>
+        <source>Computer</source>
+        <translation>Máy</translation>
+    </message>
+    <message>
+        <source>IP address</source>
+        <translation>Địa chỉ IP</translation>
+    </message>
+    <message>
+        <source>Room</source>
+        <translation>Phòng</translation>
+    </message>
+    <message>
+        <source>User</source>
+        <translation>Người dùng</translation>
+    </message>
+    <message>
+        <source>Accept selected</source>
+        <translation>Chấp nhận máy đã chọn</translation>
+    </message>
+    <message>
+        <source>Accept all</source>
+        <translation>Chấp nhận tất cả</translation>
+    </message>
+    <message>
+        <source>Reject selected</source>
+        <translation>Từ chối máy đã chọn</translation>
+    </message>
+    <message>
+        <source>Connect computers</source>
+        <translation>Kết nối máy</translation>
+    </message>
+    <message>
+        <source>This teacher computer has no authentication key. Please create one in the ITLabControl Configurator (page &quot;Room&quot;).</source>
+        <translation>Máy giáo viên này chưa có khoá xác thực. Hãy tạo khoá trong ITLabControl Configurator (trang &quot;Phòng máy&quot;).</translation>
+    </message>
+    <message>
+        <source>The student computer is not reachable.</source>
+        <translation>Không kết nối được tới máy học sinh.</translation>
+    </message>
+    <message>
+        <source>No answer from the student computer.</source>
+        <translation>Máy học sinh không trả lời.</translation>
     </message>
 </context>
 <context>
