@@ -19,7 +19,12 @@ if(VEYON_BUILD_WINDOWS)
 		AppListDialog.h
 		RestrictionListsDialog.cpp
 		RestrictionListsDialog.h
+		WebHistory.cpp
+		WebHistory.h
+		WebHistoryDialog.cpp
+		WebHistoryDialog.h
 		itlab-restrictions.qrc
 		)
-	target_link_libraries(itlabrestrictions PRIVATE -luserenv -liphlpapi -lws2_32)
+	find_package(Qt${QT_MAJOR_VERSION} COMPONENTS Sql REQUIRED)
+	target_link_libraries(itlabrestrictions PRIVATE -luserenv -liphlpapi -lws2_32 Qt${QT_MAJOR_VERSION}::Sql)
 endif()

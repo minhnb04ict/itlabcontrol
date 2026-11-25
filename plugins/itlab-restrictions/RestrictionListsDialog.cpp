@@ -9,7 +9,11 @@
  * version 2 of the License, or (at your option) any later version.
  */
 
+#include <QComboBox>
 #include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QLineEdit>
+#include <QPlainTextEdit>
 #include <QHBoxLayout>
 #include <QInputDialog>
 #include <QLabel>
@@ -188,18 +192,126 @@ QStringList RestrictionListsDialog::normalized( const ListTab& tab, const QStrin
 
 
 
-void RestrictionListsDialog::addEntries( ListTab& tab )
+bool RestrictionListsDialog::askWebsites( const QString& title, const QString& initialEntry, bool multiLine,
+										  QStringList* result )
 {
-	bool ok = false;
-	const auto text = QInputDialog::getMultiLineText( this, tr( "Add" ),
-		tab.websites ? tr( "Websites, one per line (e.g. vnexpress.net):" )
-					 : tr( "Program file names, one per line (e.g. zalo.exe):" ), {}, &ok );
-	if( ok == false )
+	QDialog dialog( this );
+	dialog.setWindowTitle( title );
+	dialog.resize( 560, multiLine ? 420 : 260 );
+
+	const auto initialExact = initialEntry.startsWith( QLatin1Char('=') );
+	const auto initialText = initialExact ? initialEntry.mid( 1 ) : initialEntry;
+
+	QPlainTextEdit* textEdit = nullptr;
+	QLineEdit* lineEdit = nullptr;
+	if( multiLine )
 	{
-		return;
+		textEdit = new QPlainTextEdit( &dialog );
+		textEdit->setPlaceholderText( QStringLiteral("chat.google.com\nfacebook.com\nyoutube.com/shorts") );
+	}
+	else
+	{
+		lineEdit = new QLineEdit( initialText, &dialog );
 	}
 
-	const auto newEntries = normalized( tab, text.split( QLatin1Char('\n') ) );
+	auto typeComboBox = new QComboBox( &dialog );
+	typeComboBox->addItem( tr( "Whole domain (including sub domains)" ) );
+	typeComboBox->addItem( tr( "Exactly this address (without sub domains)" ) );
+	typeComboBox->setCurrentIndex( initialExact ? 1 : 0 );
+
+	auto hint = new QLabel( tr( "Examples:<br>"
+								"<b>google.com</b> - google.com and all sub domains (mail.google.com, chat.google.com, ...)<br>"
+								"<b>chat.google.com</b> - only chat.google.com, the search on google.com still works<br>"
+								"<b>youtube.com/shorts</b> - only the Shorts pages of YouTube<br>"
+								"With <i>Exactly this address</i>, <b>www.google.com</b> only matches www.google.com, "
+								"not google.com or other sub domains.<br>"
+								"Note: Google Chat is also available inside Gmail at <b>mail.google.com/chat</b>." ), &dialog );
+	hint->setWordWrap( true );
+
+	auto form = new QFormLayout;
+	form->addRow( tr( "Type:" ), typeComboBox );
+
+	auto buttons = new QDialogButtonBox( QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog );
+	connect( buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept );
+	connect( buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject );
+
+	auto layout = new QVBoxLayout( &dialog );
+	layout->addWidget( new QLabel( multiLine ? tr( "Websites, one per line:" ) : tr( "Website:" ), &dialog ) );
+	if( textEdit )
+	{
+		layout->addWidget( textEdit, 1 );
+	}
+	else
+	{
+		layout->addWidget( lineEdit );
+	}
+	layout->addLayout( form );
+	layout->addWidget( hint );
+	layout->addWidget( buttons );
+
+	if( dialog.exec() != QDialog::Accepted )
+	{
+		return false;
+	}
+
+	const auto lines = textEdit ? textEdit->toPlainText().split( QLatin1Char('\n') ) : QStringList{ lineEdit->text() };
+	const auto exact = typeComboBox->currentIndex() == 1;
+	result->clear();
+	for( auto line : lines )
+	{
+		line = line.trimmed();
+		while( line.startsWith( QLatin1Char('=') ) )
+		{
+			line = line.mid( 1 ).trimmed();
+		}
+		if( line.isEmpty() == false )
+		{
+			result->append( exact ? QStringLiteral("=") + line : line );
+		}
+	}
+	return true;
+}
+
+
+
+QString RestrictionListsDialog::displayText( const ListTab& tab, const QString& entry )
+{
+	if( tab.websites == false )
+	{
+		return entry;
+	}
+	if( entry.startsWith( QLatin1Char('=') ) )
+	{
+		return entry.mid( 1 ) + QStringLiteral("    ") + tr( "(exactly this address)" );
+	}
+	return entry + QStringLiteral("    ") + tr( "(including sub domains)" );
+}
+
+
+
+void RestrictionListsDialog::addEntries( ListTab& tab )
+{
+	QStringList lines;
+	if( tab.websites )
+	{
+		if( askWebsites( tr( "Add" ), {}, true, &lines ) == false )
+		{
+			return;
+		}
+	}
+	else
+	{
+		bool ok = false;
+		const auto text = QInputDialog::getMultiLineText( this, tr( "Add" ),
+														  tr( "Program file names, one per line (e.g. zalo.exe):" ), {}, &ok );
+		if( ok == false )
+		{
+			return;
+		}
+		lines = text.split( QLatin1Char('\n') );
+	}
+
+	const auto newEntries = normalized( tab, lines );
 	if( newEntries.isEmpty() )
 	{
 		QMessageBox::information( this, tr( "Add" ), tr( "No valid entry was entered." ) );
@@ -220,17 +332,28 @@ void RestrictionListsDialog::editEntry( ListTab& tab )
 		return;
 	}
 
-	const auto oldEntry = item->text();
-	bool ok = false;
-	const auto text = QInputDialog::getText( this, tr( "Edit" ),
-											 tab.websites ? tr( "Website:" ) : tr( "Program file name:" ),
-											 QLineEdit::Normal, oldEntry, &ok );
-	if( ok == false )
+	const auto oldEntry = item->data( Qt::UserRole ).toString();
+	QStringList lines;
+	if( tab.websites )
 	{
-		return;
+		if( askWebsites( tr( "Edit" ), oldEntry, false, &lines ) == false )
+		{
+			return;
+		}
+	}
+	else
+	{
+		bool ok = false;
+		const auto text = QInputDialog::getText( this, tr( "Edit" ), tr( "Program file name:" ),
+												 QLineEdit::Normal, oldEntry, &ok );
+		if( ok == false )
+		{
+			return;
+		}
+		lines = QStringList{ text };
 	}
 
-	const auto newEntry = normalized( tab, { text } ).value( 0 );
+	const auto newEntry = normalized( tab, lines ).value( 0 );
 	if( newEntry.isEmpty() )
 	{
 		QMessageBox::information( this, tr( "Edit" ), tr( "The entry is not valid." ) );
@@ -270,7 +393,7 @@ void RestrictionListsDialog::removeEntries( ListTab& tab )
 	QStringList removed;
 	for( const auto item : selected )
 	{
-		removed.append( item->text() );
+		removed.append( item->data( Qt::UserRole ).toString() );
 	}
 
 	auto current = entries( tab );
@@ -301,7 +424,11 @@ void RestrictionListsDialog::addPreset( ListTab& tab, const QStringList& newEntr
 void RestrictionListsDialog::setEntries( ListTab& tab, const QStringList& newEntries )
 {
 	tab.list->clear();
-	tab.list->addItems( newEntries );
+	for( const auto& entry : newEntries )
+	{
+		auto item = new QListWidgetItem( displayText( tab, entry ), tab.list );
+		item->setData( Qt::UserRole, entry );
+	}
 	m_modified = true;
 	updateCount( tab );
 }
@@ -313,7 +440,7 @@ QStringList RestrictionListsDialog::entries( const ListTab& tab ) const
 	QStringList result;
 	for( int i = 0; i < tab.list->count(); ++i )
 	{
-		result.append( tab.list->item( i )->text() );
+		result.append( tab.list->item( i )->data( Qt::UserRole ).toString() );
 	}
 	return result;
 }

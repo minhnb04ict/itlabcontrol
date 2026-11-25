@@ -27,8 +27,13 @@
 
 #pragma once
 
+#include <atomic>
+
 #include <QMutex>
+#include <QPointer>
 #include <QTimer>
+
+class WebHistoryDialog;
 
 #include "CommandLineIO.h"
 #include "CommandLinePluginInterface.h"
@@ -56,6 +61,8 @@ public:
 		ApplyAppControl,
 		RemoveAppControl,
 		RefreshUserPolicy,
+		QueryWebHistory,
+		WebHistoryReply,
 	};
 	Q_ENUM(FeatureCommand)
 
@@ -65,6 +72,9 @@ public:
 		Active,
 		AppMode,
 		Apps,
+		From,
+		To,
+		Entries,
 	};
 	Q_ENUM(Argument)
 
@@ -140,11 +150,14 @@ public Q_SLOTS:
 	CommandLinePluginInterface::RunResult handle_clear( const QStringList& arguments );
 	CommandLinePluginInterface::RunResult handle_web( const QStringList& arguments );
 	CommandLinePluginInterface::RunResult handle_apps( const QStringList& arguments );
+	CommandLinePluginInterface::RunResult handle_history( const QStringList& arguments );
 
 private:
 	static constexpr int HeartbeatInterval = 60 * 1000;
 	static constexpr int ExpiryCheckInterval = 30 * 1000;
 	static constexpr int AppWatchInterval = 700;
+	static constexpr int WebHistoryInterval = 3 * 60 * 1000;
+	static constexpr int WebHistoryMaxEntries = 5000;
 
 	// MASTER
 	void addHeartbeatTargets( const ComputerControlInterfaceList& computerControlInterfaces );
@@ -155,6 +168,7 @@ private:
 	void checkExpiry();
 	void updateActiveState( const QJsonObject& state );
 	void enforceAppControl();
+	void collectWebHistory();
 
 	const Feature m_restrictionsFeature;
 	const Feature m_webRestrictionsFeature;
@@ -162,6 +176,7 @@ private:
 	const Feature m_allowListedWebsitesFeature;
 	const Feature m_blockListedWebsitesFeature;
 	const Feature m_unblockWebsitesFeature;
+	const Feature m_webHistoryFeature;
 	const Feature m_appRestrictionsFeature;
 	const Feature m_blockListedAppsFeature;
 	const Feature m_allowListedAppsFeature;
@@ -187,5 +202,10 @@ private:
 	QTimer m_appWatchTimer;
 	VeyonServerInterface* m_server{nullptr};
 	QMap<QString, qint64> m_lastAppNotification;
+	QTimer m_webHistoryTimer;
+	std::atomic<bool> m_collectingWebHistory{false};
+
+	// MASTER
+	QPointer<WebHistoryDialog> m_webHistoryDialog;
 
 };

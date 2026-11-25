@@ -73,13 +73,54 @@ QStringList sortedValueNames( const QSettings& key )
 	return names;
 }
 
-QStringList firefoxPatterns( const QStringList& hosts )
+// canonical entries (see RestrictionsBackend::normalizedWebsites): "[=]host[/path]"
+struct WebsiteEntry
+{
+	bool exact{false};
+	QString host;
+	QString path;   // "" or "/..."
+};
+
+WebsiteEntry parseEntry( const QString& entry )
+{
+	WebsiteEntry result;
+	auto text = entry;
+	if( text.startsWith( QLatin1Char('=') ) )
+	{
+		result.exact = true;
+		text = text.mid( 1 );
+	}
+	const auto slash = text.indexOf( QLatin1Char('/') );
+	result.host = slash < 0 ? text : text.left( slash );
+	result.path = slash < 0 ? QString{} : text.mid( slash );
+	return result;
+}
+
+// Chrome/Edge/Coc Coc/Brave URL filter format: "host" includes sub domains, ".host" is the exact host,
+// a path limits the filter to pages below it
+QStringList chromiumFilters( const QStringList& entries )
+{
+	QStringList filters;
+	for( const auto& entry : entries )
+	{
+		const auto website = parseEntry( entry );
+		filters.append( ( website.exact ? QStringLiteral(".") : QString{} ) + website.host + website.path );
+	}
+	return filters;
+}
+
+QStringList firefoxPatterns( const QStringList& entries )
 {
 	QStringList patterns;
-	for( const auto& host : hosts )
+	for( const auto& entry : entries )
 	{
-		patterns.append( QStringLiteral("*://%1/*").arg( host ) );
-		patterns.append( QStringLiteral("*://*.%1/*").arg( host ) );
+		const auto website = parseEntry( entry );
+		const auto path = website.path.isEmpty() ? QStringLiteral("/*") : website.path + QLatin1Char('*');
+		patterns.append( QStringLiteral("*://%1%2").arg( website.host, path ) );
+		if( website.exact == false )
+		{
+			patterns.append( QStringLiteral("*://*.%1%2").arg( website.host, path ) );
+		}
 	}
 	return patterns;
 }
@@ -180,12 +221,12 @@ bool RestrictionsBackend::applyWebFilter( WebMode mode, const QStringList& websi
 		break;
 	case WebMode::AllowListed:
 		chromiumBlock = QStringList{ QStringLiteral("*") };
-		chromiumAllow = hosts;
+		chromiumAllow = chromiumFilters( hosts );
 		firefoxBlock = QStringList{ QStringLiteral("<all_urls>") };
 		firefoxExceptions = firefoxPatterns( hosts );
 		break;
 	case WebMode::BlockListed:
-		chromiumBlock = hosts;
+		chromiumBlock = chromiumFilters( hosts );
 		firefoxBlock = firefoxPatterns( hosts );
 		break;
 	case WebMode::None:
@@ -254,14 +295,26 @@ bool RestrictionsBackend::removeAllRestrictions( QJsonObject& state )
 QStringList RestrictionsBackend::normalizedWebsites( const QStringList& websites )
 {
 	static const QRegularExpression validHost( QStringLiteral("^[\\w.-]+$"), QRegularExpression::UseUnicodePropertiesOption );
+	static const QRegularExpression validPath( QStringLiteral("^/[^\\s\"<>]*$") );
 
-	QStringList hosts;
+	// canonical form "[=]host[/path]":
+	//   "google.com"           -> the website and all its sub domains
+	//   "chat.google.com"      -> only this sub domain (and its sub domains)
+	//   "youtube.com/shorts"   -> only pages below this path
+	//   "=www.google.com"      -> exactly this host (no sub domains), "=" = "exact address"
+	QStringList entries;
 	for( auto entry : websites )
 	{
-		entry = entry.trimmed().toLower();
+		entry = entry.trimmed();
 		if( entry.isEmpty() || entry.startsWith( QLatin1Char('#') ) )
 		{
 			continue;
+		}
+
+		const auto exact = entry.startsWith( QLatin1Char('=') );
+		if( exact )
+		{
+			entry = entry.mid( 1 ).trimmed();
 		}
 
 		const auto schemeEnd = entry.indexOf( QStringLiteral("://") );
@@ -270,30 +323,54 @@ QStringList RestrictionsBackend::normalizedWebsites( const QStringList& websites
 			entry = entry.mid( schemeEnd + 3 );
 		}
 
-		const auto end = entry.indexOf( QRegularExpression( QStringLiteral("[/?#:]") ) );
-		if( end >= 0 )
+		// query and fragment are never part of a filter
+		const auto queryStart = entry.indexOf( QRegularExpression( QStringLiteral("[?#]") ) );
+		if( queryStart >= 0 )
 		{
-			entry = entry.left( end );
+			entry = entry.left( queryStart );
 		}
 
-		while( entry.startsWith( QLatin1String("*.") ) || entry.startsWith( QLatin1Char('.') ) )
+		const auto slash = entry.indexOf( QLatin1Char('/') );
+		auto host = ( slash < 0 ? entry : entry.left( slash ) ).toLower();
+		auto path = slash < 0 ? QString{} : entry.mid( slash );
+
+		const auto portStart = host.indexOf( QLatin1Char(':') );
+		if( portStart >= 0 )
 		{
-			entry = entry.mid( entry.startsWith( QLatin1Char('.') ) ? 1 : 2 );
+			host = host.left( portStart );
 		}
 
-		// "www.youtube.com" means the whole website (also youtube.com, m.youtube.com)
-		if( entry.startsWith( QLatin1String("www.") ) && entry.count( QLatin1Char('.') ) >= 2 )
+		while( host.startsWith( QLatin1String("*.") ) || host.startsWith( QLatin1Char('.') ) )
 		{
-			entry = entry.mid( 4 );
+			host = host.mid( host.startsWith( QLatin1Char('.') ) ? 1 : 2 );
 		}
 
-		if( entry.isEmpty() == false && validHost.match( entry ).hasMatch() && hosts.contains( entry ) == false )
+		// "www.youtube.com" means the whole website (also youtube.com, m.youtube.com),
+		// unless the exact address was requested
+		if( exact == false && host.startsWith( QLatin1String("www.") ) && host.count( QLatin1Char('.') ) >= 2 )
 		{
-			hosts.append( entry );
+			host = host.mid( 4 );
+		}
+
+		while( path.endsWith( QLatin1Char('/') ) )
+		{
+			path.chop( 1 );
+		}
+
+		if( host.isEmpty() || validHost.match( host ).hasMatch() == false ||
+			( path.isEmpty() == false && validPath.match( path ).hasMatch() == false ) )
+		{
+			continue;
+		}
+
+		const auto canonical = ( exact ? QStringLiteral("=") : QString{} ) + host + path;
+		if( entries.contains( canonical ) == false )
+		{
+			entries.append( canonical );
 		}
 	}
 
-	return hosts;
+	return entries;
 }
 
 

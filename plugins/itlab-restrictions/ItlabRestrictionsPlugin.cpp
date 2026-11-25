@@ -27,6 +27,10 @@
 #include "WebsiteListDialog.h"
 #include "AppListDialog.h"
 #include "RestrictionListsDialog.h"
+#include "WebHistory.h"
+#include "WebHistoryDialog.h"
+
+#include <QtConcurrent>
 #include "BuiltinFeatures.h"
 #include "FeatureWorkerManager.h"
 #include "SystemTrayIcon.h"
@@ -91,6 +95,12 @@ ItlabRestrictionsPlugin::ItlabRestrictionsPlugin( QObject* parent ) :
 							  m_webRestrictionsFeature.uid(),
 							  tr( "Unblock websites" ), {},
 							  tr( "All websites can be opened again." ) ),
+	m_webHistoryFeature( QStringLiteral("ItlabWebHistory"),
+						 Feature::Flag::Action | Feature::Flag::AllComponents,
+						 Feature::Uid( "b4d6f8a0-2c3e-4f57-9a71-5c6d7e8f9a07" ),
+						 m_webRestrictionsFeature.uid(),
+						 tr( "Web browsing history..." ), {},
+						 tr( "Show and export the websites visited on the student computers (last 30 days)." ) ),
 	m_appRestrictionsFeature( QStringLiteral("ItlabAppRestrictions"),
 							  Feature::Flag::Action | Feature::Flag::AllComponents,
 							  Feature::Uid( "d2c4e6a8-0b1d-4f35-8c79-6e5f4d3c2b10" ),
@@ -130,7 +140,7 @@ ItlabRestrictionsPlugin::ItlabRestrictionsPlugin( QObject* parent ) :
 									tr( "Remove every restriction from the student computers." ) ),
 	m_features( { m_restrictionsFeature,
 				  m_webRestrictionsFeature, m_blockAllWebsitesFeature, m_allowListedWebsitesFeature,
-				  m_blockListedWebsitesFeature, m_unblockWebsitesFeature,
+				  m_blockListedWebsitesFeature, m_unblockWebsitesFeature, m_webHistoryFeature,
 				  m_appRestrictionsFeature, m_blockListedAppsFeature, m_allowListedAppsFeature, m_unblockAppsFeature,
 				  m_editListsFeature, m_removeAllRestrictionsFeature } ),
 	m_commands( {
@@ -138,10 +148,14 @@ ItlabRestrictionsPlugin::ItlabRestrictionsPlugin( QObject* parent ) :
 		{ QStringLiteral("clear"), tr( "Remove all restrictions from this computer (emergency)" ) },
 		{ QStringLiteral("web"), tr( "Apply a web filter on this computer: web blockall | web allow <websites> | web block <websites>" ) },
 		{ QStringLiteral("apps"), tr( "Restrict applications on this computer: apps block <programs> | apps allow <programs>" ) },
+		{ QStringLiteral("history"), tr( "Collect and print the web browsing history of this computer: history [days]" ) },
 	} )
 {
 	m_appWatchTimer.setInterval( AppWatchInterval );
 	connect( &m_appWatchTimer, &QTimer::timeout, this, &ItlabRestrictionsPlugin::enforceAppControl );
+
+	m_webHistoryTimer.setInterval( WebHistoryInterval );
+	connect( &m_webHistoryTimer, &QTimer::timeout, this, &ItlabRestrictionsPlugin::collectWebHistory );
 
 	m_heartbeatTimer.setInterval( HeartbeatInterval );
 	connect( &m_heartbeatTimer, &QTimer::timeout, this, &ItlabRestrictionsPlugin::sendHeartbeats );
@@ -172,6 +186,23 @@ bool ItlabRestrictionsPlugin::startFeature( VeyonMasterInterface& master, const 
 		feature == m_webRestrictionsFeature || feature == m_appRestrictionsFeature )
 	{
 		return false;
+	}
+
+	// web browsing history of the computers (nothing is restricted)
+	if( feature == m_webHistoryFeature )
+	{
+		if( m_webHistoryDialog )
+		{
+			m_webHistoryDialog->close();
+		}
+		m_webHistoryDialog = new WebHistoryDialog( computerControlInterfaces,
+			[this]( const ComputerControlInterfaceList& computers, qint64 fromMs, qint64 toMs ) {
+				sendFeatureMessage( FeatureMessage{ m_restrictionsFeature.uid(), FeatureCommand::QueryWebHistory }
+										.addArgument( Argument::From, fromMs )
+										.addArgument( Argument::To, toMs ), computers );
+			}, master.mainWindow() );
+		m_webHistoryDialog->show();
+		return true;
 	}
 
 	// only edits the lists, nothing is sent to the student computers
@@ -308,6 +339,16 @@ bool ItlabRestrictionsPlugin::handleFeatureMessage( ComputerControlInterface::Po
 													const FeatureMessage& message )
 {
 	if( message.featureUid() == m_restrictionsFeature.uid() &&
+		message.command<FeatureCommand>() == FeatureCommand::WebHistoryReply )
+	{
+		if( m_webHistoryDialog )
+		{
+			m_webHistoryDialog->addEntries( computerControlInterface, message.argument( Argument::Entries ).toList() );
+		}
+		return true;
+	}
+
+	if( message.featureUid() == m_restrictionsFeature.uid() &&
 		message.command<FeatureCommand>() == FeatureCommand::Status )
 	{
 		// restrictions are still active on this computer (e.g. after the Console was restarted):
@@ -387,6 +428,24 @@ bool ItlabRestrictionsPlugin::handleFeatureMessage( VeyonServerInterface& server
 	}
 
 	m_server = &server;
+
+	// web browsing history: collect the newest entries and answer in the background
+	if( message.command<FeatureCommand>() == FeatureCommand::QueryWebHistory )
+	{
+		const auto fromMs = message.argument( Argument::From ).toLongLong();
+		const auto toMs = message.argument( Argument::To ).toLongLong();
+		auto serverPointer = &server;
+		(void) QtConcurrent::run( [this, serverPointer, messageContext, fromMs, toMs]() {
+			WebHistory::collect();
+			const auto entries = WebHistory::query( fromMs, toMs, WebHistoryMaxEntries );
+			QMetaObject::invokeMethod( this, [this, serverPointer, messageContext, entries]() {
+				serverPointer->sendFeatureMessageReply( messageContext,
+					FeatureMessage{ m_restrictionsFeature.uid(), FeatureCommand::WebHistoryReply }
+						.addArgument( Argument::Entries, entries ) );
+			}, Qt::QueuedConnection );
+		} );
+		return true;
+	}
 
 	QMutexLocker locker( &m_stateMutex );
 
@@ -552,6 +611,30 @@ void ItlabRestrictionsPlugin::initServer()
 	// restrictions of a previous session (e.g. before a reboot) may have expired meanwhile
 	checkExpiry();
 	m_expiryCheckTimer.start();
+
+	// the web browsing history is only kept on student computers
+	const auto teacherComputer = VeyonCore::config().value( QStringLiteral("Role"), QStringLiteral("ITLab"), QString{} )
+									 .toString().compare( QLatin1String("Teacher"), Qt::CaseInsensitive ) == 0;
+	if( teacherComputer == false )
+	{
+		QTimer::singleShot( 30 * 1000, this, &ItlabRestrictionsPlugin::collectWebHistory );
+		m_webHistoryTimer.start();
+	}
+}
+
+
+
+void ItlabRestrictionsPlugin::collectWebHistory()
+{
+	// reading the browser databases may take a moment - do not block the server
+	if( m_collectingWebHistory.exchange( true ) )
+	{
+		return;
+	}
+	(void) QtConcurrent::run( [this]() {
+		WebHistory::collect();
+		m_collectingWebHistory = false;
+	} );
 }
 
 
@@ -763,6 +846,27 @@ CommandLinePluginInterface::RunResult ItlabRestrictionsPlugin::handle_web( const
 	}
 
 	info( tr( "Web filter applied. It is removed automatically when no Teacher Console keeps it alive." ) );
+	return Successful;
+}
+
+
+
+CommandLinePluginInterface::RunResult ItlabRestrictionsPlugin::handle_history( const QStringList& arguments )
+{
+	const auto days = qBound( 1, arguments.value( 0, QStringLiteral("1") ).toInt(), WebHistory::retentionDays() );
+	WebHistory::collect();
+	const auto toMs = QDateTime::currentMSecsSinceEpoch();
+	const auto fromMs = toMs - qint64(days) * 24 * 3600 * 1000;
+	const auto entries = WebHistory::query( fromMs, toMs, WebHistoryMaxEntries );
+	for( const auto& entryValue : entries )
+	{
+		const auto entry = entryValue.toList();
+		print( QStringLiteral("%1	%2	%3	%4	%5").arg(
+				   QDateTime::fromMSecsSinceEpoch( entry.value( 0 ).toLongLong() ).toString( QStringLiteral("yyyy-MM-dd HH:mm:ss") ),
+				   entry.value( 1 ).toString(), entry.value( 2 ).toString(),
+				   entry.value( 3 ).toString(), entry.value( 4 ).toString() ) );
+	}
+	info( tr( "%1 entries" ).arg( entries.size() ) );
 	return Successful;
 }
 

@@ -36,7 +36,10 @@ bool WebsiteListDialog::edit( QWidget* parent, bool allowList, QStringList& webs
 		:
 		tr( "These websites can not be opened on the student computers, all others can. "
 			"Enter one website per line, e.g. <b>facebook.com</b> or <b>https://www.youtube.com</b>. "
-			"Subdomains are included automatically." ), &dialog );
+			"Subdomains are included automatically.<br><br>"
+			"Block only a part of a website: <b>chat.google.com</b> blocks the chat but not the search on google.com, "
+			"<b>youtube.com/shorts</b> blocks only the Shorts. Put <b>=</b> in front (e.g. <b>=www.google.com</b>) "
+			"to block exactly this address without sub domains." ), &dialog );
 	description->setWordWrap( true );
 
 	auto edit = new QPlainTextEdit( &dialog );

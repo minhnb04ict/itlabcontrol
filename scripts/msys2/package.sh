@@ -32,7 +32,7 @@ OUT=$BUILDDIR/package
 
 echo "==> Tạo thư mục $OUT"
 rm -rf "$OUT"
-mkdir -p "$OUT"/{plugins,translations,crypto,imageformats,platforms,styles,tls,interception}
+mkdir -p "$OUT"/{plugins,translations,crypto,imageformats,platforms,styles,tls,sqldrivers,interception}
 
 echo "==> Chép chương trình và plugin"
 find "$BUILDDIR" -mindepth 2 -name 'veyon-*.exe' -not -path "$OUT/*" -exec cp '{}' "$OUT/" ';'
@@ -47,6 +47,8 @@ cp "$QTPLUGINS/platforms/qwindows.dll" "$OUT/platforms/"
 cp "$QTPLUGINS/imageformats/qjpeg.dll" "$OUT/imageformats/"
 cp "$QTPLUGINS"/styles/*.dll "$OUT/styles/"
 cp "$QTPLUGINS/tls/qopensslbackend.dll" "$OUT/tls/"
+# ITLabControl: SQLite driver for reading the browser history (itlab-restrictions)
+cp "$QTPLUGINS/sqldrivers/qsqlite.dll" "$OUT/sqldrivers/"
 cp "$QTPLUGINS/crypto/libqca-ossl.dll" "$OUT/crypto/"
 
 echo "==> Chép bản dịch"

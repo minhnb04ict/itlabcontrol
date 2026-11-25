@@ -48,6 +48,8 @@ private:
 
 	QWidget* createTab( ListTab& tab );
 	QStringList normalized( const ListTab& tab, const QStringList& entries ) const;
+	bool askWebsites( const QString& title, const QString& initialEntry, bool multiLine, QStringList* result );
+	static QString displayText( const ListTab& tab, const QString& entry );
 	void addEntries( ListTab& tab );
 	void editEntry( ListTab& tab );
 	void removeEntries( ListTab& tab );

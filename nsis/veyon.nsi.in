@@ -156,6 +156,9 @@ File "styles/*.dll"
 # Qt TLS backend
 SetOutPath "$INSTDIR\tls"
 File "tls/qopensslbackend.dll"
+# ITLabControl: SQLite driver (browser history)
+SetOutPath "$INSTDIR\sqldrivers"
+File "sqldrivers/*.dll"
 # configuration
 ExecWait '"$INSTDIR\veyon-wcli.exe" service register'
 ExecWait '"$INSTDIR\veyon-wcli.exe" config set Network/FirewallExceptionEnabled 1'
@@ -419,6 +422,7 @@ RmDir /r "$INSTDIR\plugins"
 RmDir /r "$INSTDIR\platforms"
 RmDir /r "$INSTDIR\styles"
 RmDir /r "$INSTDIR\tls"
+RmDir /r "$INSTDIR\sqldrivers"
 RmDir /r "$INSTDIR\translations"
 RmDir /r "$INSTDIR\interception"
 

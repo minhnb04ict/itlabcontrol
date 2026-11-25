@@ -2610,6 +2610,85 @@ Make sure that the names of the keys belonging to each other are identical on al
     </message>
 </context>
 <context>
+    <name>ItlabAudioPlugin</name>
+    <message>
+        <source>Sound</source>
+        <translation>Âm thanh</translation>
+    </message>
+    <message>
+        <source>Mute or unmute the student computers or change their volume.</source>
+        <translation>Tắt/bật tiếng máy học sinh hoặc điều chỉnh âm lượng.</translation>
+    </message>
+    <message>
+        <source>Mute (keep muted)</source>
+        <translation>Tắt tiếng (giữ tắt)</translation>
+    </message>
+    <message>
+        <source>Mutes the student computers. If a student unmutes, the computer is muted again.</source>
+        <translation>Tắt tiếng các máy học sinh. Nếu học sinh tự bật lại, máy sẽ bị tắt tiếng lại.</translation>
+    </message>
+    <message>
+        <source>Unmute</source>
+        <translation>Bật tiếng</translation>
+    </message>
+    <message>
+        <source>Turns the sound of the student computers on again.</source>
+        <translation>Bật lại âm thanh cho các máy học sinh.</translation>
+    </message>
+    <message>
+        <source>Volume 25%</source>
+        <translation>Âm lượng 25%</translation>
+    </message>
+    <message>
+        <source>Volume 50%</source>
+        <translation>Âm lượng 50%</translation>
+    </message>
+    <message>
+        <source>Volume 75%</source>
+        <translation>Âm lượng 75%</translation>
+    </message>
+    <message>
+        <source>Volume 100%</source>
+        <translation>Âm lượng 100%</translation>
+    </message>
+    <message>
+        <source>Set volume...</source>
+        <translation>Đặt âm lượng...</translation>
+    </message>
+    <message>
+        <source>Sets the volume of the student computers to a value between 0 and 100%.</source>
+        <translation>Đặt âm lượng các máy học sinh trong khoảng 0 - 100%.</translation>
+    </message>
+    <message>
+        <source>The sound of this computer (the teacher computer) is never changed.</source>
+        <translation>Âm thanh của máy này (máy giáo viên) không bao giờ bị thay đổi.</translation>
+    </message>
+    <message>
+        <source>Set volume</source>
+        <translation>Đặt âm lượng</translation>
+    </message>
+    <message>
+        <source>Volume of the student computers (0 - 100%):</source>
+        <translation>Âm lượng các máy học sinh (0 - 100%):</translation>
+    </message>
+    <message>
+        <source>No audio output device found.</source>
+        <translation>Không tìm thấy thiết bị phát âm thanh.</translation>
+    </message>
+    <message>
+        <source>Mute, unmute and set the volume of student computers</source>
+        <translation>Tắt/bật tiếng và đặt âm lượng máy học sinh</translation>
+    </message>
+    <message>
+        <source>Mute, unmute or set the volume of this computer</source>
+        <translation>Tắt/bật tiếng hoặc đặt âm lượng của máy này</translation>
+    </message>
+    <message>
+        <source>Set the volume (0 - 100)</source>
+        <translation>Đặt âm lượng (0 - 100)</translation>
+    </message>
+</context>
+<context>
     <name>ItlabClearDesktopFeaturePlugin</name>
     <message>
         <source>Screen management</source>
@@ -2726,6 +2805,14 @@ Make sure that the names of the keys belonging to each other are identical on al
         <translation>Mở lại được mọi trang web.</translation>
     </message>
     <message>
+        <source>Web browsing history...</source>
+        <translation>Lịch sử duyệt web...</translation>
+    </message>
+    <message>
+        <source>Show and export the websites visited on the student computers (last 30 days).</source>
+        <translation>Xem và xuất các trang web đã truy cập trên máy học sinh (30 ngày gần nhất).</translation>
+    </message>
+    <message>
         <source>Restrict applications</source>
         <translation>Hạn chế ứng dụng</translation>
     </message>
@@ -2790,6 +2877,10 @@ Make sure that the names of the keys belonging to each other are identical on al
         <translation>Hạn chế ứng dụng trên máy này: apps block &lt;chương trình&gt; | apps allow &lt;chương trình&gt;</translation>
     </message>
     <message>
+        <source>Collect and print the web browsing history of this computer: history [days]</source>
+        <translation>Thu thập và in lịch sử duyệt web của máy này: history [số ngày]</translation>
+    </message>
+    <message>
         <source>Restrictions are never applied to this computer (the teacher computer).</source>
         <translation>Không bao giờ áp dụng hạn chế cho chính máy này (máy giáo viên).</translation>
     </message>
@@ -2828,6 +2919,10 @@ Make sure that the names of the keys belonging to each other are identical on al
     <message>
         <source>Web filter applied. It is removed automatically when no Teacher Console keeps it alive.</source>
         <translation>Đã chặn web. Việc chặn tự được gỡ khi không có Bảng điều khiển giáo viên duy trì.</translation>
+    </message>
+    <message>
+        <source>%1 entries</source>
+        <translation>%1 mục</translation>
     </message>
     <message>
         <source>The restriction could not be saved. Please run this command as administrator.</source>
@@ -4834,12 +4929,36 @@ Vui lòng lưu bài và đóng tất cả chương trình.</translation>
         <translation>Thêm theo nhóm</translation>
     </message>
     <message>
-        <source>Add</source>
-        <translation>Thêm</translation>
+        <source>Whole domain (including sub domains)</source>
+        <translation>Cả tên miền (gồm các tên miền con)</translation>
     </message>
     <message>
-        <source>Websites, one per line (e.g. vnexpress.net):</source>
-        <translation>Website, mỗi dòng một trang (ví dụ vnexpress.net):</translation>
+        <source>Exactly this address (without sub domains)</source>
+        <translation>Chính xác địa chỉ này (không gồm tên miền con)</translation>
+    </message>
+    <message>
+        <source>Examples:&lt;br&gt;&lt;b&gt;google.com&lt;/b&gt; - google.com and all sub domains (mail.google.com, chat.google.com, ...)&lt;br&gt;&lt;b&gt;chat.google.com&lt;/b&gt; - only chat.google.com, the search on google.com still works&lt;br&gt;&lt;b&gt;youtube.com/shorts&lt;/b&gt; - only the Shorts pages of YouTube&lt;br&gt;With &lt;i&gt;Exactly this address&lt;/i&gt;, &lt;b&gt;www.google.com&lt;/b&gt; only matches www.google.com, not google.com or other sub domains.&lt;br&gt;Note: Google Chat is also available inside Gmail at &lt;b&gt;mail.google.com/chat&lt;/b&gt;.</source>
+        <translation>Ví dụ:&lt;br&gt;&lt;b&gt;google.com&lt;/b&gt; - google.com và mọi tên miền con (mail.google.com, chat.google.com, ...)&lt;br&gt;&lt;b&gt;chat.google.com&lt;/b&gt; - chỉ chat.google.com, tìm kiếm trên google.com vẫn dùng được&lt;br&gt;&lt;b&gt;youtube.com/shorts&lt;/b&gt; - chỉ các trang Shorts của YouTube&lt;br&gt;Với &lt;i&gt;Chính xác địa chỉ này&lt;/i&gt;, &lt;b&gt;www.google.com&lt;/b&gt; chỉ khớp www.google.com, không gồm google.com hay tên miền con khác.&lt;br&gt;Lưu ý: Google Chat cũng có trong Gmail tại &lt;b&gt;mail.google.com/chat&lt;/b&gt;.</translation>
+    </message>
+    <message>
+        <source>Type:</source>
+        <translation>Kiểu:</translation>
+    </message>
+    <message>
+        <source>Websites, one per line:</source>
+        <translation>Các website, mỗi dòng một trang:</translation>
+    </message>
+    <message>
+        <source>(exactly this address)</source>
+        <translation>(chính xác địa chỉ này)</translation>
+    </message>
+    <message>
+        <source>(including sub domains)</source>
+        <translation>(gồm cả tên miền con)</translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation>Thêm</translation>
     </message>
     <message>
         <source>Program file names, one per line (e.g. zalo.exe):</source>
@@ -6374,6 +6493,85 @@ Ví dụ: [^-]*-(PC[0-9]*)</translation>
     </message>
 </context>
 <context>
+    <name>WebHistoryDialog</name>
+    <message>
+        <source>Web browsing history</source>
+        <translation>Lịch sử duyệt web</translation>
+    </message>
+    <message>
+        <source>Load</source>
+        <translation>Tải</translation>
+    </message>
+    <message>
+        <source>Search in computer, user, title and address</source>
+        <translation>Tìm theo máy, người dùng, tiêu đề và địa chỉ</translation>
+    </message>
+    <message>
+        <source>From:</source>
+        <translation>Từ:</translation>
+    </message>
+    <message>
+        <source>to:</source>
+        <translation>đến:</translation>
+    </message>
+    <message>
+        <source>Computer</source>
+        <translation>Máy</translation>
+    </message>
+    <message>
+        <source>Time</source>
+        <translation>Thời gian</translation>
+    </message>
+    <message>
+        <source>User</source>
+        <translation>Người dùng</translation>
+    </message>
+    <message>
+        <source>Browser</source>
+        <translation>Trình duyệt</translation>
+    </message>
+    <message>
+        <source>Title</source>
+        <translation>Tiêu đề</translation>
+    </message>
+    <message>
+        <source>Address</source>
+        <translation>Địa chỉ</translation>
+    </message>
+    <message>
+        <source>The history of the last %1 days is kept on each student computer. Pages opened in private/incognito windows are not recorded by the browsers.</source>
+        <translation>Lịch sử %1 ngày gần nhất được lưu trên từng máy học sinh. Các trang mở trong cửa sổ ẩn danh/riêng tư không được trình duyệt ghi lại.</translation>
+    </message>
+    <message>
+        <source>Export (CSV for Excel)...</source>
+        <translation>Xuất (CSV cho Excel)...</translation>
+    </message>
+    <message>
+        <source>None of the computers is connected.</source>
+        <translation>Không có máy nào đang kết nối.</translation>
+    </message>
+    <message>
+        <source>%1 of %2 computers answered, %3 entries.</source>
+        <translation>%1/%2 máy đã trả lời, %3 mục.</translation>
+    </message>
+    <message>
+        <source>Export web browsing history</source>
+        <translation>Xuất lịch sử duyệt web</translation>
+    </message>
+    <message>
+        <source>CSV files (*.csv)</source>
+        <translation>File CSV (*.csv)</translation>
+    </message>
+    <message>
+        <source>The file could not be written.</source>
+        <translation>Không ghi được tệp.</translation>
+    </message>
+    <message>
+        <source>%1 entries exported.</source>
+        <translation>Đã xuất %1 mục.</translation>
+    </message>
+</context>
+<context>
     <name>WebsiteListDialog</name>
     <message>
         <source>Allow only listed websites</source>
@@ -6388,8 +6586,8 @@ Ví dụ: [^-]*-(PC[0-9]*)</translation>
         <translation>Máy học sinh chỉ mở được các trang web này. Mỗi dòng một trang, ví dụ &lt;b&gt;vnexpress.net&lt;/b&gt; hoặc &lt;b&gt;https://www.google.com&lt;/b&gt;. Tên miền con được tính luôn (google.com cho phép cả mail.google.com).&lt;br&gt;&lt;br&gt;Lưu ý: nhiều trang web tải nội dung từ trang khác (ảnh, video, đăng nhập). Nếu trang hiển thị không đúng, hãy thêm cả các trang đó.</translation>
     </message>
     <message>
-        <source>These websites can not be opened on the student computers, all others can. Enter one website per line, e.g. &lt;b&gt;facebook.com&lt;/b&gt; or &lt;b&gt;https://www.youtube.com&lt;/b&gt;. Subdomains are included automatically.</source>
-        <translation>Máy học sinh không mở được các trang web này, các trang khác vẫn mở được. Mỗi dòng một trang, ví dụ &lt;b&gt;facebook.com&lt;/b&gt; hoặc &lt;b&gt;https://www.youtube.com&lt;/b&gt;. Tên miền con được tính luôn.</translation>
+        <source>These websites can not be opened on the student computers, all others can. Enter one website per line, e.g. &lt;b&gt;facebook.com&lt;/b&gt; or &lt;b&gt;https://www.youtube.com&lt;/b&gt;. Subdomains are included automatically.&lt;br&gt;&lt;br&gt;Block only a part of a website: &lt;b&gt;chat.google.com&lt;/b&gt; blocks the chat but not the search on google.com, &lt;b&gt;youtube.com/shorts&lt;/b&gt; blocks only the Shorts. Put &lt;b&gt;=&lt;/b&gt; in front (e.g. &lt;b&gt;=www.google.com&lt;/b&gt;) to block exactly this address without sub domains.</source>
+        <translation>Học sinh không mở được các website này, các trang khác vẫn mở được. Nhập mỗi dòng một website, ví dụ &lt;b&gt;facebook.com&lt;/b&gt; hoặc &lt;b&gt;https://www.youtube.com&lt;/b&gt;. Tên miền con được tính tự động.&lt;br&gt;&lt;br&gt;Chỉ chặn một phần website: &lt;b&gt;chat.google.com&lt;/b&gt; chặn chat nhưng không chặn tìm kiếm trên google.com, &lt;b&gt;youtube.com/shorts&lt;/b&gt; chỉ chặn Shorts. Thêm &lt;b&gt;=&lt;/b&gt; ở đầu (ví dụ &lt;b&gt;=www.google.com&lt;/b&gt;) để chặn chính xác địa chỉ đó, không gồm tên miền con.</translation>
     </message>
     <message>
         <source>Allow only these websites</source>

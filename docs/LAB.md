@@ -172,6 +172,14 @@ Ghi **Đạt / Không đạt** và ghi chú (máy nào, hiện tượng gì). M�
 | 28 | Chặn ứng dụng ⭐ | Hạn chế → Hạn chế ứng dụng → Chặn các ứng dụng…, thêm `notepad.exe`; trên máy HS mở Notepad | Notepad bị đóng trong khoảng 1 giây, HS thấy thông báo "Ứng dụng bị giáo viên chặn" | |
 | 29 | Chỉ cho phép ứng dụng ⭐ | Hạn chế ứng dụng → Chỉ cho phép…, bấm "+ Office"; trên máy HS mở Word, Zalo, Chrome | Word dùng được; Zalo, Chrome bị đóng; UniKey, File Explorer vẫn dùng được | |
 | 30 | Bỏ chặn ứng dụng ⭐ | Hạn chế ứng dụng → Bỏ chặn ứng dụng | Mở lại được mọi ứng dụng | |
+| 31 | Chặn chính xác trang web ⭐ | Hạn chế website → Chặn danh sách, nhập `chat.google.com`; trên máy HS mở google.com và chat.google.com | Tìm kiếm Google vẫn dùng được, chat.google.com bị chặn | |
+| 32 | Chặn đúng địa chỉ ⭐ | Quản lý danh sách → thêm `www.example.org` kiểu **Chính xác địa chỉ này** → Chặn danh sách | www.example.org bị chặn; example.org (không có www) vẫn vào được | |
+| 33 | Tắt tiếng ⭐ | Âm thanh → Tắt tiếng (giữ tắt); trên máy HS tự bật lại tiếng | Máy HS bị tắt tiếng lại trong khoảng 1 giây; máy GV không bị ảnh hưởng | |
+| 34 | Âm lượng | Âm thanh → Bật tiếng, rồi Âm lượng 25% / Đặt âm lượng… 60 | Âm lượng máy HS đổi đúng mức | |
+| 35 | Lịch sử duyệt web ⭐ | HS mở vài trang trên Chrome/Edge/Cốc Cốc; GV chọn máy → Hạn chế website → Lịch sử duyệt web… → Tải | Hiện các trang HS vừa mở (máy, giờ, người dùng, trình duyệt, tiêu đề, địa chỉ) | |
+| 36 | Xuất lịch sử | Trong cửa sổ lịch sử bấm Xuất (CSV cho Excel) | Mở bằng Excel đúng tiếng Việt; lịch sử cũ hơn 30 ngày tự xoá trên máy HS | |
+
+> Lịch sử duyệt web: máy HS đọc lịch sử trình duyệt mỗi 3 phút, lưu ở `%ProgramData%\ITLabControl\webhistory` (mỗi ngày một file, giữ `ITLab/WebHistoryDays` = 30 ngày). Trên máy HS có thể xem nhanh: `veyon-cli restrictions history 1`. Trang mở ở cửa sổ ẩn danh không được ghi lại.
 
 > Firefox chỉ nhận thay đổi chặn web khi **mở lại** Firefox. Chrome, Edge, Cốc Cốc nhận ngay (vài giây).
 
