@@ -24,9 +24,11 @@
 
 #include <QCoreApplication>
 #include <QDesktopServices>
+#include <QDirIterator>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QPushButton>
 
 #include "BuiltinFeatures.h"
 #include "Filesystem.h"
@@ -44,20 +46,7 @@
 #include "VeyonMasterInterface.h"
 #include "VeyonServerInterface.h"
 #include "VeyonWorkerInterface.h"
-
-
-// Resolve a path relative to the active user's home directory.
-// Absolute paths (starting with /) are returned as-is.
-// Relative paths are prefixed with the user's home directory.
-// Empty paths are returned as-is.
-static QString resolvePathToHome(const QString& path)
-{
-	if (path.isEmpty())
-		return path;
-	if (QDir::isAbsolutePath(path))
-		return path;
-	return QDir::toNativeSeparators(QDir::homePath() + QLatin1Char('/') + path);
-}
+#include "UserPathResolver.h"
 
 
 FileTransferPlugin::FileTransferPlugin( QObject* parent ) :
@@ -120,17 +109,62 @@ bool FileTransferPlugin::startFeature( VeyonMasterInterface& master, const Featu
 		{
 			m_lastFileTransferSourceDirectory = VeyonCore::filesystem().expandPath( m_configuration.fileTransferDefaultSourceDirectory() );
 		}
-		const auto files = QFileDialog::getOpenFileNames( master.mainWindow(),
-														  tr( "Select one or more files to transfer" ),
-														  m_lastFileTransferSourceDirectory );
+		// ITLabControl: send single files or a whole folder (with its sub folders)
+		QMessageBox choice( QMessageBox::Question, tr( "Distribute" ),
+							tr( "What do you want to send to the student computers?" ),
+							QMessageBox::NoButton, master.mainWindow() );
+		const auto filesButton = choice.addButton( tr( "Files..." ), QMessageBox::AcceptRole );
+		const auto folderButton = choice.addButton( tr( "A folder..." ), QMessageBox::AcceptRole );
+		choice.addButton( QMessageBox::Cancel );
+		choice.exec();
+
+		QStringList files;
+		QString baseDirectory;
+
+		if( choice.clickedButton() == filesButton )
+		{
+			files = QFileDialog::getOpenFileNames( master.mainWindow(),
+												   tr( "Select one or more files to transfer" ),
+												   m_lastFileTransferSourceDirectory );
+			if( files.isEmpty() == false )
+			{
+				config.setLastFileTransferSourceDirectory( QFileInfo( files.first() ).absolutePath() );
+			}
+		}
+		else if( choice.clickedButton() == folderButton )
+		{
+			const auto folder = QFileDialog::getExistingDirectory( master.mainWindow(),
+																   tr( "Select the folder to transfer" ),
+																   m_lastFileTransferSourceDirectory );
+			if( folder.isEmpty() == false )
+			{
+				QDirIterator it( folder, QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories );
+				while( it.hasNext() )
+				{
+					files.append( it.next() );
+				}
+				files.sort( Qt::CaseInsensitive );
+
+				if( files.isEmpty() )
+				{
+					QMessageBox::information( master.mainWindow(), tr( "Distribute" ),
+											  tr( "The folder %1 does not contain any files." ).arg( QDir::toNativeSeparators( folder ) ) );
+				}
+
+				// the files keep their path below the parent folder, e.g. "BaiTap/Tuan1/a.docx"
+				const QFileInfo folderInfo( folder );
+				baseDirectory = folderInfo.absolutePath();
+				config.setLastFileTransferSourceDirectory( baseDirectory );
+			}
+		}
 
 		if( files.isEmpty() == false )
 		{
-			config.setLastFileTransferSourceDirectory( QFileInfo( files.first() ).absolutePath() );
-
 			if( controlFeature( feature.uid(), Operation::Initialize,
 			{ { argToString(Argument::Files), files } }, computerControlInterfaces ) )
 			{
+				m_fileTransferController->setBaseDirectory( baseDirectory );
+
 				auto dialog = new FileTransferDialog( m_fileTransferController, master.mainWindow() );
 				connect( dialog, &QDialog::finished, dialog, &QDialog::deleteLater );
 				dialog->open();
@@ -178,7 +212,8 @@ bool FileTransferPlugin::handleFeatureMessage(ComputerControlInterface::Pointer 
 																	 collectionId,
 																	 message.argument(Argument::DirectoryPath).toString(),
 																	 message.argument(Argument::DirectoryEntries).toList(),
-																	 message.argument(Argument::ErrorString).toString());
+																	 message.argument(Argument::ErrorString).toString(),
+																	 message.argument(Argument::PathIsFile).toBool());
 			break;
 		case FeatureCommand::StartFileTransfer:
 			m_fileCollectController->startFileTransfer(computerControlInterface,
@@ -546,19 +581,23 @@ bool FileTransferPlugin::handleDistributeFilesMessage(const FeatureMessage& mess
 			QString destDir;
 			if (message.hasArgument(Argument::DestinationDirectory))
 			{
-				destDir = resolvePathToHome(
-								  message.argument(Argument::DestinationDirectory).toString());
+				// ITLabControl: "Desktop\BaiTap", "D:\BaiLam" etc., see UserPathResolver
+				destDir = UserPathResolver::resolve(message.argument(Argument::DestinationDirectory).toString());
 			}
 			if (destDir.isEmpty())
 			{
 				destDir = destinationDirectory();
 			}
-			if (QDir(destDir).exists() == false)
-			{
-				VeyonCore::filesystem().ensurePathExists(destDir);
-			}
 
-			m_currentFileName = destDir + QDir::separator() + message.argument(Argument::FileName).toString();
+			// ITLabControl: when a folder is sent, the file name contains sub folders ("Folder/sub/a.txt")
+			const auto relativeName = UserPathResolver::safeRelativePath(message.argument(Argument::FileName).toString());
+			m_currentFileName = destDir + QDir::separator() + relativeName;
+
+			const auto fileDirectory = QFileInfo(m_currentFileName).absolutePath();
+			if (QDir(fileDirectory).exists() == false)
+			{
+				VeyonCore::filesystem().ensurePathExists(fileDirectory);
+			}
 		}
 		m_currentFile.setFileName(m_currentFileName);
 		if( m_currentFile.exists() && message.argument(Argument::OverwriteExistingFile).toBool() == false )
@@ -678,9 +717,11 @@ bool FileTransferPlugin::handleCollectFilesMessage(VeyonWorkerInterface& worker,
 	{
 		const auto path = message.argument(Argument::DirectoryPath).toString();
 		QString errorString;
-		const auto entries = FileCollectWorker::listDirectory(path, &errorString);
+		bool pathIsFile = false;
+		const auto entries = FileCollectWorker::listDirectory(path, &errorString, &pathIsFile);
 		reply.addArgument(Argument::DirectoryPath, path)
-				.addArgument(Argument::DirectoryEntries, entries);
+				.addArgument(Argument::DirectoryEntries, entries)
+				.addArgument(Argument::PathIsFile, pathIsFile);
 		if (errorString.isEmpty() == false)
 		{
 			reply.addArgument(Argument::ErrorString, errorString);

@@ -1965,8 +1965,12 @@ Make sure that the names of the keys belonging to each other are identical on al
         <translation>Duyệt thư mục của máy học sinh đang chọn để chọn một thư mục hoặc từng file</translation>
     </message>
     <message>
-        <source>Select a folder or enter a path relative to the user profile (e.g. Documents/Lop10) or an absolute path (e.g. C:\BaiLam)</source>
-        <translation>Chọn thư mục hoặc nhập đường dẫn tính từ thư mục người dùng (ví dụ Documents/Lop10) hoặc đường dẫn đầy đủ (ví dụ C:\BaiLam)</translation>
+        <source>Empty: Documents folder of the student</source>
+        <translation>Để trống: thư mục Documents của học sinh</translation>
+    </message>
+    <message>
+        <source>Path of a folder or file on the student computers, e.g. Desktop\Exercises, Downloads, Documents\Class 10, D:\Work or C:\Work\task1.docx</source>
+        <translation>Đường dẫn tới thư mục hoặc file trên máy học sinh, ví dụ Desktop\BaiTap, Downloads, Documents\Lop10, D:\BaiLam hoặc C:\BaiLam\bai1.docx</translation>
     </message>
     <message>
         <source>Source directory on remote computers</source>
@@ -1995,22 +1999,6 @@ Make sure that the names of the keys belonging to each other are identical on al
     <message>
         <source>Start</source>
         <translation>Bắt đầu</translation>
-    </message>
-    <message>
-        <source>Documents folder of the user</source>
-        <translation>Thư mục Documents của học sinh</translation>
-    </message>
-    <message>
-        <source>Desktop of the user</source>
-        <translation>Màn hình nền (Desktop) của học sinh</translation>
-    </message>
-    <message>
-        <source>Downloads folder of the user</source>
-        <translation>Thư mục Downloads của học sinh</translation>
-    </message>
-    <message>
-        <source>Shared assignments folder (C:\BaiLam)</source>
-        <translation>Thư mục bài làm chung (C:\BaiLam)</translation>
     </message>
     <message>
         <source>All files</source>
@@ -2047,6 +2035,10 @@ Make sure that the names of the keys belonging to each other are identical on al
     <message>
         <source>Show the files which would be collected from each computer. Untick the files you do not need, then click &quot;Start&quot;.</source>
         <translation>Hiện danh sách file sẽ thu trên từng máy. Bỏ đánh dấu các file không cần, rồi bấm &quot;Bắt đầu&quot;.</translation>
+    </message>
+    <message>
+        <source>Browse the folders of %1 and choose a folder or files. The same path is used on all selected computers.</source>
+        <translation>Duyệt thư mục trên máy %1 để chọn thư mục hoặc file. Đường dẫn đã chọn được dùng cho mọi máy đang chọn.</translation>
     </message>
     <message>
         <source>Select destination directory</source>
@@ -2304,16 +2296,16 @@ Make sure that the names of the keys belonging to each other are identical on al
         <translation>Thư mục lưu trên máy học sinh:</translation>
     </message>
     <message>
-        <source>Relative (Desktop/) or absolute (/tmp/ or C:\TMP) or empty for configured directory</source>
-        <translation>Đường dẫn tương đối (Desktop/) hoặc đầy đủ (/tmp/ hoặc C:\TMP), để trống thì dùng thư mục đã cấu hình</translation>
-    </message>
-    <message>
         <source>Overwrite existing files</source>
         <translation>Ghi đè file đã có</translation>
     </message>
     <message>
         <source>Transfer only</source>
         <translation>Chỉ chuyển file</translation>
+    </message>
+    <message>
+        <source>e.g. Desktop\Exercises, Documents\Class 10 or D:\Work - empty: configured folder</source>
+        <translation>Ví dụ Desktop\BaiTap, Documents\Lop10 hoặc D:\BaiLam - để trống: thư mục mặc định</translation>
     </message>
     <message>
         <source>Transfer and open file(s) with associated program</source>
@@ -2355,8 +2347,28 @@ Make sure that the names of the keys belonging to each other are identical on al
         <translation>Bấm nút này để thu file từ tất cả các máy về máy của bạn.</translation>
     </message>
     <message>
+        <source>What do you want to send to the student computers?</source>
+        <translation>Bạn muốn gửi gì tới máy học sinh?</translation>
+    </message>
+    <message>
+        <source>Files...</source>
+        <translation>Các file...</translation>
+    </message>
+    <message>
+        <source>A folder...</source>
+        <translation>Một thư mục...</translation>
+    </message>
+    <message>
         <source>Select one or more files to transfer</source>
         <translation>Chọn một hoặc nhiều file để gửi</translation>
+    </message>
+    <message>
+        <source>Select the folder to transfer</source>
+        <translation>Chọn thư mục cần gửi</translation>
+    </message>
+    <message>
+        <source>The folder %1 does not contain any files.</source>
+        <translation>Thư mục %1 không có file nào.</translation>
     </message>
     <message>
         <source>File transfer</source>

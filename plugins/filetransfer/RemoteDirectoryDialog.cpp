@@ -22,6 +22,7 @@
 
 #include <QDateTime>
 #include <QDialogButtonBox>
+#include <QDir>
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QLabel>
@@ -101,7 +102,10 @@ RemoteDirectoryDialog::RemoteDirectoryDialog(FileCollectController* controller,
 	connect(m_entryList, &QTreeWidget::itemDoubleClicked, this, [this](QTreeWidgetItem* item) {
 		if (item->data(0, IsDirRole).toBool())
 		{
-			navigate(item->data(0, PathRole).toString());
+			// keep paths short and independent of the user name ("Desktop\BaiTap"), so they
+			// work on every student computer; the list is rebuilt after the double-click is handled
+			const auto path = m_currentPath.isEmpty() ? item->data(0, PathRole).toString() : childPath(item->text(0));
+			QTimer::singleShot(0, this, [this, path]() { navigate(path); });
 		}
 		else
 		{
@@ -147,7 +151,7 @@ void RemoteDirectoryDialog::navigate(const QString& path)
 
 void RemoteDirectoryDialog::handleListing(ComputerControlInterface::Pointer computerControlInterface,
 										  const QUuid& browseId, const QString& path,
-										  const QVariantList& entries, const QString& errorString)
+										  const QVariantList& entries, const QString& errorString, bool pathIsFile)
 {
 	if (computerControlInterface != m_computerControlInterface || browseId != m_browseId ||
 		path != m_requestedPath)
@@ -164,8 +168,17 @@ void RemoteDirectoryDialog::handleListing(ComputerControlInterface::Pointer comp
 		return;
 	}
 
-	m_currentPath = path;
-	m_pathEdit->setText(path);
+	// the entered path pointed to a file: its folder is shown
+	auto folderPath = path;
+	if (pathIsFile)
+	{
+		const auto normalized = QDir::fromNativeSeparators(path);
+		const auto separator = normalized.lastIndexOf(QLatin1Char('/'));
+		folderPath = separator > 0 ? QDir::toNativeSeparators(normalized.left(separator)) : QStringLiteral(".");
+	}
+
+	m_currentPath = folderPath;
+	m_pathEdit->setText(folderPath);
 	m_entryList->clear();
 
 	int folderCount = 0;
@@ -202,6 +215,21 @@ void RemoteDirectoryDialog::handleListing(ComputerControlInterface::Pointer comp
 	m_statusLabel->setText(path.isEmpty() ? tr("Choose a user folder or a drive.")
 										  : tr("%1 folders, %2 files").arg(folderCount).arg(fileCount));
 	updateButtons();
+}
+
+
+
+QString RemoteDirectoryDialog::childPath(const QString& name) const
+{
+	if (m_currentPath == QLatin1String("."))
+	{
+		return name;
+	}
+	if (m_currentPath.endsWith(QLatin1Char('\\')) || m_currentPath.endsWith(QLatin1Char('/')))
+	{
+		return m_currentPath + name;
+	}
+	return m_currentPath + QLatin1Char('\\') + name;
 }
 
 

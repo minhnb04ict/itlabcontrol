@@ -49,6 +49,11 @@ public:
 	~FileTransferController() override;
 
 	void setFiles( const QStringList& files );
+
+	// ITLabControl: when a folder is distributed, files are sent with their path relative to
+	// this directory (the parent of the chosen folder), so the folder structure is kept
+	void setBaseDirectory( const QString& baseDirectory );
+	QString transferName( const QString& filePath ) const;
 	void setInterfaces( const ComputerControlInterfaceList& interfaces );
 	void setFlags( Flags flags );
 	void setDestinationDirectory( const QString& destDir );
@@ -94,6 +99,7 @@ private:
 	int m_currentFileIndex;
 	QUuid m_currentTransferId;
 	QStringList m_files;
+	QString m_baseDirectory;
 	Flags m_flags;
 	ComputerControlInterfaceList m_interfaces;
 

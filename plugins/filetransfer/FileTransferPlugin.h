@@ -80,6 +80,7 @@ public:
 		DirectoryPath,
 		DirectoryEntries,
 		ErrorString,
+		PathIsFile,
 	};
 	Q_ENUM(Argument)
 

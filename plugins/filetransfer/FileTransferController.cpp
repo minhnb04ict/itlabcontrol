@@ -22,6 +22,7 @@
  *
  */
 
+#include <QDir>
 #include <QFileInfo>
 
 #include "FileReadThread.h"
@@ -61,8 +62,32 @@ FileTransferController::~FileTransferController()
 void FileTransferController::setFiles( const QStringList& files )
 {
 	m_files = files;
+	m_baseDirectory.clear();
 	m_currentFileIndex = 0;
 	Q_EMIT filesChanged();
+}
+
+
+
+void FileTransferController::setBaseDirectory( const QString& baseDirectory )
+{
+	m_baseDirectory = baseDirectory;
+}
+
+
+
+QString FileTransferController::transferName( const QString& filePath ) const
+{
+	// ITLabControl: files of a folder keep their sub folders, e.g. "BaiTap/Tuan1/a.docx"
+	if( m_baseDirectory.isEmpty() == false )
+	{
+		const auto relativePath = QDir( m_baseDirectory ).relativeFilePath( filePath );
+		if( relativePath.startsWith( QLatin1String("..") ) == false && QDir::isRelativePath( relativePath ) )
+		{
+			return relativePath;
+		}
+	}
+	return QFileInfo( filePath ).fileName();
 }
 
 
@@ -217,7 +242,7 @@ bool FileTransferController::openFile()
 
 	m_currentTransferId = QUuid::createUuid();
 
-	m_plugin->sendStartMessage( m_currentTransferId, QFileInfo(m_files.value(m_currentFileIndex)).fileName(),
+	m_plugin->sendStartMessage( m_currentTransferId, transferName( m_files.value( m_currentFileIndex ) ),
 								m_flags.testFlag( OverwriteExistingFiles ), m_interfaces,
 								m_destinationDirectory );
 
@@ -256,7 +281,7 @@ void FileTransferController::finishFile()
 		delete m_fileReadThread;
 		m_fileReadThread = nullptr;
 
-		m_plugin->sendFinishMessage( m_currentTransferId, QFileInfo(m_files.value(m_currentFileIndex)).fileName(),
+		m_plugin->sendFinishMessage( m_currentTransferId, transferName( m_files.value( m_currentFileIndex ) ),
 									 m_flags.testFlag( OpenFilesInApplication ), m_interfaces );
 
 		m_currentTransferId = QUuid();

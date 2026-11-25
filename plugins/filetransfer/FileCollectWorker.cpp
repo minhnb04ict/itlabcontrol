@@ -31,6 +31,7 @@
 #include "FileCollectWorker.h"
 #include "FileTransferPlugin.h"
 #include "Filesystem.h"
+#include "UserPathResolver.h"
 
 
 static QStringList listFilesInDirectory(const QString& dirPath, const QList<QRegularExpression>& excludeRegExes, bool recursive = false)
@@ -89,18 +90,21 @@ FileCollectWorker::FileCollectWorker(FileTransferPlugin* plugin,
 									 bool collectRecursively) :
 	QObject(plugin),
 	m_configuration(plugin->configuration()),
-	// ITLabControl: expand placeholders such as %DOCUMENTS%, %DESKTOP% or %DOWNLOADS% sent by the
-	// master so that the real (e.g. OneDrive-redirected) folders of the logged on user are used
-	m_sourceDirectory(sourceDirectory.isEmpty() ?
-						  VeyonCore::filesystem().expandPath(m_configuration.filesToCollectSourceDirectory())
-						:
-						  (QDir::isAbsolutePath(VeyonCore::filesystem().expandPath(sourceDirectory)) ?
-						   VeyonCore::filesystem().expandPath(sourceDirectory)
-						 :
-						   QDir::toNativeSeparators(QDir::homePath() + QLatin1Char('/') + sourceDirectory))),
+	// ITLabControl: "Desktop\BaiTap", "%DOCUMENTS%", "D:\BaiLam" etc. are resolved to the real
+	// (e.g. OneDrive-redirected) folders of the logged on user, see UserPathResolver
+	m_sourceDirectory(UserPathResolver::resolve(sourceDirectory.isEmpty() ? m_configuration.filesToCollectSourceDirectory()
+																		 : sourceDirectory)),
 	m_filePattern(filePattern),
 	m_collectRecursively(collectRecursively || m_configuration.collectFilesRecursively())
 {
+	// ITLabControl: the teacher may also enter the path of a single file
+	const QFileInfo sourceInfo(m_sourceDirectory);
+	if (sourceInfo.isFile())
+	{
+		m_singleFile = sourceInfo.fileName();
+		m_sourceDirectory = QDir::toNativeSeparators(sourceInfo.absolutePath());
+	}
+
 	if (m_sourceDirectory.endsWith(QDir::separator()) == false)
 	{
 		m_sourceDirectory.append(QDir::separator());
@@ -165,7 +169,7 @@ void FileCollectWorker::selectFiles(const QStringList& files)
 
 
 
-QVariantList FileCollectWorker::listDirectory(const QString& path, QString* errorString)
+QVariantList FileCollectWorker::listDirectory(const QString& path, QString* errorString, bool* pathIsFile)
 {
 	QVariantList entries;
 
@@ -181,19 +185,22 @@ QVariantList FileCollectWorker::listDirectory(const QString& path, QString* erro
 
 	if (path.isEmpty())
 	{
-		// starting points: personal folders of the logged on user, then all drives
-		const QList<QPair<QString, QStandardPaths::StandardLocation>> userFolders{
-			{ tr("Documents"), QStandardPaths::DocumentsLocation },
-			{ tr("Desktop"), QStandardPaths::DesktopLocation },
-			{ tr("Downloads"), QStandardPaths::DownloadLocation },
-			{ tr("User folder"), QStandardPaths::HomeLocation },
+		// starting points: personal folders of the logged on user, then all drives.
+		// ITLabControl: personal folders get short paths ("Desktop", ...) which every student
+		// computer resolves for its own user, so a path chosen on one computer works on all
+		struct UserFolder { QString label; QString shortPath; QStandardPaths::StandardLocation location; };
+		const QList<UserFolder> userFolders{
+			{ tr("Documents"), QStringLiteral("Documents"), QStandardPaths::DocumentsLocation },
+			{ tr("Desktop"), QStringLiteral("Desktop"), QStandardPaths::DesktopLocation },
+			{ tr("Downloads"), QStringLiteral("Downloads"), QStandardPaths::DownloadLocation },
+			{ tr("User folder"), QStringLiteral("."), QStandardPaths::HomeLocation },
 		};
 		for (const auto& folder : userFolders)
 		{
-			const auto folderPath = QStandardPaths::writableLocation(folder.second);
+			const auto folderPath = QStandardPaths::writableLocation(folder.location);
 			if (folderPath.isEmpty() == false && QDir(folderPath).exists())
 			{
-				entries.append(makeEntry(folder.first, folderPath, true, 0, 0));
+				entries.append(makeEntry(folder.label, folder.shortPath, true, 0, 0));
 			}
 		}
 
@@ -206,7 +213,17 @@ QVariantList FileCollectWorker::listDirectory(const QString& path, QString* erro
 		return entries;
 	}
 
-	const QDir dir(QDir::fromNativeSeparators(VeyonCore::filesystem().expandPath(path)));
+	// ITLabControl: same path rules as for collecting; for a file the folder containing it is shown
+	auto resolvedPath = UserPathResolver::resolve(path);
+	if (QFileInfo(resolvedPath).isFile())
+	{
+		resolvedPath = QFileInfo(resolvedPath).absolutePath();
+		if (pathIsFile)
+		{
+			*pathIsFile = true;
+		}
+	}
+	const QDir dir(QDir::fromNativeSeparators(resolvedPath));
 	if (dir.exists() == false)
 	{
 		if (errorString)
@@ -288,6 +305,13 @@ bool FileCollectWorker::currentFileAtEnd() const
 
 void FileCollectWorker::initFiles()
 {
+	if (m_singleFile.isEmpty() == false)
+	{
+		// a single file was chosen explicitly - collect it regardless of file type or exclude list
+		m_files = QStringList{m_singleFile};
+		return;
+	}
+
 	m_files = listFilesInDirectory(m_sourceDirectory, excludeRegExes(), m_collectRecursively);
 
 	m_files = filterFilesByPattern(m_files, m_filePattern);

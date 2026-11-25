@@ -27,7 +27,7 @@
       <item row="4" column="1">
        <widget class="QLineEdit" name="destinationDirectoryEdit">
         <property name="placeholderText">
-         <string>Relative (Desktop/) or absolute (/tmp/ or C:\TMP) or empty for configured directory</string>
+         <string>e.g. Desktop\Exercises, Documents\Class 10 or D:\Work - empty: configured folder</string>
         </property>
        </widget>
       </item>

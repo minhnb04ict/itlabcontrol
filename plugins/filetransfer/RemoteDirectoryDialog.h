@@ -60,7 +60,8 @@ public:
 private:
 	void navigate(const QString& path);
 	void handleListing(ComputerControlInterface::Pointer computerControlInterface, const QUuid& browseId,
-					   const QString& path, const QVariantList& entries, const QString& errorString);
+					   const QString& path, const QVariantList& entries, const QString& errorString, bool pathIsFile );
+	QString childPath( const QString& name ) const;
 	void goUp();
 	void updateButtons();
 	void chooseFolder();

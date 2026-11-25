@@ -77,7 +77,7 @@ public:
 
 	// ITLabControl: folders and files of a directory for browsing from the teacher computer;
 	// an empty path returns the user folders and drives
-	static QVariantList listDirectory(const QString& path, QString* errorString);
+	static QVariantList listDirectory(const QString& path, QString* errorString, bool* pathIsFile = nullptr);
 
 	QPair<TransferState, QString> startNextTransfer();
 	void skipToNextFile();
@@ -98,6 +98,7 @@ private:
 	QString m_filePattern;
 	bool m_collectRecursively;
 
+	QString m_singleFile; // ITLabControl: the path entered by the teacher points to a file
 	QStringList m_files;
 	int m_currentFileIndex = -1;
 	FileCollection::TransferId m_currentTransferId;

@@ -176,7 +176,7 @@ Q_SIGNALS:
 	void previewChanged();
 	void directoryListingReceived(ComputerControlInterface::Pointer computerControlInterface,
 								  const QUuid& browseId, const QString& path,
-								  const QVariantList& entries, const QString& errorString);
+								  const QVariantList& entries, const QString& errorString, bool pathIsFile);
 
 private:
 	void initiateNextFileTransfer(ComputerControlInterface::Pointer computerControlInterface,

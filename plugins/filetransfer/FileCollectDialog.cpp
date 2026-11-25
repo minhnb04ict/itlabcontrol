@@ -96,14 +96,17 @@ FileCollectDialog::FileCollectDialog(FileCollectController* controller, QWidget*
 													  new ProgressItemDelegate(ui->collectionsTreeView));
 	ui->collectionsTreeView->setModel(m_model);
 
-	// Initialize source directory from controller / default config
-	populateComboBox(ui->sourceDirectoryComboBox, {
-						 { tr("Documents folder of the user"), QStringLiteral("%DOCUMENTS%") },
-						 { tr("Desktop of the user"), QStringLiteral("%DESKTOP%") },
-						 { tr("Downloads folder of the user"), QStringLiteral("%DOWNLOADS%") },
-						 { tr("Shared assignments folder (C:\\BaiLam)"), QStringLiteral("C:\\BaiLam") },
-					 },
-					 m_controller->collectSourceDirectory());
+	// ITLabControl: one simple path field (folder or file on the student computers), see UserPathResolver;
+	// placeholders of earlier versions are shown with the short folder names
+	auto sourcePath = m_controller->collectSourceDirectory();
+	if (sourcePath.compare(QLatin1String("%DOCUMENTS%"), Qt::CaseInsensitive) == 0)
+	{
+		sourcePath.clear();
+	}
+	sourcePath.replace(QLatin1String("%DESKTOP%"), QLatin1String("Desktop"), Qt::CaseInsensitive);
+	sourcePath.replace(QLatin1String("%DOWNLOADS%"), QLatin1String("Downloads"), Qt::CaseInsensitive);
+	sourcePath.replace(QLatin1String("%DOCUMENTS%"), QLatin1String("Documents"), Qt::CaseInsensitive);
+	ui->sourcePathEdit->setText(QDir::toNativeSeparators(sourcePath));
 
 	// Initialize file pattern
 	populateComboBox(ui->filePatternComboBox, {
@@ -129,11 +132,17 @@ FileCollectDialog::FileCollectDialog(FileCollectController* controller, QWidget*
 								   "Untick the files you do not need, then click \"Start\"."));
 	connect(m_previewButton, &QPushButton::clicked, this, &FileCollectDialog::preview);
 
-	// ITLabControl: browsing is only possible for a single student computer
-	ui->browseSourceButton->setVisible(m_controller->collections().size() == 1);
+	// ITLabControl: browse the folders of the (first) student computer; the chosen path is used for all
+	ui->browseSourceButton->setEnabled(m_controller->collections().isEmpty() == false);
+	if (m_controller->collections().isEmpty() == false)
+	{
+		ui->browseSourceButton->setToolTip(tr("Browse the folders of %1 and choose a folder or files. "
+											  "The same path is used on all selected computers.")
+										   .arg(m_controller->collections().firstKey()->computerName()));
+	}
 	connect(ui->browseSourceButton, &QPushButton::clicked, this, &FileCollectDialog::browseSource);
 
-	connect(ui->sourceDirectoryComboBox, &QComboBox::currentTextChanged, this, [this]() {
+	connect(ui->sourcePathEdit, &QLineEdit::textChanged, this, [this]() {
 		handleSettingsChanged(m_settingSourceFromBrowser == false);
 	});
 	connect(ui->filePatternComboBox, &QComboBox::currentTextChanged, this, [this]() { handleSettingsChanged(false); });
@@ -251,12 +260,9 @@ void FileCollectDialog::start()
 
 void FileCollectDialog::applySettings()
 {
-	// Pass source directory and file pattern to controller
-	const auto sourceDir = comboBoxValue(ui->sourceDirectoryComboBox);
-	if (sourceDir.isEmpty() == false)
-	{
-		m_controller->setCollectSourceDirectory(sourceDir);
-	}
+	// Pass source path and file pattern to controller; an empty path means the configured
+	// default (Documents) and must be passed as well so an earlier path is not reused
+	m_controller->setCollectSourceDirectory(ui->sourcePathEdit->text().trimmed());
 
 	// an empty pattern ("All files") must also be passed so a previously used pattern is reset
 	m_controller->setFilePattern(comboBoxValue(ui->filePatternComboBox));
@@ -281,29 +287,33 @@ void FileCollectDialog::preview()
 
 void FileCollectDialog::browseSource()
 {
-	if (m_controller->collections().size() != 1)
+	if (m_controller->collections().isEmpty())
 	{
 		return;
 	}
 
-	// start in the currently chosen folder if it is a real path, otherwise on the start page
-	auto initialPath = comboBoxValue(ui->sourceDirectoryComboBox);
-	if (initialPath.contains(QLatin1Char('%')) || QDir::isAbsolutePath(QDir::fromNativeSeparators(initialPath)) == false)
-	{
-		initialPath.clear();
-	}
-
-	RemoteDirectoryDialog dialog(m_controller, m_controller->collections().firstKey(), initialPath, this);
+	// start in the entered folder (the student computer resolves "Desktop\..." etc.), otherwise on the start page
+	RemoteDirectoryDialog dialog(m_controller, m_controller->collections().firstKey(),
+								 ui->sourcePathEdit->text().trimmed(), this);
 	if (dialog.exec() != QDialog::Accepted)
 	{
 		return;
 	}
 
+	// a single file is entered as path of the file, several files as folder + file selection
+	auto path = dialog.selectedDirectory();
+	auto files = dialog.selectedFiles();
+	if (files.size() == 1)
+	{
+		path = QDir::toNativeSeparators(QDir::fromNativeSeparators(path) + QLatin1Char('/') + files.first());
+		files.clear();
+	}
+
 	m_settingSourceFromBrowser = true;
-	ui->sourceDirectoryComboBox->setEditText(dialog.selectedDirectory());
+	ui->sourcePathEdit->setText(path);
 	m_settingSourceFromBrowser = false;
 
-	m_controller->setFileSelection(dialog.selectedFiles());
+	m_controller->setFileSelection(files);
 	updateSelectionInfo();
 }
 
