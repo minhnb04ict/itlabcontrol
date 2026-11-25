@@ -26,6 +26,42 @@
 #include "VeyonWorkerInterface.h"
 
 
+namespace {
+
+// one menu entry per question type, in the order of SurveyQuestion::Type
+const char* const TypeFeatureUids[] = {
+	"1a2b3c4d-0001-4e5f-8a9b-6c7d8e9f0a01",
+	"1a2b3c4d-0002-4e5f-8a9b-6c7d8e9f0a02",
+	"1a2b3c4d-0003-4e5f-8a9b-6c7d8e9f0a03",
+	"1a2b3c4d-0004-4e5f-8a9b-6c7d8e9f0a04",
+	"1a2b3c4d-0005-4e5f-8a9b-6c7d8e9f0a05",
+	"1a2b3c4d-0006-4e5f-8a9b-6c7d8e9f0a06",
+	"1a2b3c4d-0007-4e5f-8a9b-6c7d8e9f0a07",
+	"1a2b3c4d-0008-4e5f-8a9b-6c7d8e9f0a08",
+	"1a2b3c4d-0009-4e5f-8a9b-6c7d8e9f0a09",
+	"1a2b3c4d-0010-4e5f-8a9b-6c7d8e9f0a10",
+};
+
+static_assert( sizeof(TypeFeatureUids) / sizeof(TypeFeatureUids[0]) == size_t(SurveyQuestion::Type::Count) );
+
+FeatureList createFeatures( const Feature& surveyFeature )
+{
+	FeatureList features{ surveyFeature };
+	for( int i = 0; i < int(SurveyQuestion::Type::Count); ++i )
+	{
+		features.append( Feature( QStringLiteral("ItlabSurveyType%1").arg( i + 1 ),
+								  Feature::Flag::Action | Feature::Flag::AllComponents,
+								  Feature::Uid( QString::fromLatin1( TypeFeatureUids[i] ) ),
+								  surveyFeature.uid(),
+								  SurveyQuestion::typeName( SurveyQuestion::Type(i) ), {}, {} ) );
+	}
+	return features;
+}
+
+}
+
+
+
 ItlabSurveyPlugin::ItlabSurveyPlugin( QObject* parent ) :
 	QObject( parent ),
 	m_surveyFeature( QStringLiteral("ItlabSurvey"),
@@ -35,39 +71,7 @@ ItlabSurveyPlugin::ItlabSurveyPlugin( QObject* parent ) :
 					 tr( "Survey" ), {},
 					 tr( "Ask the class a quick question and see the answers immediately." ),
 					 QStringLiteral(":/itlab-survey/itlab-survey.png") ),
-	m_composeFeature( QStringLiteral("ItlabSurveyCompose"),
-					  Feature::Flag::Action | Feature::Flag::AllComponents,
-					  Feature::Uid( "7b3a9d52-6e8c-4fa4-81b7-3daf9e8a2c64" ),
-					  m_surveyFeature.uid(),
-					  tr( "New question..." ), {},
-					  tr( "Write a question, choose the type of answers and send it to the students." ) ),
-	m_understandingFeature( QStringLiteral("ItlabSurveyUnderstanding"),
-							Feature::Flag::Action | Feature::Flag::AllComponents,
-							Feature::Uid( "8c4bae63-7f9d-4ab5-92c8-4eb0af9b3d75" ),
-							m_surveyFeature.uid(),
-							SurveyComposeDialog::templateName( SurveyComposeDialog::Template::Understanding ), {}, {} ),
-	m_doneFeature( QStringLiteral("ItlabSurveyDone"),
-				   Feature::Flag::Action | Feature::Flag::AllComponents,
-				   Feature::Uid( "9d5cbf74-80ae-4bc6-a3d9-5fc1b0ac4e86" ),
-				   m_surveyFeature.uid(),
-				   SurveyComposeDialog::templateName( SurveyComposeDialog::Template::Done ), {}, {} ),
-	m_chooseAnswerFeature( QStringLiteral("ItlabSurveyChooseAnswer"),
-						   Feature::Flag::Action | Feature::Flag::AllComponents,
-						   Feature::Uid( "ae6dc085-91bf-4cd7-b4ea-60d2c1bd5f97" ),
-						   m_surveyFeature.uid(),
-						   SurveyComposeDialog::templateName( SurveyComposeDialog::Template::ChooseAnswer ), {}, {} ),
-	m_trueFalseFeature( QStringLiteral("ItlabSurveyTrueFalse"),
-						Feature::Flag::Action | Feature::Flag::AllComponents,
-						Feature::Uid( "bf7ed196-a2c0-4de8-85fb-71e3d2ce6a08" ),
-						m_surveyFeature.uid(),
-						SurveyComposeDialog::templateName( SurveyComposeDialog::Template::TrueOrFalse ), {}, {} ),
-	m_rateLessonFeature( QStringLiteral("ItlabSurveyRateLesson"),
-						 Feature::Flag::Action | Feature::Flag::AllComponents,
-						 Feature::Uid( "c08fe2a7-b3d1-4ef9-96ac-82f4e3df7b19" ),
-						 m_surveyFeature.uid(),
-						 SurveyComposeDialog::templateName( SurveyComposeDialog::Template::RateLesson ), {}, {} ),
-	m_features( { m_surveyFeature, m_composeFeature, m_understandingFeature, m_doneFeature,
-				  m_chooseAnswerFeature, m_trueFalseFeature, m_rateLessonFeature } )
+	m_features( createFeatures( m_surveyFeature ) )
 {
 }
 
@@ -95,31 +99,25 @@ bool ItlabSurveyPlugin::startFeature( VeyonMasterInterface& master, const Featur
 		return true;
 	}
 
-	SurveyQuestion question;
-	if( feature == m_composeFeature )
+	int typeIndex = -1;
+	for( int i = 0; i < int(SurveyQuestion::Type::Count); ++i )
 	{
-		SurveyComposeDialog dialog( computers.size(), master.mainWindow() );
-		if( dialog.exec() != QDialog::Accepted )
+		if( feature.uid() == Feature::Uid( QString::fromLatin1( TypeFeatureUids[i] ) ) )
 		{
-			return true;
+			typeIndex = i;
 		}
-		question = dialog.question();
 	}
-	else
+	if( typeIndex < 0 )
 	{
-		const QMap<Feature::Uid, SurveyComposeDialog::Template> templates{
-			{ m_understandingFeature.uid(), SurveyComposeDialog::Template::Understanding },
-			{ m_doneFeature.uid(), SurveyComposeDialog::Template::Done },
-			{ m_chooseAnswerFeature.uid(), SurveyComposeDialog::Template::ChooseAnswer },
-			{ m_trueFalseFeature.uid(), SurveyComposeDialog::Template::TrueOrFalse },
-			{ m_rateLessonFeature.uid(), SurveyComposeDialog::Template::RateLesson },
-		};
-		if( templates.contains( feature.uid() ) == false )
-		{
-			return false;
-		}
-		question = SurveyComposeDialog::templateQuestion( templates[feature.uid()] );
+		return false;
 	}
+
+	SurveyComposeDialog dialog( SurveyQuestion::Type( typeIndex ), computers.size(), master.mainWindow() );
+	if( dialog.exec() != QDialog::Accepted )
+	{
+		return true;
+	}
+	const auto question = dialog.question();
 
 	startSurvey( master, question, computers );
 	return true;

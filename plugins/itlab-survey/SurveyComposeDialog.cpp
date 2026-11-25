@@ -61,7 +61,7 @@ const QList<int> TimeLimits{ 0, 15, 30, 60, 120, 180, 300, 600 };
 
 
 
-SurveyComposeDialog::SurveyComposeDialog( int computerCount, QWidget* parent ) :
+SurveyComposeDialog::SurveyComposeDialog( SurveyQuestion::Type type, int computerCount, QWidget* parent ) :
 	QDialog( parent ),
 	m_textEdit( new QPlainTextEdit( this ) ),
 	m_typeCombo( new QComboBox( this ) ),
@@ -70,7 +70,7 @@ SurveyComposeDialog::SurveyComposeDialog( int computerCount, QWidget* parent ) :
 	m_allowChangeCheck( new QCheckBox( tr( "Students can change their answer" ), this ) ),
 	m_anonymousCheck( new QCheckBox( tr( "Anonymous (nobody can see who answered what)" ), this ) )
 {
-	setWindowTitle( tr( "Quick survey" ) );
+	setWindowTitle( tr( "Quick survey" ) + QStringLiteral(" - ") + SurveyQuestion::typeName( type ) );
 	setMinimumWidth( 620 );
 
 	m_textEdit->setPlaceholderText( tr( "Question (may stay empty if the question is shown on the board or projector)" ) );
@@ -277,21 +277,17 @@ SurveyComposeDialog::SurveyComposeDialog( int computerCount, QWidget* parent ) :
 	connect( buttons, &QDialogButtonBox::accepted, this, &QDialog::accept );
 	connect( buttons, &QDialogButtonBox::rejected, this, &QDialog::reject );
 
-	// start with the settings of the last question
+	// type chosen in the menu, options of the last question
+	m_typeCombo->setCurrentIndex( int( type ) );
 	if( s_hasLastQuestion )
 	{
-		m_typeCombo->setCurrentIndex( int( s_lastQuestion.type ) );
-		if( s_lastQuestion.type == Type::SingleChoice || s_lastQuestion.type == Type::MultipleChoice )
+		if( s_lastQuestion.type == type && ( type == Type::SingleChoice || type == Type::MultipleChoice ) )
 		{
 			m_choiceCount->setValue( s_lastQuestion.options.size() );
 		}
 		m_timeCombo->setCurrentIndex( qMax( 0, m_timeCombo->findData( s_lastQuestion.timeLimit ) ) );
 		m_allowChangeCheck->setChecked( s_lastQuestion.allowChange );
 		m_anonymousCheck->setChecked( s_lastQuestion.anonymous );
-	}
-	else
-	{
-		m_typeCombo->setCurrentIndex( int( Type::SingleChoice ) );
 	}
 
 	updatePage();
@@ -488,62 +484,9 @@ void SurveyComposeDialog::setDefaultOptions( SurveyQuestion& question, int count
 										QStringLiteral("4"), QStringLiteral("5") };
 		break;
 	case Type::Understanding:
-		question.options = QStringList{ tr( "I understand" ), tr( "Not sure yet" ), tr( "I do not understand" ) };
+		question.options = QStringList{ tr( "Yes, I do" ), tr( "Not sure yet" ), tr( "Not yet" ) };
 		break;
 	default:
 		break;
 	}
-}
-
-
-
-QString SurveyComposeDialog::templateName( Template templateId )
-{
-	switch( templateId )
-	{
-	case Template::Understanding: return tr( "Have you understood the lesson?" );
-	case Template::Done: return tr( "Have you finished?" );
-	case Template::ChooseAnswer: return tr( "Choose the correct answer (A - D)" );
-	case Template::TrueOrFalse: return tr( "True or false?" );
-	case Template::RateLesson: return tr( "Rate today's lesson" );
-	default: break;
-	}
-	return {};
-}
-
-
-
-SurveyQuestion SurveyComposeDialog::templateQuestion( Template templateId )
-{
-	SurveyQuestion question;
-	question.id = QUuid::createUuid().toString( QUuid::WithoutBraces );
-	question.text = templateName( templateId );
-
-	switch( templateId )
-	{
-	case Template::Understanding:
-		question.type = Type::Understanding;
-		break;
-	case Template::Done:
-		question.type = Type::YesNo;
-		setDefaultOptions( question );
-		question.options = QStringList{ tr( "Yes, finished" ), tr( "Not yet" ) };
-		return question;
-	case Template::ChooseAnswer:
-		question.type = Type::SingleChoice;
-		question.text = tr( "Choose the correct answer" );
-		break;
-	case Template::TrueOrFalse:
-		question.type = Type::TrueFalse;
-		break;
-	case Template::RateLesson:
-		question.type = Type::Stars;
-		question.anonymous = true;
-		break;
-	default:
-		break;
-	}
-
-	setDefaultOptions( question );
-	return question;
 }

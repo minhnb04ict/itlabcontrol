@@ -145,7 +145,7 @@ QString SurveyQuestion::typeName( Type type )
 	case Type::Scale: return tr( "Scale 1 ... n" );
 	case Type::Agreement: return tr( "Agreement (5 levels)" );
 	case Type::Stars: return tr( "Star rating (1 - 5)" );
-	case Type::Understanding: return tr( "Understanding (traffic light)" );
+	case Type::Understanding: return tr( "Three colored buttons" );
 	case Type::Number: return tr( "Number" );
 	case Type::ShortText: return tr( "Short text answer" );
 	default: break;

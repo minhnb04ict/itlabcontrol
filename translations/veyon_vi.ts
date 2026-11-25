@@ -2979,14 +2979,6 @@ Make sure that the names of the keys belonging to each other are identical on al
         <translation>Hỏi nhanh cả lớp và xem câu trả lời ngay lập tức.</translation>
     </message>
     <message>
-        <source>New question...</source>
-        <translation>Câu hỏi mới...</translation>
-    </message>
-    <message>
-        <source>Write a question, choose the type of answers and send it to the students.</source>
-        <translation>Soạn câu hỏi, chọn dạng trả lời và gửi tới học sinh.</translation>
-    </message>
-    <message>
         <source>There are no student computers to send the question to.</source>
         <translation>Không có máy học sinh nào để gửi câu hỏi.</translation>
     </message>
@@ -6366,48 +6358,16 @@ Ví dụ: [^-]*-(PC[0-9]*)</translation>
         <translation>Rất đồng ý</translation>
     </message>
     <message>
-        <source>I understand</source>
-        <translation>Em hiểu rồi</translation>
+        <source>Yes, I do</source>
+        <translation>Em có</translation>
     </message>
     <message>
         <source>Not sure yet</source>
         <translation>Em chưa chắc</translation>
     </message>
     <message>
-        <source>I do not understand</source>
-        <translation>Em chưa hiểu</translation>
-    </message>
-    <message>
-        <source>Have you understood the lesson?</source>
-        <translation>Các em đã hiểu bài chưa?</translation>
-    </message>
-    <message>
-        <source>Have you finished?</source>
-        <translation>Các em đã làm xong chưa?</translation>
-    </message>
-    <message>
-        <source>Choose the correct answer (A - D)</source>
-        <translation>Chọn đáp án đúng (A - D)</translation>
-    </message>
-    <message>
-        <source>True or false?</source>
-        <translation>Đúng hay sai?</translation>
-    </message>
-    <message>
-        <source>Rate today&apos;s lesson</source>
-        <translation>Đánh giá bài học hôm nay</translation>
-    </message>
-    <message>
-        <source>Yes, finished</source>
-        <translation>Em làm xong rồi</translation>
-    </message>
-    <message>
         <source>Not yet</source>
-        <translation>Em chưa xong</translation>
-    </message>
-    <message>
-        <source>Choose the correct answer</source>
-        <translation>Chọn đáp án đúng</translation>
+        <translation>Em chưa</translation>
     </message>
 </context>
 <context>
@@ -6422,7 +6382,7 @@ Ví dụ: [^-]*-(PC[0-9]*)</translation>
     </message>
     <message>
         <source>Single choice (A, B, C, ...)</source>
-        <translation>Chọn 1 đáp án (A, B, C, ...)</translation>
+        <translation>Trắc nghiệm đáp án (A, B, C, ...)</translation>
     </message>
     <message>
         <source>Multiple choice</source>
@@ -6441,8 +6401,8 @@ Ví dụ: [^-]*-(PC[0-9]*)</translation>
         <translation>Đánh giá sao (1 - 5)</translation>
     </message>
     <message>
-        <source>Understanding (traffic light)</source>
-        <translation>Mức hiểu bài (đèn giao thông)</translation>
+        <source>Three colored buttons</source>
+        <translation>Mức độ 3 nút màu</translation>
     </message>
     <message>
         <source>Number</source>

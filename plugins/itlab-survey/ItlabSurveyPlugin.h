@@ -9,8 +9,7 @@
  * version 2 of the License, or (at your option) any later version.
  *
  *  "Survey" button of the Teacher Console (phase 1b, docs/ITLabControl_Survey_Design.md):
- *    - new question (10 question types, correct answer, time limit, anonymous)
- *    - questions which are sent with one click (templates)
+ *    - one menu entry per question type (10 types): write the question, correct answer, time limit, anonymous
  *
  *  MASTER --(StartSurvey)--> SERVER --> WORKER (shows the question in the session of the student)
  *  WORKER --(Answer)--> SERVER --(reply)--> MASTER (live results)
@@ -115,12 +114,6 @@ private:
 	void showQuestion( VeyonWorkerInterface& worker, const SurveyQuestion& question );
 
 	const Feature m_surveyFeature;
-	const Feature m_composeFeature;
-	const Feature m_understandingFeature;
-	const Feature m_doneFeature;
-	const Feature m_chooseAnswerFeature;
-	const Feature m_trueFalseFeature;
-	const Feature m_rateLessonFeature;
 	const FeatureList m_features;
 
 	// MASTER

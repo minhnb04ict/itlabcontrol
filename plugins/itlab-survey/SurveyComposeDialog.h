@@ -29,22 +29,9 @@ class SurveyComposeDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	enum class Template {
-		Understanding,
-		Done,
-		ChooseAnswer,
-		TrueOrFalse,
-		RateLesson,
-		Count
-	};
-
-	SurveyComposeDialog( int computerCount, QWidget* parent );
+	SurveyComposeDialog( SurveyQuestion::Type type, int computerCount, QWidget* parent );
 
 	SurveyQuestion question() const;
-
-	// questions which are sent with one click
-	static QString templateName( Template templateId );
-	static SurveyQuestion templateQuestion( Template templateId );
 
 	// default answer buttons of the types without editable options
 	static void setDefaultOptions( SurveyQuestion& question, int count = 0 );

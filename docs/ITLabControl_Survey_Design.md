@@ -1,6 +1,6 @@
 # Thiết kế tính năng Khảo sát nhanh (`itlab-survey`)
 
-Trạng thái: **đã duyệt 2026-11-11**; **S1 đã làm 2026-11-25** (kèm sớm dạng 6, 7, 9, 5 mẫu một chạm và nút "Gửi lại câu hỏi" cho máy chưa trả lời của S2). Làm thành **Giai đoạn 1b**, ngay sau GĐ1 và trước GĐ2. Đủ 11 dạng câu hỏi; ẩn danh là ẩn hoàn toàn (mục 3.1).
+Trạng thái: **đã duyệt 2026-11-11**; **S1 đã làm 2026-11-25** (kèm sớm dạng 6, 7, 9 và nút "Gửi lại câu hỏi" cho máy chưa trả lời của S2). Menu Khảo sát liệt kê 10 dạng câu hỏi; dạng 8 đổi thành "Mức độ 3 nút màu" (Em có / Em chưa chắc / Em chưa), dạng 3 đổi tên "Trắc nghiệm đáp án" (GV quyết định 2026-11-25, thay cho 5 mẫu một chạm). Làm thành **Giai đoạn 1b**, ngay sau GĐ1 và trước GĐ2. Đủ 11 dạng câu hỏi; ẩn danh là ẩn hoàn toàn (mục 3.1).
 Bản này mở rộng mục "Khảo sát nhanh" trong `ITLabControl_Design_Plan.md` mục 3.1.
 
 ## 1. Mục tiêu

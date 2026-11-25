@@ -178,9 +178,9 @@ Ghi **Đạt / Không đạt** và ghi chú (máy nào, hiện tượng gì). M�
 | 34 | Âm lượng | Âm thanh → Bật tiếng, rồi Âm lượng 25% / Đặt âm lượng… 60 | Âm lượng máy HS đổi đúng mức | |
 | 35 | Lịch sử duyệt web ⭐ | HS mở vài trang trên Chrome/Edge/Cốc Cốc; GV chọn máy → Hạn chế website → Lịch sử duyệt web… → Tải | Hiện các trang HS vừa mở (máy, giờ, người dùng, trình duyệt, tiêu đề, địa chỉ) | |
 | 36 | Xuất lịch sử | Trong cửa sổ lịch sử bấm Xuất (CSV cho Excel) | Mở bằng Excel đúng tiếng Việt; lịch sử cũ hơn 30 ngày tự xoá trên máy HS | |
-| 37 | Khảo sát mẫu ⭐ | Khảo sát → "Các em đã hiểu bài chưa?" | Máy HS hiện cửa sổ 3 nút xanh/vàng/đỏ; bấm 1 nút → Console cập nhật biểu đồ ngay | |
-| 38 | Khảo sát chọn 1 có đáp án ⭐ | Khảo sát → Câu hỏi mới…, Chọn 1, 4 đáp án để trống, tick B đúng, 1 phút | HS thấy A–D và đồng hồ; Console hiện % đúng, tab Từng máy; hết giờ cửa sổ HS tự đóng | |
-| 39 | Khảo sát ẩn danh ⭐ | Đánh giá bài học hôm nay (mẫu, ẩn danh) | HS thấy "Khảo sát ẩn danh"; Console không có tab Từng máy; file CSV không có tên máy | |
+| 37 | Khảo sát 3 nút màu ⭐ | Khảo sát → Mức độ 3 nút màu, câu hỏi "Các em đã hiểu bài chưa?" → Gửi | Máy HS hiện 3 nút Em có / Em chưa chắc / Em chưa (xanh/vàng/đỏ); bấm 1 nút → Console cập nhật biểu đồ ngay | |
+| 38 | Trắc nghiệm có đáp án ⭐ | Khảo sát → Trắc nghiệm đáp án (A, B, C, ...), 4 đáp án để trống, tick B đúng, 1 phút | HS thấy A–D và đồng hồ; Console hiện % đúng, tab Từng máy; hết giờ cửa sổ HS tự đóng | |
+| 39 | Khảo sát ẩn danh ⭐ | Khảo sát → Đánh giá sao (1 - 5), tick Ẩn danh | HS thấy "Khảo sát ẩn danh"; Console không có tab Từng máy; file CSV không có tên máy | |
 | 40 | Sửa đáp án / gửi lại | Câu hỏi cho sửa đáp án; HS bấm Sửa câu trả lời; GV bấm Gửi lại câu hỏi với máy chưa trả lời | Console cập nhật đáp án mới; máy chưa trả lời hiện lại câu hỏi | |
 | 41 | Lưu kết quả | Bấm Đóng khảo sát → Mở thư mục kết quả | Có file .json và .csv trong Documents\ITLabControl\Khảo sát\<ngày>; CSV mở bằng Excel đúng tiếng Việt | |
 
