@@ -151,5 +151,6 @@ private:
 
 	QLabel* m_statusLabel{nullptr};
 	bool m_saving{false};
+	int m_scanGeneration{0};
 
 };

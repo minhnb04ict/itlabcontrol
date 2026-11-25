@@ -350,7 +350,10 @@ QWidget* RoomManagerDialog::createRoomsTab()
 
 	connect( addRoomButton, &QPushButton::clicked, this, &RoomManagerDialog::addRoom );
 	connect( renameRoomButton, &QPushButton::clicked, this, &RoomManagerDialog::renameSelected );
-	connect( m_roomsTree, &QTreeWidget::itemDoubleClicked, this, &RoomManagerDialog::renameSelected );
+	// renaming rebuilds the tree, which must not happen while the tree is still handling the double-click
+	connect( m_roomsTree, &QTreeWidget::itemDoubleClicked, this, [this]() {
+		QTimer::singleShot( 0, this, &RoomManagerDialog::renameSelected );
+	} );
 	connect( addComputersButton, &QPushButton::clicked, this, &RoomManagerDialog::addComputersByName );
 	connect( moveButton, &QPushButton::clicked, this, &RoomManagerDialog::moveSelectedComputers );
 	connect( writeRoomButton, &QPushButton::clicked, this, &RoomManagerDialog::writeRoomToSelectedComputers );
@@ -545,7 +548,9 @@ void RoomManagerDialog::addComputersByName()
 		tr( "Enter one computer per line, either as name only (e.g. T36-ICT2-20) "
 			"or as name and IP address separated by a comma (e.g. T36-ICT2-20, 172.18.217.20):" ) );
 
+	// refreshRoomsTree() below deletes all tree items, so "item" must not be used after it
 	const auto uid = item->data( 0, RoleUid ).toString();
+	const auto roomName = item->text( 0 );
 	int count = 0;
 	for( const auto& line : text.split( QLatin1Char('\n'), Qt::SkipEmptyParts ) )
 	{
@@ -562,7 +567,7 @@ void RoomManagerDialog::addComputersByName()
 	if( count > 0 )
 	{
 		refreshRoomsTree();
-		showStatus( tr( "%1 computers added to room \"%2\". Click \"Save\" to apply." ).arg( count ).arg( item->text( 0 ) ) );
+		showStatus( tr( "%1 computers added to room \"%2\". Click \"Save\" to apply." ).arg( count ).arg( roomName ) );
 	}
 }
 
@@ -615,7 +620,9 @@ void RoomManagerDialog::writeRoomToSelectedComputers()
 	{
 		if( item->data( 0, RoleIsRoom ).toBool() == false && item->parent() )
 		{
-			sendSetRoom( item->text( 1 ), item->text( 0 ), item->parent()->text( 0 ) );
+			// computers without own host address are addressed by their name
+			const auto hostAddress = item->text( 1 ).isEmpty() ? item->text( 0 ) : item->text( 1 );
+			sendSetRoom( hostAddress, item->text( 0 ), item->parent()->text( 0 ) );
 			++count;
 		}
 	}
@@ -940,7 +947,14 @@ void RoomManagerDialog::startDiscovery()
 		m_scanSockets.append( socket );
 	}
 
-	QTimer::singleShot( PortScanTimeout, this, &RoomManagerDialog::finishPortScan );
+	// timers of an earlier discovery must not finish this one
+	const auto generation = ++m_scanGeneration;
+	QTimer::singleShot( PortScanTimeout, this, [this, generation]() {
+		if( generation == m_scanGeneration )
+		{
+			finishPortScan();
+		}
+	} );
 }
 
 
@@ -966,7 +980,12 @@ void RoomManagerDialog::finishPortScan()
 		queryComputer( address );
 	}
 
-	QTimer::singleShot( QueryTimeout, this, &RoomManagerDialog::finishDiscovery );
+	QTimer::singleShot( QueryTimeout, this, [this, generation = m_scanGeneration]() {
+		if( generation == m_scanGeneration )
+		{
+			finishDiscovery();
+		}
+	} );
 }
 
 
